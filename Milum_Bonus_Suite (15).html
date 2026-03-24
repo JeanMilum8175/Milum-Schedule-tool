@@ -1,0 +1,1882 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Milum Bonus Suite</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#07090f;--s1:#0d1120;--s2:#131929;--s3:#1a2236;--s4:#222d45;
+  --b1:#1e2a45;--b2:#2a3a5c;--b3:#3a4e72;
+  --acc:#00ccff;--acc2:#0088bb;--acc3:#002233;
+  --grn:#00e676;--grn2:#00a152;--grn3:#003318;
+  --ylw:#ffd740;--ylw2:#e6b800;--ylw3:#332a00;
+  --red:#ff4444;--red3:#330a0a;
+  --org:#ff8c00;--org2:#cc6600;--org3:#2a1800;
+  --txt:#dde8ff;--txt2:#7a90bb;--txt3:#3a4d6a;
+  --mono:'JetBrains Mono',monospace;--body:'Syne',sans-serif;
+  --r:7px;
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{background:var(--bg);color:var(--txt);font-family:var(--body);font-size:13px;min-height:100vh;
+  background-image:radial-gradient(ellipse 60% 40% at 10% 0%,rgba(0,204,255,.05) 0%,transparent 60%),
+                   radial-gradient(ellipse 40% 30% at 90% 100%,rgba(0,230,118,.04) 0%,transparent 55%);}
+
+/* HEADER */
+.hdr{background:rgba(13,17,32,.96);border-bottom:1px solid var(--b1);backdrop-filter:blur(10px);
+     position:sticky;top:0;z-index:200;box-shadow:0 2px 20px rgba(0,0,0,.5);}
+.hdr-in{max-width:1440px;margin:0 auto;padding:0 24px;display:flex;align-items:center;gap:14px;height:56px;}
+.logo-chip{background:linear-gradient(135deg,#006688,var(--acc));color:#000;
+           font-family:var(--mono);font-weight:700;font-size:11px;padding:3px 11px;border-radius:4px;letter-spacing:1px;}
+.logo-name{font-weight:800;font-size:14px;}
+.logo-sub{font-size:10px;color:var(--txt3);font-family:var(--mono);margin-top:1px;}
+.sp{flex:1;}
+
+/* TAB BAR */
+.tabbar{display:flex;gap:4px;background:var(--s2);border:1px solid var(--b1);border-radius:8px;padding:4px;}
+.tab{padding:7px 20px;border-radius:5px;cursor:pointer;font-weight:700;font-size:12px;
+     color:var(--txt2);transition:all .15s;white-space:nowrap;display:flex;align-items:center;gap:7px;border:none;background:transparent;}
+.tab:hover{color:var(--txt);background:var(--s3);}
+.tab.active-eff{background:var(--acc3);color:var(--acc);border:1px solid var(--acc2);}
+.tab.active-dot{background:var(--org3);color:var(--org);border:1px solid var(--org2);}
+.tab-badge{font-size:9px;font-family:var(--mono);padding:1px 6px;border-radius:3px;font-weight:700;}
+.tb-eff{background:var(--acc3);color:var(--acc);}
+.tb-dot{background:var(--org3);color:var(--org);}
+
+/* HEADER ACTION AREA */
+.hdr-actions{display:flex;align-items:center;gap:8px;}
+.wkbdg{font-family:var(--mono);font-size:11px;color:var(--txt2);background:var(--s2);
+       border:1px solid var(--b1);padding:3px 14px;border-radius:20px;}
+.hbtn{font-family:var(--body);font-size:12px;font-weight:700;padding:6px 15px;border-radius:var(--r);
+      border:none;cursor:pointer;transition:all .15s;display:inline-flex;align-items:center;gap:6px;}
+.hbtn-acc{background:var(--acc);color:#000;}
+.hbtn-acc:hover{background:#33ddff;color:#000;}
+.hbtn-org{background:var(--org);color:#000;}
+.hbtn-org:hover{background:#ffaa33;color:#000;}
+.hbtn-red{background:transparent;border:1px solid var(--red);color:var(--red);}
+.hbtn-red:hover{background:var(--red3);}
+.hbtn:disabled{opacity:.3;cursor:not-allowed;}
+
+/* MAIN */
+.main{max-width:1440px;margin:0 auto;padding:22px 24px;}
+.tab-content{display:none;}
+.tab-content.active{display:block;}
+
+/* STEPS */
+.steps{display:flex;background:var(--s1);border:1px solid var(--b1);border-radius:9px;
+       overflow:hidden;margin-bottom:22px;}
+.step{flex:1;padding:13px 16px;display:flex;align-items:center;gap:10px;
+      border-right:1px solid var(--b1);cursor:pointer;transition:background .15s;position:relative;}
+.step:last-child{border-right:none;}
+.step.active-eff{background:var(--acc3);border-bottom:2px solid var(--acc);}
+.step.active-dot{background:var(--org3);border-bottom:2px solid var(--org);}
+.step.done{background:var(--grn3);}
+.sn{width:22px;height:22px;border-radius:50%;background:var(--s3);display:flex;align-items:center;
+    justify-content:center;font-family:var(--mono);font-size:10px;font-weight:700;color:var(--txt3);flex-shrink:0;}
+.step.active-eff .sn{background:var(--acc);color:#000;}
+.step.active-dot .sn{background:var(--org);color:#000;}
+.step.done .sn{background:var(--grn);color:#000;}
+.slbl{font-size:10px;color:var(--txt3);text-transform:uppercase;letter-spacing:.5px;font-family:var(--mono);}
+.stit{font-weight:700;font-size:12px;margin-top:1px;}
+.step.active-eff .stit{color:var(--acc);}
+.step.active-dot .stit{color:var(--org);}
+.step.done .stit{color:var(--grn);}
+.sarr{position:absolute;right:-9px;top:50%;transform:translateY(-50%);
+      color:var(--b2);font-size:16px;z-index:1;pointer-events:none;}
+
+/* UPLOAD */
+.ugrid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px;margin-bottom:18px;}
+.ubox{background:var(--s1);border:2px dashed var(--b2);border-radius:9px;
+      padding:22px 16px;text-align:center;cursor:pointer;transition:all .2s;position:relative;}
+.ubox:hover,.ubox.over{border-color:var(--acc);background:rgba(0,204,255,.04);}
+.ubox.done{border-color:var(--grn);border-style:solid;background:rgba(0,230,118,.04);}
+.ubox.done .uico{color:var(--grn);}
+.utag{display:inline-block;font-family:var(--mono);font-size:10px;font-weight:600;
+      padding:2px 9px;border-radius:3px;margin-bottom:8px;letter-spacing:.5px;}
+.ta{background:rgba(0,204,255,.1);color:var(--acc);border:1px solid var(--acc2);}
+.tg{background:rgba(0,230,118,.1);color:var(--grn);border:1px solid var(--grn2);}
+.ty{background:rgba(255,215,64,.1);color:var(--ylw);border:1px solid var(--ylw2);}
+.uico{font-size:28px;color:var(--txt3);margin-bottom:7px;}
+.util{font-weight:700;font-size:13px;margin-bottom:3px;}
+.usub{color:var(--txt2);font-size:11px;line-height:1.5;}
+.ust{font-size:12px;font-weight:700;margin-top:10px;font-family:var(--mono);display:none;
+     padding:6px 10px;border-radius:5px;line-height:1.4;}
+.ust.ok{color:#fff;background:rgba(0,0,0,.25);}
+.ust.err{color:var(--red);background:var(--red3);}
+.crow{display:flex;justify-content:center;gap:12px;padding-top:4px;}
+.cbtn{font-family:var(--body);font-size:14px;font-weight:800;padding:12px 44px;border-radius:var(--r);
+      border:none;cursor:pointer;letter-spacing:.3px;transition:all .2s;}
+.cbtn-eff{background:linear-gradient(135deg,var(--acc2),var(--acc));color:#000;}
+.cbtn-eff:hover:not(:disabled){transform:translateY(-1px);box-shadow:0 4px 24px rgba(0,204,255,.35);}
+.cbtn-dot{background:linear-gradient(135deg,var(--org2),var(--org));color:#000;}
+.cbtn-dot:hover:not(:disabled){transform:translateY(-1px);box-shadow:0 4px 24px rgba(255,140,0,.35);}
+.cbtn:disabled{opacity:.3;cursor:not-allowed;transform:none;}
+
+/* NOTE */
+.note{background:rgba(0,204,255,.05);border:1px solid rgba(0,204,255,.15);border-radius:var(--r);
+      padding:11px 14px;font-size:12px;color:var(--txt2);margin-bottom:16px;
+      display:flex;gap:9px;align-items:flex-start;line-height:1.6;}
+.note.dot-note{background:rgba(255,140,0,.05);border-color:rgba(255,140,0,.2);}
+.note strong{color:var(--acc);}
+.note.dot-note strong{color:var(--org);}
+
+/* STATS */
+.stats{display:flex;gap:11px;margin-bottom:16px;flex-wrap:wrap;}
+.stat{background:var(--s1);border:1px solid var(--b1);border-radius:var(--r);padding:12px 16px;flex:1;min-width:110px;}
+.slb{font-size:10px;text-transform:uppercase;letter-spacing:.5px;color:var(--txt3);font-family:var(--mono);margin-bottom:4px;}
+.svl{font-weight:800;font-size:20px;font-family:var(--mono);}
+.ca{color:var(--acc)!important;} .cg{color:var(--grn)!important;}
+.cy{color:var(--ylw)!important;} .co{color:var(--org)!important;}
+
+/* TABLE */
+.tw{background:var(--s1);border:1px solid var(--b1);border-radius:9px;overflow:hidden;}
+.th2{padding:13px 16px;border-bottom:1px solid var(--b1);background:var(--s2);
+     display:flex;align-items:center;gap:10px;flex-wrap:wrap;}
+.ttl{font-weight:700;font-size:13px;}
+.tsu{font-size:11px;color:var(--txt3);font-family:var(--mono);}
+.tac{margin-left:auto;display:flex;gap:7px;align-items:center;flex-wrap:wrap;}
+.srch{padding:5px 10px;border:1px solid var(--b2);border-radius:5px;font-size:11px;
+      font-family:var(--body);background:var(--s2);color:var(--txt);}
+.srch:focus{outline:none;border-color:var(--acc);}
+.tsc{overflow-x:auto;max-height:560px;overflow-y:auto;}
+table{width:100%;border-collapse:collapse;font-size:11.5px;}
+th{background:#050810;color:var(--txt3);font-weight:600;font-size:10px;text-transform:uppercase;
+   letter-spacing:.5px;padding:8px 11px;white-space:nowrap;position:sticky;top:0;z-index:1;
+   text-align:left;border-bottom:1px solid var(--b1);}
+th.r{text-align:right;}
+td{padding:7px 11px;border-bottom:1px solid rgba(255,255,255,.025);vertical-align:middle;}
+tr:last-child td{border-bottom:none;}
+tr:hover td{background:rgba(255,255,255,.02);}
+tr.el td{background:rgba(0,230,118,.03);}
+tr.el:hover td{background:rgba(0,230,118,.06);}
+tr.sv td{background:rgba(255,140,0,.04);}
+tr.sv:hover td{background:rgba(255,140,0,.08);}
+tr.flag td{background:rgba(255,68,68,.04);}
+tr.dim td{opacity:.4;}
+td.r{text-align:right;font-family:var(--mono);}
+td.m{font-family:var(--mono);}
+.bdg{font-size:10px;font-weight:600;padding:2px 7px;border-radius:3px;font-family:var(--mono);}
+.bg{background:var(--grn3);color:var(--grn);border:1px solid var(--grn2);}
+.ba{background:var(--acc3);color:var(--acc);border:1px solid var(--acc2);}
+.by{background:var(--ylw3);color:var(--ylw);}
+.bo{background:var(--org3);color:var(--org);border:1px solid var(--org2);}
+.br{background:var(--red3);color:var(--red);}
+.bd{background:var(--s3);color:var(--txt3);}
+::-webkit-scrollbar{width:4px;height:4px;}
+::-webkit-scrollbar-thumb{background:var(--b2);border-radius:2px;}
+
+/* ── LOCK SCREEN ─────────────────────────────────────────────────────────── */
+#lockScreen{position:fixed;inset:0;z-index:9999;background:#07090f;
+  display:flex;align-items:center;justify-content:center;
+  background-image:radial-gradient(ellipse 60% 40% at 10% 0%,rgba(0,204,255,.07) 0%,transparent 60%),
+                   radial-gradient(ellipse 40% 30% at 90% 100%,rgba(0,230,118,.05) 0%,transparent 55%);}
+.lock-box{background:var(--s1);border:1px solid var(--b2);border-radius:14px;
+  padding:44px 48px;width:100%;max-width:420px;text-align:center;
+  box-shadow:0 8px 60px rgba(0,0,0,.6);}
+.lock-logo{display:inline-block;background:linear-gradient(135deg,#006688,var(--acc));
+  color:#000;font-family:var(--mono);font-weight:700;font-size:13px;
+  padding:4px 14px;border-radius:5px;letter-spacing:1.5px;margin-bottom:18px;}
+.lock-title{font-size:20px;font-weight:800;margin-bottom:4px;}
+.lock-sub{font-size:12px;color:var(--txt3);margin-bottom:28px;font-family:var(--mono);}
+.lock-label{display:block;text-align:left;font-size:11px;font-weight:700;
+  color:var(--txt3);text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px;font-family:var(--mono);}
+.lock-input{width:100%;padding:11px 14px;background:var(--s2);border:1px solid var(--b2);
+  border-radius:7px;color:var(--txt);font-family:var(--body);font-size:13px;
+  outline:none;transition:border .15s;margin-bottom:16px;}
+.lock-input:focus{border-color:var(--acc);}
+.lock-btn{width:100%;padding:13px;background:linear-gradient(135deg,var(--acc2),var(--acc));
+  color:#000;font-family:var(--body);font-size:14px;font-weight:800;
+  border:none;border-radius:7px;cursor:pointer;letter-spacing:.3px;
+  transition:all .2s;margin-top:4px;}
+.lock-btn:hover{transform:translateY(-1px);box-shadow:0 4px 24px rgba(0,204,255,.35);}
+.lock-btn:disabled{opacity:.4;cursor:not-allowed;transform:none;}
+.lock-err{color:var(--red);font-size:12px;margin-top:10px;min-height:18px;font-family:var(--mono);}
+.lock-spinner{display:none;font-size:12px;color:var(--txt3);margin-top:10px;font-family:var(--mono);}
+
+@media print{body{background:#fff;color:#000;}
+  .hdr,.steps,.ugrid,.crow,.tac,.note{display:none!important;}
+  .tsc{max-height:none;overflow:visible;}}
+</style>
+</head>
+<body>
+
+<!-- ── LOCK SCREEN ── -->
+<div id="lockScreen">
+  <div class="lock-box">
+    <div class="lock-logo">MLM</div>
+    <div class="lock-title">Bonus Suite</div>
+    <div class="lock-sub">Milum Express LLC — Restricted Access</div>
+    <label class="lock-label" for="lockName">Your Full Name</label>
+    <input class="lock-input" id="lockName" type="text" placeholder="e.g. John Smith" autocomplete="name">
+    <label class="lock-label" for="lockPass">Password</label>
+    <input class="lock-input" id="lockPass" type="password" placeholder="Enter password">
+    <button class="lock-btn" id="lockBtn" onclick="lockSubmit()">🔓 Unlock</button>
+    <div class="lock-err" id="lockErr"></div>
+    <div class="lock-spinner" id="lockSpinner">⏳ Logging access…</div>
+  </div>
+</div>
+
+
+<!-- HEADER -->
+<div class="hdr">
+  <div class="hdr-in">
+    <div class="logo-chip" id="logoChip">MLM</div>
+    <div><div class="logo-name">Bonus Suite</div>
+      <div class="logo-sub">Milum Express LLC — Amazon DSP</div></div>
+    <div class="sp"></div>
+
+    <!-- TAB SWITCHER -->
+    <div class="tabbar">
+      <button class="tab active-eff" id="tabEff" onclick="switchTab('eff')">
+        <span class="tab-badge tb-eff">EFF</span> EFF Bonus Generator
+      </button>
+      <button class="tab" id="tabDot" onclick="switchTab('dot')">
+        <span class="tab-badge tb-dot">DOT</span> DOT Bonus Calculator
+      </button>
+    </div>
+    <div class="sp"></div>
+
+    <div class="hdr-actions">
+      <div class="wkbdg" id="wkbdg">No data loaded</div>
+      <button class="hbtn hbtn-red" id="clrBtn" onclick="activeTab==='eff'?effClearAll():dotClearAll()" style="display:none">✕ Reset</button>
+      <button class="hbtn hbtn-acc" id="dlBtnEff" onclick="effDlXlsx()" style="display:none">↓ EFF (.xlsx)</button>
+      <button class="hbtn" id="dlBtnBoth" onclick="dlBoth()" style="display:none;background:linear-gradient(135deg,var(--acc2),var(--acc));color:#000;border:none">↓ Download Both</button>
+      <button class="hbtn hbtn-org" id="dlBtnDot" onclick="dotDlXlsx()" style="display:none">↓ DOT (.xlsx)</button>
+    </div>
+  </div>
+</div>
+
+<div class="main">
+
+<!-- ════════════════════════════════════════════════════════ EFF TAB ══ -->
+<div class="tab-content active" id="tab-eff">
+
+  <div class="steps">
+    <div class="step active-eff" id="est1" onclick="if(effG.step>=1)effShowStep(1)">
+      <div class="sn" id="esn1">1</div>
+      <div><div class="slbl">Step 1</div><div class="stit">Upload Files</div></div>
+      <div class="sarr">›</div></div>
+    <div class="step" id="est2" onclick="if(effG.step>=2)effShowStep(2)">
+      <div class="sn" id="esn2">2</div>
+      <div><div class="slbl">Step 2</div><div class="stit">Review</div></div>
+      <div class="sarr">›</div></div>
+    <div class="step" id="est3" onclick="if(effG.step>=3)effShowStep(3)">
+      <div class="sn" id="esn3">3</div>
+      <div><div class="slbl">Step 3</div><div class="stit">EFF Report</div></div>
+    </div>
+  </div>
+
+  <div id="ev1">
+    <div class="note">
+      <span style="font-size:15px">⚡</span>
+      <div>Upload all three files. <strong>Amazon ZIP</strong> → AMZN paid hours. <strong>ADP Timecard</strong> → actual worked hours. <strong>Schedule .xlsx</strong> → station detection. Supports DVB8 and DFH1.</div>
+    </div>
+    <div class="ugrid">
+      <div class="ubox" id="bxZ">
+        <input type="file" id="fZ" style="position:absolute;left:-9999px" accept=".zip">
+        <div class="utag ta">AMAZON ZIP</div><div class="uico">📦</div>
+        <div class="util">MLM Weekly Report (.zip)</div>
+        <div class="usub">Service Details CSV — route &amp; shipment data per DA per day</div>
+        <div class="ust" id="stZ"></div>
+      </div>
+      <div class="ubox" id="bxA">
+        <input type="file" id="fA" style="position:absolute;left:-9999px" accept=".xls,.xlsx,.html,.htm">
+        <div class="utag tg">ADP TIMECARD</div><div class="uico">🕐</div>
+        <div class="util">ADP Timecard (.xls)</div>
+        <div class="usub">Weekly Timecard Hours from ADP — actual clock hours per DA</div>
+        <div class="ust" id="stA"></div>
+      </div>
+      <div class="ubox" id="bxS">
+        <input type="file" id="fS" style="position:absolute;left:-9999px" accept=".xlsx,.xls">
+        <div class="utag ty">SCHEDULE</div><div class="uico">📅</div>
+        <div class="util">Milum Schedule (.xlsx)</div>
+        <div class="usub">From Milum Schedule Tool — station detection &amp; day types (H/ T/ S/)</div>
+        <div class="ust" id="stS"></div>
+      </div>
+
+    </div>
+    <div class="crow">
+      <button class="cbtn cbtn-eff" id="ecalcBtn" onclick="effRunCalc()" disabled>⚡ Calculate EFF Bonuses</button>
+    </div>
+  </div>
+
+  <div id="ev2" style="display:none">
+    <div class="stats">
+      <div class="stat"><div class="slb">Total DAs</div><div class="svl ca" id="es2t">--</div></div>
+      <div class="stat"><div class="slb">With AMZN Hours</div><div class="svl ca" id="es2a">--</div></div>
+      <div class="stat"><div class="slb">EFF Eligible</div><div class="svl cg" id="es2e">--</div></div>
+      <div class="stat"><div class="slb">Total EFF Bonus</div><div class="svl cg" id="es2b">--</div></div>
+    </div>
+    <div class="tw">
+      <div class="th2">
+        <div><div class="ttl">📋 DA Breakdown — <span id="es2wk"></span></div>
+          <div class="tsu">AMZN: zip primary-shipments · ADP: timecard · fallback: schedule</div></div>
+        <div class="tac">
+          <input class="srch" id="es2q" placeholder="Search…" oninput="effF2()">
+          <select class="srch" id="es2f" onchange="effF2()">
+            <option value="">All DAs</option><option value="e">EFF Eligible</option>
+            <option value="z">No Bonus</option><option value="n">No AMZN</option></select>
+          <button class="hbtn hbtn-acc" onclick="effGoS3()">Generate Report →</button>
+        </div>
+      </div>
+      <div class="tsc">
+        <table><thead><tr>
+          <th>File #</th><th>Last Name</th><th>First Name</th><th class="r">Rate</th>
+          <th class="r">AMZN Paid</th><th>Src</th>
+          <th class="r">ADP Hours</th><th>Src</th>
+          <th class="r">Eff Time</th><th class="r">EFF Bonus</th><th>Status</th>
+        </tr></thead><tbody id="es2b2"></tbody></table>
+      </div>
+    </div>
+  </div>
+
+  <div id="ev3" style="display:none">
+    <div class="stats">
+      <div class="stat"><div class="slb">Total DAs</div><div class="svl ca" id="es3t">--</div></div>
+      <div class="stat"><div class="slb">EFF Eligible</div><div class="svl cg" id="es3e">--</div></div>
+      <div class="stat"><div class="slb">Total EFF Bonus</div><div class="svl cg" id="es3b">--</div></div>
+      <div class="stat"><div class="slb">Station</div><div class="svl ca" style="font-size:15px" id="es3s">--</div></div>
+      <div class="stat"><div class="slb">Pay Period</div><div class="svl ca" style="font-size:10px;padding-top:6px" id="es3w">--</div></div>
+    </div>
+    <div class="tw">
+      <div class="th2">
+        <div><div class="ttl">📄 EFF Bonus Report — ADP Payroll Import Format</div>
+          <div class="tsu" id="es3su">10-column format ready for payroll submission</div></div>
+        <div class="tac">
+          <input class="srch" id="es3q" placeholder="Search…" oninput="effF3()">
+          <select class="srch" id="es3f" onchange="effF3()">
+            <option value="">All DAs</option><option value="e">Eligible only</option><option value="z">Zero bonus</option></select>
+          <button class="hbtn" style="background:var(--s3);color:var(--txt);border:1px solid var(--b2)" onclick="window.print()">🖨 Print</button>
+          <button class="hbtn hbtn-acc" onclick="effDlXlsx()">↓ Download .xlsx</button>
+        </div>
+      </div>
+      <div class="tsc">
+        <table><thead><tr>
+          <th>Co Code</th><th>Batch</th><th>Last Name</th><th>First Name</th>
+          <th>File #</th><th class="r">Rate</th><th>Earn Code</th>
+          <th class="r">EFF Bonus</th><th>Dept Code</th><th>Dept Desc</th>
+        </tr></thead><tbody id="es3b2"></tbody></table>
+      </div>
+    </div>
+  </div>
+
+</div><!-- /tab-eff -->
+
+<!-- ════════════════════════════════════════════════════════ DOT TAB ══ -->
+<div class="tab-content" id="tab-dot">
+
+  <div class="steps">
+    <div class="step" id="dst1" onclick="if(dotG.step>=1)dotShowStep(1)">
+      <div class="sn" id="dsn1">1</div>
+      <div><div class="slbl">Step 1</div><div class="stit">Upload Files</div></div>
+      <div class="sarr">›</div></div>
+    <div class="step" id="dst2" onclick="if(dotG.step>=2)dotShowStep(2)">
+      <div class="sn" id="dsn2">2</div>
+      <div><div class="slbl">Step 2</div><div class="stit">Review</div></div>
+      <div class="sarr">›</div></div>
+    <div class="step" id="dst3" onclick="if(dotG.step>=3)dotShowStep(3)">
+      <div class="sn" id="dsn3">3</div>
+      <div><div class="slbl">Step 3</div><div class="stit">DOT Report</div></div>
+    </div>
+  </div>
+
+  <div id="dv1">
+    <div class="note dot-note">
+      <span style="font-size:15px">🚚</span>
+      <div>Uses the same 3 files you uploaded in the EFF tab — just switch tabs after uploading. <strong>Step Van routes</strong> are auto-detected from the Amazon ZIP. Bonus = $1/hr Amazon SV hours (with EFF) or $1/hr actual ADP hours capped at Amazon (without EFF).</div>
+    </div>
+    <div style="text-align:center;padding:40px;color:var(--txt2)">
+      <div style="font-size:40px;margin-bottom:12px">🚚</div>
+      <div style="font-weight:700;font-size:16px;margin-bottom:8px">Files load from the EFF tab</div>
+      <div style="font-size:12px">Upload your ZIP, ADP Timecard, and Schedule in the <strong style="color:var(--acc)">EFF tab</strong> then come back here to calculate DOT bonuses. Both tools share the same uploaded files.</div>
+    </div>
+    <div class="crow">
+      <button class="cbtn cbtn-dot" id="dcalcBtn" onclick="dotRunCalc()" disabled>🚚 Calculate DOT Bonuses</button>
+    </div>
+  </div>
+
+  <div id="dv2" style="display:none">
+    <div class="stats">
+      <div class="stat"><div class="slb">Step Van DAs</div><div class="svl co" id="ds2sv">--</div></div>
+      <div class="stat"><div class="slb">Total SV Hrs (Amazon)</div><div class="svl co" id="ds2ah">--</div></div>
+      <div class="stat"><div class="slb">Total Bonus w/ EFF</div><div class="svl cg" id="ds2bw">--</div></div>
+      <div class="stat"><div class="slb">Total Bonus no EFF</div><div class="svl cy" id="ds2bn">--</div></div>
+      <div class="stat"><div class="slb">Flagged</div><div class="svl" style="color:var(--red)" id="ds2fl">--</div></div>
+    </div>
+    <div class="tw">
+      <div class="th2">
+        <div><div class="ttl">🚚 Step Van Review — <span id="ds2wk"></span></div>
+          <div class="tsu">Primary DA = most shipments · $1/hr · w/ EFF = Amazon hrs · no EFF = min(ADP, Amazon)</div></div>
+        <div class="tac">
+          <input class="srch" id="ds2q" placeholder="Search…" oninput="dotF2()">
+          <select class="srch" id="ds2f" onchange="dotF2()">
+            <option value="">All DAs</option>
+            <option value="sv">Step Van only</option>
+            <option value="fl">Flagged only</option></select>
+          <button class="hbtn hbtn-org" onclick="dotGoS3()">Generate Report →</button>
+        </div>
+      </div>
+      <div class="tsc">
+        <table><thead><tr>
+          <th>Last Name</th><th>First Name</th>
+          <th class="r">Amazon SV Hrs</th><th class="r">ADP SV Hrs</th>
+          <th class="r">Bonus w/ EFF</th><th class="r">Bonus no EFF</th>
+          <th>ADP Note</th><th>Status</th>
+        </tr></thead><tbody id="ds2body"></tbody></table>
+      </div>
+    </div>
+  </div>
+
+  <div id="dv3" style="display:none">
+    <div class="stats">
+      <div class="stat"><div class="slb">Step Van DAs</div><div class="svl co" id="ds3sv">--</div></div>
+      <div class="stat"><div class="slb">Amazon SV Hours</div><div class="svl co" id="ds3ah">--</div></div>
+      <div class="stat"><div class="slb">Total w/ EFF</div><div class="svl cg" id="ds3bw">--</div></div>
+      <div class="stat"><div class="slb">Total no EFF</div><div class="svl cy" id="ds3bn">--</div></div>
+      <div class="stat"><div class="slb">Pay Period</div><div class="svl co" style="font-size:10px;padding-top:6px" id="ds3wk">--</div></div>
+    </div>
+    <div class="tw">
+      <div class="th2">
+        <div><div class="ttl">📄 DOT Bonus Report — Step Van</div>
+          <div class="tsu" id="ds3su">Ready for submission</div></div>
+        <div class="tac">
+          <input class="srch" id="ds3q" placeholder="Search…" oninput="dotF3()">
+          <select class="srch" id="ds3f" onchange="dotF3()">
+            <option value="">All DAs</option>
+            <option value="sv">Step Van only</option>
+            <option value="fl">Flagged only</option></select>
+          <button class="hbtn" style="background:var(--s3);color:var(--txt);border:1px solid var(--b2)" onclick="window.print()">🖨 Print</button>
+          <button class="hbtn hbtn-org" onclick="dotDlXlsx()">↓ Download .xlsx</button>
+        </div>
+      </div>
+      <div class="tsc">
+        <table><thead><tr>
+          <th>Last Name</th><th>First Name</th>
+          <th class="r">Amazon SV Hrs</th><th class="r">ADP SV Hrs</th>
+          <th class="r">Bonus w/ EFF</th><th class="r">Bonus no EFF</th>
+          <th>Routes</th><th>ADP Note</th><th>Flag</th>
+        </tr></thead><tbody id="ds3body"></tbody></table>
+      </div>
+    </div>
+  </div>
+
+</div><!-- /tab-dot -->
+</div><!-- /main -->
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+<script>
+// ── TAB MANAGEMENT ────────────────────────────────────────────────────────────
+var activeTab = 'eff';
+function switchTab(tab){
+  activeTab = tab;
+  document.getElementById('tab-eff').classList.toggle('active', tab==='eff');
+  document.getElementById('tab-dot').classList.toggle('active', tab==='dot');
+  document.getElementById('tabEff').className = 'tab' + (tab==='eff'?' active-eff':'');
+  document.getElementById('tabDot').className = 'tab' + (tab==='dot'?' active-dot':'');
+  // Update header buttons
+  document.getElementById('dlBtnEff').style.display = (tab==='eff' && effG.results.length) ? '' : 'none';
+  document.getElementById('dlBtnDot').style.display = (tab==='dot' && dotG.results.length) ? '' : 'none';
+  // Update DOT calc button — enable if files are loaded
+  document.getElementById('dcalcBtn').disabled = !(effG.zip && effG.adp);
+}
+
+// ── SHARED FILE WIRING ────────────────────────────────────────────────────────
+function wire(box,inp,fn){
+  var b=document.getElementById(box),i=document.getElementById(inp);
+  b.addEventListener('click',function(){i.click();});
+  i.addEventListener('change',function(){if(i.files[0])fn(i.files[0]);});
+  b.addEventListener('dragover',function(e){e.preventDefault();b.classList.add('over');});
+  b.addEventListener('dragleave',function(){b.classList.remove('over');});
+  b.addEventListener('drop',function(e){e.preventDefault();b.classList.remove('over');if(e.dataTransfer.files[0])fn(e.dataTransfer.files[0]);});
+}
+document.addEventListener('dragover',function(e){e.preventDefault();});
+document.addEventListener('drop',function(e){e.preventDefault();});
+
+// Files load into BOTH tools simultaneously
+function loadZip(f){ effLoadZip(f); dotG.zip=null; /* DOT uses effG.zip at calc time */ }
+function loadAdp(f){ effLoadAdp(f); }
+function loadSch(f){ effLoadSch(f); }
+
+wire('bxZ','fZ',loadZip);
+wire('bxA','fA',loadAdp);
+wire('bxS','fS',loadSch);
+
+function setSt(id,msg,ok){var e=document.getElementById(id);if(!e)return;e.textContent=msg;e.className='ust '+(ok?'ok':'err');e.style.display='block';}
+
+// Shared wkbdg update
+function updateWkBdg(week){ document.getElementById('wkbdg').textContent=week||'No data loaded'; }
+
+
+// ── EMBEDDED DATA ─────────────────────────────────────────────────────────────
+const ROSTERS  = {"DFH1":[{"file":"001308","last":"Abreu","first":"Meyleen","rate":22.5,"dept":"00DFH1","dept_desc":"Miami Gardens"},{"file":"002480","last":"Alvarino","first":"Daniel","rate":21.5,"dept":"00DFH1","dept_desc":"Miami Gardens"},{"file":"003470","last":"Apollon","first":"Budler","rate":21.5,"dept":"00DFH1","dept_desc":"Miami Gardens"},{"file":"003030","last":"Arango","first":"Luisa","rate":21.5,"dept":"00DFH1","dept_desc":"Miami Gardens"},{"file":"003263","last":"Armentero","first":"Henry","rate":21.5,"dept":"00DFH1","dept_desc":"Miami Gardens"},{"file":"003261","last":"Avalos","first":"Laura","rate":21.5,"dept":"00DFH1","dept_desc":"Miami Gardens"},{"file":"003277","last":"Barrero","first":"Alvaro","rate":21.5,"dept":"00DFH1","dept_desc":"Miami Gardens"},{"file":"003372","last":"Cadet","first":"Fritz","rate":21.5,"dept":"00DFH1","dept_desc":"Miami Gardens"},{"file":"003456","last":"Benedicto","first":"Francisco","rate":21.5,"dept":"00DFH1","dept_desc":"Miami Gardens"},{"file":"002436","last":"Benedicto","first":"Antonio","rate":21.5,"dept":"00DFH1","dept_desc":"Miami Gardens"},{"file":"003327","last":"Blake","first":"Dave","rate":21.5,"dept":"00DFH1","dept_desc":"Miami Gardens"},{"file":"002353","last":"Boulier","first":"Daniel","rate":21.5,"dept":"00DFH1","dept_desc":"Miami Gardens"},{"file":"003501","last":"Brianzo","first":"Ninfa","rate":21.5,"dept":"00DFH1","dept_desc":"Miami Gardens"},{"file":"003399","last":"Bryant","first":"Ervin","rate":21.5,"dept":"00DFH1","dept_desc":"Miami Gardens"},{"file":"003254","last":"Cadet","first":"Jonathan","rate":21.5,"dept":"00DFH1","dept_desc":"Miami Gardens"},{"file":"002979","last":"Carmenate","first":"Ernesto","rate":21.5,"dept":"00DFH1","dept_desc":"Miami Gardens"},{"file":"003276","last":"Carral","first":"Ervin","rate":21.5,"dept":"00DFH1","dept_desc":"Miami Gardens"},{"file":"003325","last":"Chipman","first":"Antwan","rate":21.5,"dept":"00DFH1","dept_desc":"Miami Gardens"},{"file":"003246","last":"Cole","first":"Kyle","rate":21.5,"dept":"00DFH1","dept_desc":"Miami Gardens"},{"file":"001162","last":"Cortes","first":"Monica","rate":22.5,"dept":"00DFH1","dept_desc":"Miami Gardens"},{"file":"003388","last":"Davis","first":"Stephon","rate":21.5,"dept":"00DFH1","dept_desc":"Miami Gardens"},{"file":"003238","last":"Espinal","first":"Saul","rate":21.5,"dept":"00DFH1","dept_desc":"Miami Gardens"},{"file":"003400","last":"Exantus","first":"Klarens","rate":21.5,"dept":"00DFH1","dept_desc":"Miami Gardens"},{"file":"003315","last":"Figueroa","first":"Jonathan","rate":21.5,"dept":"00DFH1","dept_desc":"Miami Gardens"},{"file":"001847","last":"Firming","first":"Livington","rate":21.75,"dept":"00DFH1","dept_desc":"Miami Gardens"},{"file":"003334","last":"Francois","first":"Patrick","rate":21.5,"dept":"00DFH1","dept_desc":"Miami Gardens"},{"file":"002930","last":"Gardner","first":"Jamie","rate":21.5,"dept":"00DFH1","dept_desc":"Miami Gardens"},{"file":"001505","last":"Germosen","first":"Eneldo","rate":22.0,"dept":"00DFH1","dept_desc":"Miami Gardens"},{"file":"003427","last":"Guarnieri","first":"Jonathan","rate":21.5,"dept":"00DFH1","dept_desc":"Miami Gardens"},{"file":"002395","last":"Headlam","first":"Sanjay","rate":21.5,"dept":"00DFH1","dept_desc":"Miami Gardens"},{"file":"003094","last":"Hermida","first":"Crhistian","rate":21.5,"dept":"00DFH1","dept_desc":"Miami Gardens"},{"file":"002459","last":"Hilaire","first":"Weiggy","rate":21.5,"dept":"00DFH1","dept_desc":"Miami Gardens"},{"file":"001740","last":"Hill","first":"Raciel","rate":21.5,"dept":"00DFH1","dept_desc":"Miami Gardens"},{"file":"003240","last":"Jaramillo","first":"Juan","rate":21.5,"dept":"00DFH1","dept_desc":"Miami Gardens"},{"file":"003465","last":"Junior","first":"Brian","rate":21.5,"dept":"00DFH1","dept_desc":"Miami Gardens"},{"file":"003482","last":"Kuan","first":"Samir","rate":21.5,"dept":"00DFH1","dept_desc":"Miami Gardens"},{"file":"003304","last":"Laguerre","first":"Kensy","rate":21.5,"dept":"00DFH1","dept_desc":"Miami Gardens"},{"file":"003115","last":"Lebreton","first":"Jeffrey","rate":21.5,"dept":"00DFH1","dept_desc":"Miami Gardens"},{"file":"002355","last":"Leger","first":"Jean","rate":21.5,"dept":"00DFH1","dept_desc":"Miami Gardens"},{"file":"003481","last":"Marquez","first":"Luis","rate":21.5,"dept":"00DFH1","dept_desc":"Miami Gardens"},{"file":"002441","last":"Martinez","first":"Hector","rate":21.5,"dept":"00DFH1","dept_desc":"Miami Gardens"},{"file":"002624","last":"Miller","first":"Courtney","rate":21.5,"dept":"00DFH1","dept_desc":"Miami Gardens"},{"file":"003025","last":"Morancy","first":"Jean","rate":21.5,"dept":"00DFH1","dept_desc":"Miami Gardens"},{"file":"003459","last":"Navarro","first":"Kristhian","rate":21.5,"dept":"00DFH1","dept_desc":"Miami Gardens"},{"file":"003266","last":"Ospina","first":"Guillermo","rate":21.5,"dept":"00DFH1","dept_desc":"Miami Gardens"},{"file":"001464","last":"Pardo","first":"Jorge","rate":22.0,"dept":"00DFH1","dept_desc":"Miami Gardens"},{"file":"003487","last":"Paul","first":"Ridge","rate":21.5,"dept":"00DFH1","dept_desc":"Miami Gardens"},{"file":"003257","last":"Perez","first":"Gabriel","rate":21.5,"dept":"00DFH1","dept_desc":"Miami Gardens"},{"file":"003220","last":"Piqueras","first":"William","rate":21.5,"dept":"00DFH1","dept_desc":"Miami Gardens"},{"file":"003370","last":"Pollock","first":"Timothy","rate":21.5,"dept":"00DFH1","dept_desc":"Miami Gardens"},{"file":"002989","last":"Pomare","first":"John","rate":21.5,"dept":"00DFH1","dept_desc":"Miami Gardens"},{"file":"003012","last":"Pyram","first":"Roberto","rate":21.5,"dept":"00DFH1","dept_desc":"Miami Gardens"},{"file":"003141","last":"Quiroz","first":"Alejandro","rate":21.5,"dept":"00DFH1","dept_desc":"Miami Gardens"},{"file":"003079","last":"Quiroz","first":"Enmauel","rate":21.5,"dept":"00DFH1","dept_desc":"Miami Gardens"},{"file":"002185","last":"Ramirez","first":"Fabio","rate":21.5,"dept":"00DFH1","dept_desc":"Miami Gardens"},{"file":"002369","last":"Reverol","first":"Cesar","rate":21.5,"dept":"00DFH1","dept_desc":"Miami Gardens"},{"file":"003435","last":"Robles","first":"Sandy","rate":21.5,"dept":"00DFH1","dept_desc":"Miami Gardens"},{"file":"003099","last":"Robles","first":"Jose","rate":21.5,"dept":"00DFH1","dept_desc":"Miami Gardens"},{"file":"003466","last":"Romero","first":"Anthony","rate":21.5,"dept":"00DFH1","dept_desc":"Miami Gardens"},{"file":"003438","last":"Romero","first":"Annelisse","rate":21.5,"dept":"00DFH1","dept_desc":"Miami Gardens"},{"file":"002670","last":"Ruiz","first":"Andres","rate":21.5,"dept":"00DFH1","dept_desc":"Miami Gardens"},{"file":"002412","last":"Russa","first":"Ivan","rate":21.5,"dept":"00DFH1","dept_desc":"Miami Gardens"},{"file":"003237","last":"Samuel","first":"Kayo","rate":21.5,"dept":"00DFH1","dept_desc":"Miami Gardens"},{"file":"003348","last":"Samuel","first":"Wilelmore","rate":21.5,"dept":"00DFH1","dept_desc":"Miami Gardens"},{"file":"003502","last":"Singh","first":"Dennis","rate":21.5,"dept":"00DFH1","dept_desc":"Miami Gardens"},{"file":"002520","last":"Tabel","first":"Maykel","rate":21.5,"dept":"00DFH1","dept_desc":"Miami Gardens"},{"file":"003419","last":"Teran","first":"Lenin","rate":21.5,"dept":"00DFH1","dept_desc":"Miami Gardens"},{"file":"003107","last":"Tovar","first":"Angie","rate":21.5,"dept":"00DFH1","dept_desc":"Miami Gardens"},{"file":"003037","last":"Tovar","first":"Kevin","rate":21.5,"dept":"00DFH1","dept_desc":"Miami Gardens"},{"file":"003234","last":"Vargas","first":"Juan","rate":21.5,"dept":"00DFH1","dept_desc":"Miami Gardens"},{"file":"002654","last":"Vega","first":"Geovanny","rate":21.5,"dept":"00DFH1","dept_desc":"Miami Gardens"},{"file":"003303","last":"Villasana","first":"Maricela","rate":21.5,"dept":"00DFH1","dept_desc":"Miami Gardens"},{"file":"002434","last":"Wills","first":"David","rate":21.5,"dept":"00DFH1","dept_desc":"Miami Gardens"},{"file":"002229","last":"Yanez","first":"Daniel","rate":21.5,"dept":"00DFH1","dept_desc":"Miami Gardens"},{"file":"002859","last":"Zambrano","first":"Javier","rate":21.5,"dept":"00DFH1","dept_desc":"Miami Gardens"},{"file":"003345","last":"Zerpa","first":"Diego","rate":21.5,"dept":"00DFH1","dept_desc":"Miami Gardens"},{"file":"003509","last":"Angelin","first":"Andrew","rate":21.5,"dept":"00DFH1","dept_desc":"Miami Gardens"},{"file":"003508","last":"Rangel-Yanes","first":"Diego","rate":21.5,"dept":"00DFH1","dept_desc":"Miami Gardens"},{"file":"003513","last":"Ross","first":"Courtney","rate":21.5,"dept":"00DFH1","dept_desc":"Miami Gardens"},{"file":"003137","last":"Veitia","first":"Yasel","rate":21.5,"dept":"00DFH1","dept_desc":"Miami Gardens"}],"DVB8":[{"file":"003504","last":"Acosta","first":"Alex","rate":21.5,"dept":"00DVB8","dept_desc":"DVB8"},{"file":"002912","last":"Acosta","first":"Angie","rate":21.5,"dept":"00DVB8","dept_desc":"DVB8"},{"file":"003333","last":"Alberti","first":"Oscar","rate":21.5,"dept":"00DVB8","dept_desc":"DVB8"},{"file":"003318","last":"Almanares","first":"Yaniel","rate":21.5,"dept":"00DVB8","dept_desc":"DVB8"},{"file":"002675","last":"Alvarez","first":"Rainer","rate":21.5,"dept":"00DVB8","dept_desc":"DVB8"},{"file":"003179","last":"Alvarez","first":"Melany","rate":21.5,"dept":"00DVB8","dept_desc":"DVB8"},{"file":"003126","last":"Aragon","first":"Yordiel","rate":21.5,"dept":"00DVB8","dept_desc":"DVB8"},{"file":"003206","last":"Becker","first":"Alno","rate":21.5,"dept":"00DVB8","dept_desc":"DVB8"},{"file":"002439","last":"Bello","first":"Patricia","rate":21.5,"dept":"00DVB8","dept_desc":"DVB8"},{"file":"003440","last":"Brizuela","first":"Kevin","rate":21.5,"dept":"00DVB8","dept_desc":"DVB8"},{"file":"003386","last":"Brunely","first":"Luis","rate":21.5,"dept":"00DVB8","dept_desc":"DVB8"},{"file":"002779","last":"Casola","first":"Yurisdel","rate":21.5,"dept":"00DVB8","dept_desc":"DVB8"},{"file":"003364","last":"Castellanos","first":"Rigoberto","rate":21.5,"dept":"00DVB8","dept_desc":"DVB8"},{"file":"003484","last":"Coello","first":"Jose","rate":21.5,"dept":"00DVB8","dept_desc":"DVB8"},{"file":"002738","last":"Cuellar","first":"Yandy","rate":21.5,"dept":"00DVB8","dept_desc":"DVB8"},{"file":"002599","last":"Curbelo","first":"Christopher","rate":21.5,"dept":"00DVB8","dept_desc":"DVB8"},{"file":"002393","last":"de Jesus","first":"Evelys","rate":21.5,"dept":"00DVB8","dept_desc":"DVB8"},{"file":"001069","last":"Delgado","first":"Marcos","rate":22.5,"dept":"00DVB8","dept_desc":"DVB8"},{"file":"001852","last":"Diaz","first":"Lazaro","rate":21.5,"dept":"00DVB8","dept_desc":"DVB8"},{"file":"003226","last":"Diaz","first":"Arnaldo","rate":21.5,"dept":"00DVB8","dept_desc":"DVB8"},{"file":"003439","last":"Diaz","first":"Kevin","rate":21.5,"dept":"00DVB8","dept_desc":"DVB8"},{"file":"003405","last":"Escobar","first":"Reynaldo","rate":21.5,"dept":"00DVB8","dept_desc":"DVB8"},{"file":"003053","last":"Fernandez","first":"Daniela","rate":21.5,"dept":"00DVB8","dept_desc":"DVB8"},{"file":"002835","last":"Fiallo","first":"Monica","rate":21.5,"dept":"00DVB8","dept_desc":"DVB8"},{"file":"002640","last":"Figueredo","first":"Jorge","rate":21.5,"dept":"00DVB8","dept_desc":"DVB8"},{"file":"001696","last":"Forsythe","first":"Stanley","rate":21.75,"dept":"00DVB8","dept_desc":"DVB8"},{"file":"002600","last":"Garcia","first":"Dairelis","rate":21.5,"dept":"00DVB8","dept_desc":"DVB8"},{"file":"002764","last":"Gomez","first":"Alain","rate":21.5,"dept":"00DVB8","dept_desc":"DVB8"},{"file":"003473","last":"Gonzalez","first":"Ronaldo","rate":21.5,"dept":"00DVB8","dept_desc":"DVB8"},{"file":"003317","last":"Guerrero","first":"Anthony","rate":21.5,"dept":"00DVB8","dept_desc":"DVB8"},{"file":"003503","last":"Guzman","first":"Daniel","rate":21.5,"dept":"00DVB8","dept_desc":"DVB8"},{"file":"003227","last":"Hernandez","first":"Reinier","rate":21.5,"dept":"00DVB8","dept_desc":"DVB8"},{"file":"002798","last":"Herrera","first":"Jorge","rate":21.5,"dept":"00DVB8","dept_desc":"DVB8"},{"file":"003056","last":"Herrera","first":"Mario","rate":21.5,"dept":"00DVB8","dept_desc":"DVB8"},{"file":"003489","last":"Herrera","first":"Abel","rate":18.0,"dept":"00DVB8","dept_desc":"DVB8"},{"file":"003437","last":"Kelly","first":"Nathaniel","rate":21.5,"dept":"00DVB8","dept_desc":"DVB8"},{"file":"003498","last":"Larracochea","first":"Dayron","rate":18.0,"dept":"00DVB8","dept_desc":"DVB8"},{"file":"003486","last":"Leon","first":"Juan","rate":21.5,"dept":"00DVB8","dept_desc":"DVB8"},{"file":"003480","last":"Madrigal","first":"Luis","rate":21.5,"dept":"00DVB8","dept_desc":"DVB8"},{"file":"003286","last":"Marquez","first":"Frank","rate":21.5,"dept":"00DVB8","dept_desc":"DVB8"},{"file":"001717","last":"Martinez","first":"Yohandys","rate":21.75,"dept":"00DVB8","dept_desc":"DVB8"},{"file":"002846","last":"Martinez","first":"Dario","rate":21.5,"dept":"00DVB8","dept_desc":"DVB8"},{"file":"003363","last":"Mojarriete","first":"Inalvis","rate":21.5,"dept":"00DVB8","dept_desc":"DVB8"},{"file":"001359","last":"Molina","first":"Frank","rate":21.5,"dept":"00DVB8","dept_desc":"DVB8"},{"file":"002900","last":"Montejo","first":"Elienne","rate":21.5,"dept":"00DVB8","dept_desc":"DVB8"},{"file":"000716","last":"Omana","first":"Othman","rate":23.0,"dept":"00DVB8","dept_desc":"DVB8"},{"file":"001886","last":"Palomino","first":"Randoris","rate":21.75,"dept":"00DVB8","dept_desc":"DVB8"},{"file":"002832","last":"Pavon","first":"Ernesto","rate":21.5,"dept":"00DVB8","dept_desc":"DVB8"},{"file":"001155","last":"Perdomo","first":"Yaima","rate":22.5,"dept":"00DVB8","dept_desc":"DVB8"},{"file":"003403","last":"Perera","first":"Yisel","rate":21.5,"dept":"00DVB8","dept_desc":"DVB8"},{"file":"002653","last":"Perez","first":"Asiel","rate":21.5,"dept":"00DVB8","dept_desc":"DVB8"},{"file":"001977","last":"Perez","first":"Niurka","rate":21.5,"dept":"00DVB8","dept_desc":"DVB8"},{"file":"003485","last":"Perez","first":"Adrian","rate":21.5,"dept":"00DVB8","dept_desc":"DVB8"},{"file":"003431","last":"Perez","first":"Angel","rate":21.5,"dept":"00DVB8","dept_desc":"DVB8"},{"file":"003101","last":"Piovet","first":"Yojaile","rate":21.5,"dept":"00DVB8","dept_desc":"DVB8"},{"file":"001705","last":"Rafael","first":"Juan","rate":21.75,"dept":"00DVB8","dept_desc":"DVB8"},{"file":"003385","last":"Ramos","first":"Alejandro","rate":21.5,"dept":"00DVB8","dept_desc":"DVB8"},{"file":"002833","last":"Rivalta","first":"Daniela","rate":21.5,"dept":"00DVB8","dept_desc":"DVB8"},{"file":"003497","last":"Rodriguez","first":"Anthony","rate":21.5,"dept":"00DVB8","dept_desc":"DVB8"},{"file":"003182","last":"Rodriguez","first":"Jeroboan","rate":21.5,"dept":"00DVB8","dept_desc":"DVB8"},{"file":"003491","last":"Rodriguez","first":"Genessis","rate":21.5,"dept":"00DVB8","dept_desc":"DVB8"},{"file":"003499","last":"Rodriguez","first":"Yusviel","rate":21.5,"dept":"00DVB8","dept_desc":"DVB8"},{"file":"003250","last":"Rosete","first":"Luis","rate":21.5,"dept":"00DVB8","dept_desc":"DVB8"},{"file":"003493","last":"Silveira","first":"Luis","rate":21.5,"dept":"00DVB8","dept_desc":"DVB8"},{"file":"003471","last":"Torres","first":"Jaciel","rate":21.5,"dept":"00DVB8","dept_desc":"DVB8"},{"file":"003073","last":"Umanzor","first":"Alexandra","rate":21.5,"dept":"00DVB8","dept_desc":"DVB8"},{"file":"003490","last":"Valina","first":"Raul","rate":21.5,"dept":"00DVB8","dept_desc":"DVB8"},{"file":"003272","last":"Vargas","first":"Alex","rate":21.5,"dept":"00DVB8","dept_desc":"DVB8"},{"file":"003500","last":"Zelaya","first":"Mario","rate":21.5,"dept":"00DVB8","dept_desc":"DVB8"},{"file":"003496","last":"Zuleta","first":"Emmanuel","rate":21.5,"dept":"00DVB8","dept_desc":"DVB8"}]};
+const DVB8_FULL = [{"file": "003504", "last": "Acosta", "first": "Alex", "earnCode": "EFF", "empStatus": "Full Time", "dept": "00DVB8", "dept_desc": "DVB8", "slots": [{"rate": 21.5, "effTotal": 0.0}]}, {"file": "002912", "last": "Acosta", "first": "Angie", "earnCode": "EFF", "empStatus": "Full Time", "dept": "00DVB8", "dept_desc": "DVB8", "slots": [{"rate": 21.5, "effTotal": 35.05}]}, {"file": "003333", "last": "Alberti", "first": "Oscar", "earnCode": "EFF", "empStatus": "Full Time", "dept": "00DVB8", "dept_desc": "DVB8", "slots": [{"rate": 21.5, "effTotal": 62.35}]}, {"file": "003318", "last": "Almanares", "first": "Yaniel", "earnCode": "EFF", "empStatus": "Full Time", "dept": "00DVB8", "dept_desc": "DVB8", "slots": [{"rate": 21.5, "effTotal": 80.19}]}, {"file": "002675", "last": "Alvarez", "first": "Rainer", "earnCode": "EFF", "empStatus": "Full Time", "dept": "00DVB8", "dept_desc": "DVB8", "slots": [{"rate": 21.5, "effTotal": 61.7}]}, {"file": "003179", "last": "Alvarez", "first": "Melany", "earnCode": "EFF", "empStatus": "Full Time", "dept": "00DVB8", "dept_desc": "DVB8", "slots": [{"rate": 21.5, "effTotal": 70.95}]}, {"file": "003126", "last": "Aragon", "first": "Yordiel", "earnCode": "EFF", "empStatus": "Full Time", "dept": "00DVB8", "dept_desc": "DVB8", "slots": [{"rate": 21.5, "effTotal": 60.63}]}, {"file": "003206", "last": "Becker", "first": "Alno", "earnCode": "EFF", "empStatus": "Full Time", "dept": "00DVB8", "dept_desc": "DVB8", "slots": [{"rate": 21.5, "effTotal": 96.75}]}, {"file": "002439", "last": "Bello", "first": "Patricia", "earnCode": "EFF", "empStatus": "Full Time", "dept": "00DVB8", "dept_desc": "DVB8", "slots": [{"rate": 21.5, "effTotal": 54.18}]}, {"file": "003440", "last": "Brizuela", "first": "Kevin", "earnCode": "EFF", "empStatus": "Full Time", "dept": "00DVB8", "dept_desc": "DVB8", "slots": [{"rate": 21.5, "effTotal": 133.94}]}, {"file": "003386", "last": "Brunely", "first": "Luis", "earnCode": "EFF", "empStatus": "Full Time", "dept": "00DVB8", "dept_desc": "DVB8", "slots": [{"rate": 21.5, "effTotal": 0.0}]}, {"file": "002779", "last": "Casola", "first": "Yurisdel", "earnCode": "EFF", "empStatus": "Full Time", "dept": "00DVB8", "dept_desc": "DVB8", "slots": [{"rate": 21.5, "effTotal": 54.18}]}, {"file": "003364", "last": "Castellanos", "first": "Rigoberto", "earnCode": "EFF", "empStatus": "Full Time", "dept": "00DVB8", "dept_desc": "DVB8", "slots": [{"rate": 21.5, "effTotal": 81.27}]}, {"file": "003484", "last": "Coello", "first": "Jose", "earnCode": "EFF", "empStatus": "Full Time", "dept": "00DVB8", "dept_desc": "DVB8", "slots": [{"rate": 21.5, "effTotal": 78.04}]}, {"file": "002738", "last": "Cuellar", "first": "Yandy", "earnCode": "EFF", "empStatus": "Full Time", "dept": "00DVB8", "dept_desc": "DVB8", "slots": [{"rate": 21.5, "effTotal": 127.49}]}, {"file": "002599", "last": "Curbelo", "first": "Christopher", "earnCode": "EFF", "empStatus": "Full Time", "dept": "00DVB8", "dept_desc": "DVB8", "slots": [{"rate": 21.5, "effTotal": 48.81}]}, {"file": "002393", "last": "de Jesus", "first": "Evelys", "earnCode": "EFF", "empStatus": "Full Time", "dept": "00DVB8", "dept_desc": "DVB8", "slots": [{"rate": 21.5, "effTotal": 24.72}]}, {"file": "001069", "last": "Delgado", "first": "Marcos", "earnCode": "EFF", "empStatus": "Full Time", "dept": "00DVB8", "dept_desc": "DVB8", "slots": [{"rate": 22.5, "effTotal": 40.05}]}, {"file": "001852", "last": "Diaz", "first": "Lazaro", "earnCode": "EFF", "empStatus": "Full Time", "dept": "00DVB8", "dept_desc": "DVB8", "slots": [{"rate": 21.5, "effTotal": 0.0}]}, {"file": "003226", "last": "Diaz", "first": "Arnaldo", "earnCode": "EFF", "empStatus": "Full Time", "dept": "00DVB8", "dept_desc": "DVB8", "slots": [{"rate": 21.5, "effTotal": 0.0}]}, {"file": "003439", "last": "Diaz", "first": "Kevin", "earnCode": "EFF", "empStatus": "Full Time", "dept": "00DVB8", "dept_desc": "DVB8", "slots": [{"rate": 21.5, "effTotal": 139.75}]}, {"file": "003405", "last": "Escobar", "first": "Reynaldo", "earnCode": "EFF", "empStatus": "Full Time", "dept": "00DVB8", "dept_desc": "DVB8", "slots": [{"rate": 21.5, "effTotal": 0.0}]}, {"file": "003053", "last": "Fernandez", "first": "Daniela", "earnCode": "EFF", "empStatus": "Full Time", "dept": "00DVB8", "dept_desc": "DVB8", "slots": [{"rate": 21.5, "effTotal": 21.93}]}, {"file": "002835", "last": "Fiallo", "first": "Monica", "earnCode": "EFF", "empStatus": "Full Time", "dept": "00DVB8", "dept_desc": "DVB8", "slots": [{"rate": 21.5, "effTotal": 58.48}]}, {"file": "002640", "last": "Figueredo", "first": "Jorge", "earnCode": "EFF", "empStatus": "Full Time", "dept": "00DVB8", "dept_desc": "DVB8", "slots": [{"rate": 21.5, "effTotal": 113.31}]}, {"file": "001696", "last": "Forsythe", "first": "Stanley", "earnCode": "EFF", "empStatus": "Full Time", "dept": "00DVB8", "dept_desc": "DVB8", "slots": [{"rate": 21.75, "effTotal": 43.06}]}, {"file": "002600", "last": "Garcia", "first": "Dairelis", "earnCode": "EFF", "empStatus": "Full Time", "dept": "00DVB8", "dept_desc": "DVB8", "slots": [{"rate": 21.5, "effTotal": 94.6}]}, {"file": "002764", "last": "Gomez", "first": "Alain", "earnCode": "EFF", "empStatus": "Full Time", "dept": "00DVB8", "dept_desc": "DVB8", "slots": [{"rate": 21.5, "effTotal": 30.53}]}, {"file": "003473", "last": "Gonzalez", "first": "Ronaldo", "earnCode": "EFF", "empStatus": "Full Time", "dept": "00DVB8", "dept_desc": "DVB8", "slots": [{"rate": 21.5, "effTotal": 147.7}]}, {"file": "003317", "last": "Guerrero", "first": "Anthony", "earnCode": "EFF", "empStatus": "Part Time", "dept": "00DVB8", "dept_desc": "DVB8", "slots": [{"rate": 21.5, "effTotal": 45.15}]}, {"file": "003503", "last": "Guzman", "first": "Daniel", "earnCode": "EFF", "empStatus": "Full Time", "dept": "00DVB8", "dept_desc": "DVB8", "slots": [{"rate": 21.5, "effTotal": 0.0}]}, {"file": "003227", "last": "Hernandez", "first": "Reinier", "earnCode": "EFF", "empStatus": "Full Time", "dept": "00DVB8", "dept_desc": "DVB8", "slots": [{"rate": 21.5, "effTotal": 51.6}]}, {"file": "002798", "last": "Herrera", "first": "Jorge", "earnCode": "EFF", "empStatus": "Full Time", "dept": "00DVB8", "dept_desc": "DVB8", "slots": [{"rate": 21.5, "effTotal": 132.66}]}, {"file": "003056", "last": "Herrera", "first": "Mario", "earnCode": "EFF", "empStatus": "Full Time", "dept": "00DVB8", "dept_desc": "DVB8", "slots": [{"rate": 21.5, "effTotal": 101.69}]}, {"file": "003489", "last": "Herrera", "first": "Abel", "earnCode": "EFF", "empStatus": "Full Time", "dept": "00DVB8", "dept_desc": "DVB8", "slots": [{"rate": 18.0, "effTotal": 68.94}]}, {"file": "003437", "last": "Kelly", "first": "Nathaniel", "earnCode": "EFF", "empStatus": "Full Time", "dept": "00DVB8", "dept_desc": "DVB8", "slots": [{"rate": 21.5, "effTotal": 4.95}, {"rate": 18.0, "effTotal": 0.0}]}, {"file": "003498", "last": "Larracochea", "first": "Dayron", "earnCode": "EFF", "empStatus": "Full Time", "dept": "00DVB8", "dept_desc": "DVB8", "slots": [{"rate": 18.0, "effTotal": 62.46}]}, {"file": "003486", "last": "Leon", "first": "Juan", "earnCode": "EFF", "empStatus": "Full Time", "dept": "00DVB8", "dept_desc": "DVB8", "slots": [{"rate": 21.5, "effTotal": 0.0}]}, {"file": "003480", "last": "Madrigal", "first": "Luis", "earnCode": "EFF", "empStatus": "Part Time", "dept": "00DVB8", "dept_desc": "DVB8", "slots": [{"rate": 21.5, "effTotal": 18.54}, {"rate": 18.0, "effTotal": 18.54}]}, {"file": "003286", "last": "Marquez", "first": "Frank", "earnCode": "EFF", "empStatus": "Full Time", "dept": "00DVB8", "dept_desc": "DVB8", "slots": [{"rate": 21.5, "effTotal": 45.8}]}, {"file": "001717", "last": "Martinez", "first": "Yohandys", "earnCode": "EFF", "empStatus": "Full Time", "dept": "00DVB8", "dept_desc": "DVB8", "slots": [{"rate": 21.75, "effTotal": 30.45}]}, {"file": "002846", "last": "Martinez", "first": "Dario", "earnCode": "EFF", "empStatus": "Full Time", "dept": "00DVB8", "dept_desc": "DVB8", "slots": [{"rate": 21.5, "effTotal": 49.45}]}, {"file": "003363", "last": "Mojarriete", "first": "Inalvis", "earnCode": "EFF", "empStatus": "Full Time", "dept": "00DVB8", "dept_desc": "DVB8", "slots": [{"rate": 21.5, "effTotal": 133.3}]}, {"file": "001359", "last": "Molina", "first": "Frank", "earnCode": "EFF", "empStatus": "Full Time", "dept": "00DVB8", "dept_desc": "DVB8", "slots": [{"rate": 21.5, "effTotal": 0.0}]}, {"file": "002900", "last": "Montejo", "first": "Elienne", "earnCode": "EFF", "empStatus": "Full Time", "dept": "00DVB8", "dept_desc": "DVB8", "slots": [{"rate": 21.5, "effTotal": 34.4}]}, {"file": "000716", "last": "Omana", "first": "Othman", "earnCode": "EFF", "empStatus": "Full Time", "dept": "00DVB8", "dept_desc": "DVB8", "slots": [{"rate": 23.0, "effTotal": 0.0}]}, {"file": "001886", "last": "Palomino", "first": "Randoris", "earnCode": "EFF", "empStatus": "Full Time", "dept": "00DVB8", "dept_desc": "DVB8", "slots": [{"rate": 21.75, "effTotal": 52.2}]}, {"file": "002832", "last": "Pavon", "first": "Ernesto", "earnCode": "EFF", "empStatus": "Full Time", "dept": "00DVB8", "dept_desc": "DVB8", "slots": [{"rate": 21.5, "effTotal": 0.0}]}, {"file": "001155", "last": "Perdomo", "first": "Yaima", "earnCode": "EFF", "empStatus": "Full Time", "dept": "00DVB8", "dept_desc": "DVB8", "slots": [{"rate": 22.5, "effTotal": 133.42}]}, {"file": "003403", "last": "Perera", "first": "Yisel", "earnCode": "EFF", "empStatus": "Full Time", "dept": "00DVB8", "dept_desc": "DVB8", "slots": [{"rate": 21.5, "effTotal": 55.47}]}, {"file": "002653", "last": "Perez", "first": "Asiel", "earnCode": "EFF", "empStatus": "Part time", "dept": "00DVB8", "dept_desc": "DVB8", "slots": [{"rate": 21.5, "effTotal": 30.1}]}, {"file": "001977", "last": "Perez", "first": "Niurka", "earnCode": "EFF", "empStatus": "Full Time", "dept": "00DVB8", "dept_desc": "DVB8", "slots": [{"rate": 21.5, "effTotal": 57.62}]}, {"file": "003485", "last": "Perez", "first": "Adrian", "earnCode": "EFF", "empStatus": "Full Time", "dept": "00DVB8", "dept_desc": "DVB8", "slots": [{"rate": 21.5, "effTotal": 31.82}]}, {"file": "003431", "last": "Perez", "first": "Angel", "earnCode": "EFF", "empStatus": "Full Time", "dept": "00DVB8", "dept_desc": "DVB8", "slots": [{"rate": 21.5, "effTotal": 92.88}]}, {"file": "003101", "last": "Piovet", "first": "Yojaile", "earnCode": "EFF", "empStatus": "Full Time", "dept": "00DVB8", "dept_desc": "DVB8", "slots": [{"rate": 21.5, "effTotal": 137.6}]}, {"file": "001705", "last": "Rafael", "first": "Juan", "earnCode": "EFF", "empStatus": "Full Time", "dept": "00DVB8", "dept_desc": "DVB8", "slots": [{"rate": 21.75, "effTotal": 26.75}]}, {"file": "003385", "last": "Ramos", "first": "Alejandro", "earnCode": "EFF", "empStatus": "Full Time", "dept": "00DVB8", "dept_desc": "DVB8", "slots": [{"rate": 21.5, "effTotal": 50.95}]}, {"file": "002833", "last": "Rivalta", "first": "Daniela", "earnCode": "EFF", "empStatus": "Full Time", "dept": "00DVB8", "dept_desc": "DVB8", "slots": [{"rate": 21.5, "effTotal": 49.88}]}, {"file": "003497", "last": "Rodriguez", "first": "Anthony", "earnCode": "EFF", "empStatus": "Full Time", "dept": "00DVB8", "dept_desc": "DVB8", "slots": [{"rate": 21.5, "effTotal": 0.0}]}, {"file": "003182", "last": "Rodriguez", "first": "Jeroboan", "earnCode": "EFF", "empStatus": "Full Time", "dept": "00DVB8", "dept_desc": "DVB8", "slots": [{"rate": 21.5, "effTotal": 20.43}]}, {"file": "003491", "last": "Rodriguez", "first": "Genessis", "earnCode": "EFF", "empStatus": "Full Time", "dept": "00DVB8", "dept_desc": "DVB8", "slots": [{"rate": 21.5, "effTotal": 0.0}]}, {"file": "003499", "last": "Rodriguez", "first": "Yusviel", "earnCode": "EFF", "empStatus": "Full Time", "dept": "00DVB8", "dept_desc": "DVB8", "slots": [{"rate": 21.5, "effTotal": 36.44}, {"rate": 18.0, "effTotal": 28.26}]}, {"file": "003250", "last": "Rosete", "first": "Luis", "earnCode": "EFF", "empStatus": "Full Time", "dept": "00DVB8", "dept_desc": "DVB8", "slots": [{"rate": 21.5, "effTotal": 0.0}]}, {"file": "003493", "last": "Silveira", "first": "Luis", "earnCode": "EFF", "empStatus": "Full Time", "dept": "00DVB8", "dept_desc": "DVB8", "slots": [{"rate": 21.5, "effTotal": 45.79}]}, {"file": "003471", "last": "Torres", "first": "Jaciel", "earnCode": "EFF", "empStatus": "Full Time", "dept": "00DVB8", "dept_desc": "DVB8", "slots": [{"rate": 21.5, "effTotal": 0.0}]}, {"file": "003073", "last": "Umanzor", "first": "Alexandra", "earnCode": "EFF", "empStatus": "Full Time", "dept": "00DVB8", "dept_desc": "DVB8", "slots": [{"rate": 21.5, "effTotal": 40.42}]}, {"file": "003490", "last": "Valina", "first": "Raul", "earnCode": "EFF", "empStatus": "Full Time", "dept": "00DVB8", "dept_desc": "DVB8", "slots": [{"rate": 21.5, "effTotal": 3.96}, {"rate": 18.0, "effTotal": 3.96}]}, {"file": "003272", "last": "Vargas", "first": "Alex", "earnCode": "EFF", "empStatus": "Full Time", "dept": "00DVB8", "dept_desc": "DVB8", "slots": [{"rate": 21.5, "effTotal": 76.76}]}, {"file": "003500", "last": "Zelaya", "first": "Mario", "earnCode": "EFF", "empStatus": "Full Time", "dept": "00DVB8", "dept_desc": "DVB8", "slots": [{"rate": 21.5, "effTotal": 0.0}]}, {"file": "003496", "last": "Zuleta", "first": "Emmanuel", "earnCode": "EFF", "empStatus": "Full Time", "dept": "00DVB8", "dept_desc": "DVB8", "slots": [{"rate": 21.5, "effTotal": 108.57}]}];
+
+const DFH1_MAP={"001308":["Meyleen ABREU LAMAS","Abreu, Meyleen"],"002480":["DANIEL ALVARINO CALDERON","Alvarino Calderon, Daniel"],"003470":["Budler junior c Apollon","Apollon, Budler Junior"],"003030":["Luisa Arango Ramirez","Arango Ramirez, Luisa Fernanda"],"003263":["HENRY MICHAEL ARMENTERO BLANCO","Armentero Blanco, Henry Michael"],"003261":[null,null],"003277":[null,null],"003372":["Fritz Cadet Belizaire","Belizaire, Fritz Cadet"],"003456":["Francisco Benedicto Dominguez","Benedicto Dominguez, Francisco Ja"],"002436":["Antonio Benedicto Perez","Benedicto Perez, Antonio De Jesus"],"003327":["Dave Blake","Blake, Dave Antony"],"002353":["Daniel Boulier","Boulier, Daniel Wayne"],"003501":["Ninfa Brianzo Diaz","Brianzo Diaz, Ninfa Josenin"],"003399":["ERVIN BRYANT","Bryant, Ervin"],"003254":["Jonathan Cadet","Cadet, Jonathan Anthony"],"002979":["Ernesto Carmenate Ruiz","Carmenate Ruiz, Ernesto"],"003276":["Ervin Carral","Carral, Ervin"],"003325":["Antwan Chipman","Chipman, Antwan Floyd"],"003246":["kyle cole","Cole, Kyle Kevin"],"001162":["Monica Cortes Jimenez","Cortes, Monica"],"003388":["Stephon Davis","Davis, Stephon Maurice"],"003238":["Saul Espinal","Espinal, Saul Antonio"],"003400":["Klarens Exantus","Exantus, Klarens"],"003315":["Jonathan Figueroa","Figueroa, Jonathan Omar"],"001847":["Livingston Firmin","Firmin, Livingston"],"003334":["Patrick Francois","Francois, Patrick Junlee"],"002930":["Jamie Gardner","Gardner, Jamie Ralph"],"001505":[null,"Germosen Salcedo, Eneldo"],"003427":["Jonathan Guarnieri","Guarnieri, Jonathan Daniel"],"002395":["Sanjay Headlam","Headlam, Sanjay Roshane"],"003094":["Crhistian Hermida Guerrero","Hermida Guerrero, Crhistian D"],"002459":["Weiggy Hilaire","Hilaire, Weiggy J"],"001740":["Raciel Hill Tamayo","Hill, Raciel"],"003240":["Juan Jaramillo","Jaramillo, Juan"],"003465":[null,"Jean, Brian Junior"],"003482":["Samir Kuan martinez","Kuan Martinez, Samir Enmanuel"],"003304":["Kensy Laguerre","Laguerre, Kensy"],"003115":["Jeffrey Lebreton","Lebreton, Jeffrey Daniel Grant"],"002355":["Jean Leger","Leger, Jean"],"003481":["Luis Marquez arencibia","Marquez-Arencibia, Luis A"],"002441":["Hector Martinez Renaud","Martinez Renaud, Hector Raul"],"002624":["Courtney Miller","Miller, Courtney Dawayne"],"003025":["Jean Ambroise Morancy","Morancy, Jean Ambroise"],"003459":["Kristhian Navarro cobas","Navarro Cobas, Kristhian Joaquin"],"003266":["Guillermo Ospina  Huila","Ospina Huila, Guillermo"],"001464":["Jorge Pardo Gonzalez","Pardo Gonzalez, Jorge"],"003487":["Ridge Paul","Paul, Ridge"],"003257":["Gabriel Perez","Perez, Gabriel Miguel"],"003220":["william piqueras","Piqueras Rivero, William"],"003370":["Timothy Pollock","Pollock, Timothy Tyshawn"],"002989":["John Pomare Lever","Pomare Lever, John Morris"],"003012":["Roberto Pyram","Pyram, Roberto"],"003141":["Alejandro Quiroz","Quiroz, Alejandro"],"003079":[null,null],"002185":[null,null],"002369":["Cesar Reverol  Ramirez","Reverol Ramirez, Cesar Alfonso"],"003435":["Sandy Robles marquez","Robles Marquez, Sandy Jossebeth"],"003099":["Jose Robles Rugama","Robles Rugama, Jose Santos"],"003466":["Anthony Romero","Romero, Anthony Adolfo"],"003438":["Annelisse Romero Diaz","Romero Diaz, Annelisse"],"002670":["Ruiz Andres  Leonardo","Ruiz Diaz, Andres Leonardo"],"002412":["Ivan Russa Mosqueda","Russa Mosqueda, Ivan Cesar"],"003237":["Kayo Samuel","Samuel, Kayo Nahjeem"],"003348":["Wilelmore Samuel","Samuel, Wilelmore"],"003502":["Dennis Singh","Singh, Dennis Pershad"],"002520":["Maykel Tabel Mena","Tabel, Maykel"],"003419":["Lenin Teran Alvarez","Teran Alvarez, Lenin Antonio"],"003107":[null,null],"003037":["Kevin Tovar","Tovar, Kevin Alexander"],"003234":["Juan Vargas","Vargas Hernandez, Juan Martin"],"002654":["Geovanny Vega Escalona","Vega Escalona, Geovanny"],"003303":["Maricela Villasana valentiner","Villasana Valentiner, Maricela D"],"002434":["David Wills","Wills, David"],"002229":["Daniel Yanez moran","Yanez, Daniel Andres"],"002859":["Javier Zambrano Rozo","Zambrano Rozo, Javier Vicente"],"003345":["Diego Zerpa Merida","Zerpa Merida, Diego Alejandro"],"003509":["Andrew Angelin","Angelin, Andrew Michael"],"003508":["Diego Rangel Yanes","Rangel-Yanes, Diego Valentin"],"003513":[null,"Ross, Courtney Nicole"],"003137":[null,null]};  // file# → [exact_zip_name, exact_adp_name]
+
+// ── STATE ─────────────────────────────────────────────────────────────────────
+var effG = { zip:null, adp:null, sch:null, adpDeact:{}, results:[], station:'', week:'', step:1 };
+
+// ── TYPO FIXES ────────────────────────────────────────────────────────────────
+var TYPOS=[[/\bfirmin\b/gi,'firming'],[/\blivingston\b/gi,'livington'],
+           [/\bcrhistian\b/gi,'christian'],[/\bcrhristian\b/gi,'christian']];
+function nrm(s){s=(s||'').toLowerCase();TYPOS.forEach(function(t){s=s.replace(t[0],t[1]);});return s;}
+function fw(s){return nrm(s).trim().split(/\s+/)[0]||'';}
+
+// ── NAME MATCHING ─────────────────────────────────────────────────────────────
+function scoreAny(rl,rf,c){
+  var cn=nrm(c),l=fw(rl),f=fw(rf);
+  if(l&&f&&cn.includes(l)&&cn.includes(f))return 2;
+  if(l&&cn.includes(l))return 1;
+  return 0;
+}
+function scoreAdp(rl,rf,an){
+  var pts=an.split(','),al=nrm(pts[0]).split(/\s+/)[0]||'',afF=nrm(pts[1]||''),af=afF.split(/\s+/)[0]||'';
+  var l=fw(rl),f=fw(rf);
+  if(al===l&&(af===f||afF.includes(f)))return 3;
+  if(al===l)return 1;
+  var full=nrm(an);
+  if(full.includes(l)&&full.includes(f))return 2;
+  if(full.includes(l))return 1;
+  return 0;
+}
+function bestOf(rl,rf,keys,scoreFn,min){
+  var b=null,bs=0;
+  keys.forEach(function(k){var s=scoreFn(rl,rf,k);if(s>bs){bs=s;b=k;}});
+  return bs>=(min||2)?b:null;
+}
+
+// ── FILE WIRING ───────────────────────────────────────────────────────────────
+function effWire(box,inp,fn){
+  var b=document.getElementById(box),i=document.getElementById(inp);
+  b.addEventListener('click',function(){i.click();});
+  i.addEventListener('change',function(){if(i.files[0])fn(i.files[0]);});
+  b.addEventListener('dragover',function(e){e.preventDefault();b.classList.add('over');});
+  b.addEventListener('dragleave',function(){b.classList.remove('over');});
+  b.addEventListener('drop',function(e){e.preventDefault();b.classList.remove('over');if(e.dataTransfer.files[0])fn(e.dataTransfer.files[0]);});
+}
+document.addEventListener('dragover',function(e){e.preventDefault();});
+document.addEventListener('drop',function(e){e.preventDefault();});
+effWire('bxZ','fZ',loadZip);
+effWire('bxA','fA',loadAdp);
+effWire('bxS','fS',loadSch);
+
+// ── ZIP ───────────────────────────────────────────────────────────────────────
+function effLoadZip(file){
+  effSetSt('stZ','⏳ Reading zip…',false);
+  var r=new FileReader();
+  r.onload=function(ev){
+    JSZip.loadAsync(ev.target.result).then(function(zip){
+      var entry=null;
+      zip.forEach(function(p,e){if(p.toLowerCase().includes('service details')&&p.endsWith('.csv'))entry=e;});
+      if(!entry){effSetSt('stZ','❌ Service Details CSV not found in zip',false);return;}
+      entry.async('string').then(function(csv){
+        effG.zip=parseCSV(csv);
+        effSetSt('stZ','✓ '+file.name+' ('+effG.zip.length+' route entries)',true);
+        document.getElementById('bxZ').classList.add('done');
+        effChkReady();
+      });
+    }).catch(function(){effSetSt('stZ','❌ Could not open zip',false);});
+  };
+  r.readAsArrayBuffer(file);
+}
+
+function parseCSV(txt){
+  var lines=txt.split(/\r?\n/),h=lines[0].split(',').map(function(x){return x.replace(/^"|"$/g,'').trim();}),rows=[];
+  for(var i=1;i<lines.length;i++){
+    var v=splitLine(lines[i]);if(v.length<4)continue;
+    var o={};h.forEach(function(k,j){o[k]=(v[j]||'').replace(/^"|"$/g,'').trim();});rows.push(o);
+  }
+  return rows;
+}
+function splitLine(l){
+  var r=[],c='',q=false;
+  for(var i=0;i<l.length;i++){var ch=l[i];if(ch==='"'){q=!q;}else if(ch===','&&!q){r.push(c);c='';}else c+=ch;}
+  r.push(c);return r;
+}
+
+// Primary-shipments AMZN calculation
+function effParseHrs(s){
+  if(!s)return 0;
+  var v=parseFloat(String(s).replace(/hr/gi,'').trim());
+  return isNaN(v)?0:v;
+}
+function effCalcAmzn(rows){
+  var map={};
+  rows.forEach(function(r){var d=r['Delivery Associate']||'';if(d&&!map[d])map[d]=[];if(d)map[d].push(r);});
+  var result={};
+  Object.keys(map).forEach(function(da){
+    var total=0,byDate={};
+    map[da].forEach(function(r){var d=r['Date']||'';if(!byDate[d])byDate[d]=[];byDate[d].push(r);});
+    Object.keys(byDate).forEach(function(date){
+      byDate[date].forEach(function(row){
+        if((row['Excluded?']||'').toLowerCase()==='yes')return;
+        var route=row['Route']||'',hrs=parseFloat((row['Planned Duration']||'0').replace(/hr/gi,'').trim())||0;
+        if(hrs>0&&hrs<5)return; // exclude very short supplemental routes (<5h)
+        var shipped=parseFloat(row['Shipments delivered']||'0')||0;
+        var grp=rows.filter(function(r2){return r2['Date']===date&&r2['Route']===route&&(r2['Excluded?']||'').toLowerCase()!=='yes';});
+        if(grp.length===1){total+=hrs;}
+        else{var mx=Math.max.apply(null,grp.map(function(r2){return parseFloat(r2['Shipments delivered']||0)||0;}));if(shipped===mx)total+=hrs;}
+      });
+    });
+    result[da]=total;
+  });
+  return result;
+}
+
+// ── ADP ───────────────────────────────────────────────────────────────────────
+function effLoadAdp(file){
+  effSetSt('stA','⏳ Reading timecard…',false);
+  var r=new FileReader();
+  r.onload=function(ev){
+    var map={};
+    var deactMap={};
+    var adpByDay={};
+    var adpOre={};  // adpOre[name][adp_date]=true when note contains ORE
+    var NO_EFF_KW=['DEACTIVATED','NO EFF','NOEFF','NO-EFF','NOT EFF','NO EFF THIS',
+                   'NO EFF TODAY','NOT ELIGIBLE FOR EFF','SUSPENDED','EFF EXEMPT','NO EFF DAY'];
+    function isNoEff(note){ var n=(note||'').toUpperCase(); return NO_EFF_KW.some(function(k){return n.includes(k);}); }
+    function processRows(rows){
+      // Pass 1: find no-eff dates per employee
+      rows.forEach(function(cells){
+        if(cells.length<8)return;
+        var name=cells[0];
+        if(!name||['Payroll','Total','Week','Grand','Name','Timecard'].some(function(x){return name.startsWith(x);}))return;
+        var note=cells[4]||'', date=(cells[3]||'').trim();
+        if(isNoEff(note)&&date){
+          if(!deactMap[name])deactMap[name]=[];
+          if(deactMap[name].indexOf(date)===-1)deactMap[name].push(date);
+        }
+        // Detect ORE (On-Road Experience) rider/driver notes
+        if(date&&(note||'').toUpperCase().includes('ORE')){
+          if(!adpOre[name])adpOre[name]={};
+          adpOre[name][date]=true;
+        }
+      });
+      // Pass 2: sum hours excluding no-eff dates and flat 10h WST entries
+      rows.forEach(function(cells){
+        if(cells.length<8)return;
+        var name=cells[0];
+        if(!name||['Payroll','Total','Week','Grand','Name','Timecard'].some(function(x){return name.startsWith(x);}))return;
+        var h=parseFloat(cells[7]);
+        if(isNaN(h)||h===10.0)return;
+        var date=(cells[3]||'').trim();
+        if(deactMap[name]&&deactMap[name].indexOf(date)!==-1)return;
+        var hrs=Math.round(h*60)/60;
+        map[name]=(map[name]||0)+hrs;  // round each entry to nearest minute (matches ADP payroll register)
+        // Also store per-day for DVB8 split (helper vs regular days)
+        if(!adpByDay[name])adpByDay[name]={};
+        adpByDay[name][date]=(adpByDay[name][date]||0)+hrs;
+      });
+    }
+    try{
+      var doc=(new DOMParser()).parseFromString(ev.target.result,'text/html');
+      processRows(Array.from(doc.querySelectorAll('tr')).map(function(row){
+        return Array.from(row.querySelectorAll('td,th')).map(function(c){return c.textContent.trim();});
+      }));
+    }catch(e){}
+    if(Object.keys(map).length===0){
+      try{
+        var wb=XLSX.read(ev.target.result,{type:'binary'});
+        var data=XLSX.utils.sheet_to_json(wb.Sheets[wb.SheetNames[0]],{header:1,defval:''});
+        processRows(data.map(function(row){return row.map(function(c){return String(c||'').trim();});}));
+      }catch(e){}
+    }
+    effG.adp=map;
+    effG.adpDeact=deactMap;
+    effG.adpByDay=adpByDay;
+    effG.adpOre=adpOre;
+    effSetSt('stA','✓ '+file.name+' ('+Object.keys(map).length+' employees)',true);
+    document.getElementById('bxA').classList.add('done');
+    effChkReady();
+  };
+  r.readAsText(file,'utf-8');
+}
+
+// ── SCHEDULE ──────────────────────────────────────────────────────────────────
+function effLoadSch(file){
+  effSetSt('stS','⏳ Reading schedule…',false);
+  var r=new FileReader();
+  r.onload=function(ev){
+    try{
+      var wb=XLSX.read(ev.target.result,{type:'array'});
+      var sn=wb.SheetNames.find(function(n){return !n.toLowerCase().includes('compliance');})||wb.SheetNames[0];
+      var data=XLSX.utils.sheet_to_json(wb.Sheets[sn],{header:1,defval:''});
+      var map={};
+      // Station from row 0
+      var m=String((data[0]||[])[0]||'').match(/·\s*([A-Z0-9]{3,6})\s*[|·—]/);
+      if(m)effG.station=m[1].trim();
+      effG.week=sn;
+      // Parse date columns (cols 2-8 = Sun through Sat, col 9 = AMZ total, col 10 = ADP total)
+      var MONTH_NUM={Jan:'01',Feb:'02',Mar:'03',Apr:'04',May:'05',Jun:'06',Jul:'07',Aug:'08',Sep:'09',Oct:'10',Nov:'11',Dec:'12'};
+      var schYear=''+new Date().getFullYear();
+      var yrMatch=String((data[0]||[])[0]||'').match(/\b(20\d{2})\b/);
+      if(!yrMatch){yrMatch=sn.match(/\b(20\d{2})\b/);}
+      if(yrMatch){schYear=yrMatch[1];}
+      function schedLabelToZipDate(lbl){
+        var s=lbl.replace(/Sun|Mon|Tue|Wed|Thu|Fri|Sat/g,'').trim();
+        var p=s.split('/');
+        return p.length===2?schYear+'-'+(MONTH_NUM[p[1]]||p[1])+'-'+p[0].padStart(2,'0'):lbl;
+      }
+      // Read header row (row 6, 0-indexed row 5) for date labels
+      var hdr=data[5]||[];
+      var dayCols=[]; // [{col, zipDate}] — only actual date columns (skip $/HR at col 2)
+      for(var c=2;c<=8;c++){
+        var lbl=String(hdr[c]||'').replace(/\n/g,'').trim();
+        // Only include columns that have a date pattern (day/month like "15/Mar")
+        if(lbl&&/\d+\/[A-Za-z]/.test(lbl)){dayCols.push({col:c,zipDate:schedLabelToZipDate(lbl)});}
+      }
+      var schedDays={};
+      var i=6;
+      while(i<data.length){
+        var row=data[i],name=String(row[0]||'').trim();
+        if(!name||name.length<3||['WEEK','DAs','Section'].some(function(x){return name.includes(x);})){i++;continue;}
+        var amz=parseFloat(String(row[9]||'').replace(/h/gi,'').replace(/—/g,'0').trim())||0;
+        var nxt=data[i+1]||[];
+        var adp=parseFloat(String(nxt[10]||'').replace(/h/gi,'').replace(/—/g,'0').trim())||0;
+        var rate=parseFloat(String(row[1]||'21.5'))||21.5;
+        if(name&&(amz>0||adp>0))map[name]={amz:amz,adp:adp,rate:rate};
+        // Per-day breakdown for DVB8
+        var days=[];
+        dayCols.forEach(function(dc){
+          var amzRaw=String(row[dc.col]||'').trim();
+          var adpRaw=String((data[i+1]||[])[dc.col]||'').trim();
+          var amznSched=0;
+          if(amzRaw&&amzRaw!=='—'){try{amznSched=parseFloat(amzRaw.replace(/h/gi,''))||0;}catch(e){}}
+          var dayType='off',adpHrs=0;
+          if(adpRaw&&adpRaw!=='—'){
+            var raw=adpRaw;
+            if(raw.startsWith('H/')){dayType='helper';raw=raw.slice(2);}
+            else if(raw.startsWith('T/')){dayType='training';raw=raw.slice(2);}
+            else if(raw.startsWith('S/')){dayType='stepvan';raw=raw.slice(2);}
+            else{dayType='regular';}
+            try{adpHrs=parseFloat(raw)||0;}catch(e){}
+          }
+          if(amznSched>0||dayType!=='off'){
+            days.push({zipDate:dc.zipDate,type:dayType,amznSched:amznSched,adpSched:adpHrs,rate:rate});
+          }
+        });
+        if(days.length>0)schedDays[name]=days;
+        i+=3;
+      }
+      effG.sch=map;
+      effG.schedDays=schedDays;
+      if(effG.station){
+        document.getElementById('logoChip').textContent=effG.station;
+        document.getElementById('logoChip').textContent='Milum Express LLC — '+effG.station+' — Amazon DSP';
+        document.getElementById('wkbdg').textContent=effG.week;
+      }
+      effSetSt('stS','✓ '+file.name+' ('+Object.keys(map).length+' DAs, '+effG.station+')',true);
+      document.getElementById('bxS').classList.add('done');
+      effChkReady();
+    }catch(e){effSetSt('stS','❌ '+e.message,false);}
+  };
+  r.readAsArrayBuffer(file);
+}
+
+function effSetSt(id,msg,ok){var e=document.getElementById(id);e.textContent=msg;e.className='ust '+(ok?'ok':'err');e.style.display='block';}
+function effChkReady(){document.getElementById('ecalcBtn').disabled=!(effG.zip&&effG.adp);}
+
+// ── CALCULATE ─────────────────────────────────────────────────────────────────
+
+// Calculate AMZN hours for a DA excluding their no-eff dates
+function effCalcAmznForDA(rows, zipName, noEffDates){
+  function zipToAdp(d){ var p=d.split('-'); return p.length===3?p[1]+'/'+p[2]+'/'+p[0]:d; }
+  var total=0, byDate={};
+  rows.filter(function(r){return r['Delivery Associate']===zipName;}).forEach(function(r){
+    var d=r['Date']||''; if(!byDate[d])byDate[d]=[]; byDate[d].push(r);
+  });
+  Object.keys(byDate).forEach(function(date){
+    if(noEffDates.indexOf(zipToAdp(date))!==-1)return;
+    byDate[date].forEach(function(row){
+      if((row['Excluded?']||'').toLowerCase()==='yes')return;
+      var hrs=parseFloat((row['Planned Duration']||'0').replace(/hr/gi,'').trim())||0;
+      if(hrs>0&&hrs<5)return; // exclude very short supplemental routes (<5h)
+      var shipped=parseFloat(row['Shipments delivered']||'0')||0;
+      var grp=rows.filter(function(r2){return r2['Date']===date&&r2['Route']===row['Route']&&(r2['Excluded?']||'').toLowerCase()!=='yes';});
+      if(grp.length===1){total+=hrs;}
+      else{var mx=Math.max.apply(null,grp.map(function(r2){return parseFloat(r2['Shipments delivered']||0)||0;}));if(shipped===mx)total+=hrs;}
+    });
+  });
+  return total;
+}
+
+function effRunCalc(){
+  var station=effG.station||'';
+  var nameMap=(station==='DFH1')?DFH1_MAP:null;
+  var amznMap=effG.zip?effCalcAmzn(effG.zip):{};
+
+  // DVB8: calculate dynamically from schedule (day types) + ZIP (AMZN) + ADP (actual hours)
+  // Schedule = authoritative source for day type: H/=helper($18), T/=training(skip), S/=stepvan, regular
+  // Helper days: AMZN from schedule (zip assigns helper routes to primary DA, not helper)
+  // Regular/Stepvan days: AMZN from ZIP using primary-shipments logic
+  // Split into two rows per DA if they have both helper and regular days
+  if(station==='DVB8'){
+    var DVB8_MAP={"001069":["Marcos Delgado Tejeiro","Delgado, Marcos","Marcos Delgado Tejeiro","Delgado","Marcos"],"001155":["yaima Perdomo Rodriguez","Perdomo, Yaima","yaima Perdomo Rodriguez","Perdomo","Yaima"],"001359":["Frank abel Molina Garcia","Molina, Frank","Frank abel Molina Garcia","Molina","Frank"],"001696":["Stanley Ramirez","Forsythe Ramirez, Stanley","Stanley Forsythe Ramirez","Forsythe","Stanley"],"001705":["Juan Perez","Rafael Perez, Juan","Juan Carlos Rafael Perez","Rafael","Juan"],"001717":["Yohandrys Martinez","Martinez, Yohandrys","Yohandrys  Martinez","Martinez","Yohandys"],"001886":["Randoris Palomino Rozas","Palomino, Randoris","Randoris Palomino Palomino Rozas","Palomino","Randoris"],"001977":["Niurka Perez","Perez, Niurka","Niurka Perez","Perez","Niurka"],"002393":["Evelys De Jesus Cosme","De Jesus Cosme, Evelys Paola","Evelys Paola De Jesus Cosme","de Jesus","Evelys"],"002439":["Patricia Bello","Bello, Patricia","Patricia  Bello","Bello","Patricia"],"002599":["Christopher Curbelo","Curbelo, Christopher Anthony","Christopher  A  Curbelo","Curbelo","Christopher"],"002600":["Dairelis Garcia Pedroso","Garcia, Dairelis","Dairelis Garcia Pedroso","Garcia","Dairelis"],"002640":["Jorge Figueredo Alarcon","Figueredo, Jorge A","Jorge Alberto Figueredo Alarcon","Figueredo","Jorge"],"002653":["Asiel Perez castellano","Perez, Asiel","Asiel Perez castellano","Perez","Asiel"],"002675":["Rainer Alvarez Estrada","Alvarez, Rainer","Rainer Alvarez Estrada","Alvarez","Rainer"],"002738":["Yandy Cuellar Guzman","Cuellar, Yandy","Yandy Cuellar Guzman","Cuellar","Yandy"],"002764":["Alain Gomez De La Torre","Gomez De La Torre, Alain Jose","Alain Jose Gomez De La Torre","Gomez","Alain"],"002779":["Yurisdel Casola Borrego","Casola, Yurisdel","Yurisdel Casola Borrego","Casola","Yurisdel"],"002798":["Jorge Herrera Gonzalez","Herrera Gonzalez, Jorge A","Jorge Alexi Herrera Gonzalez","Herrera","Jorge"],"002832":[null,null,null,"Pavon","Ernesto"],"002833":["Daniela Rivalta Alonso","Rivalta Alonso, Daniela","Daniela Rivalta Alonso","Rivalta","Daniela"],"002835":["Monica Fiallo Reyes","Fiallo Reyes, Monica","Monica Fiallo Reyes","Fiallo","Monica"],"002846":["Dario Martinez Torres","Martinez Torres, Dario B","Dario Benjamin Martinez Torres","Martinez","Dario"],"002900":["Elienne Montejo Fundora","Montejo Fundora, Elienne Jesus","Elienne Jesus Montejo Fundora","Montejo","Elienne"],"002912":["Angie Acosta Arenas","Acosta Arenas, Angie Nathalia","Angie Nathalia Acosta Arenas","Acosta","Angie"],"003053":["Daniela Fernandez Martinez","Fernandez Martinez, Daniela De la","Daniela Fernandez Martinez","Fernandez","Daniela"],"003056":["Mario Herrera Leon","Herrera Leon, Mario Alejandro","Mario Alejandro Herrera Leon","Herrera","Mario"],"003073":["Alexandra Umanzor Quintanilla","Umanzor Quintanilla, Alexandra Va","Alexandra Vanessa Umanzor Quintanilla","Umanzor","Alexandra"],"003101":["Yojaile Piovet marrero","Piovet Marrero, Yojaile","Yojaile Piovet marrero","Piovet","Yojaile"],"003126":["Yordiel Aragon blay","Aragon Blay, Yordiel","Yordiel Aragon blay","Aragon","Yordiel"],"003179":["Melany Alvarez Esquijaroza","Alvarez Esquijaroza, Melany","Melany Alvarez Esquijaroza","Alvarez","Melany"],"003182":[null,null,null,"Rodriguez","Jeroboan"],"003206":["Alno Becker Perez","Becker Perez, Alno Rochel","Alno Rochel Becker Perez","Becker","Alno"],"003226":[null,null,null,"Diaz","Arnaldo"],"003227":["Reinier Hernandez Vara","Hernandez Vara, Reinier","Reinier  Hernandez Vara","Hernandez","Reinier"],"003272":["Alex enrique Vargas","Vargas Enrique, Alex Benito","Alex enrique Vargas","Vargas","Alex"],"003286":["Frank Marquez guedez","Marquez Guedez, Frank Junior","Frank Marquez guedez","Marquez","Frank"],"003317":["Anthony Guerrero mustelier","Guerrero Mustelier, Anthony","Anthony Guerrero mustelier","Guerrero","Anthony"],"003318":["Yaniel Almarales Munoz","Almarales Munoz, Yaniel Ernesto","Yaniel Ernesto Almarales Munoz","Almanares","Yaniel"],"003333":["Oscar Alberti","Alberti, Oscar","Oscar Alberti","Alberti","Oscar"],"003363":["Inalvis Mojarrieta Rosales","Mojarrieta Rosales, Inalvis","Inalvis Mojarrieta Rosales","Mojarriete","Inalvis"],"003364":["Rigoberto Castellanos Cruz","Castellanos Cruz, Rigoberto","Rigoberto Castellanos Cruz","Castellanos","Rigoberto"],"003385":["Alejandro Ramosdiaz","Ramos Diaz, Alejandro Fidel","Alejandro Ramosdiaz","Ramos","Alejandro"],"003386":[null,null,null,"Brunely","Luis"],"003403":["Yisel Perera Mendoza","Perera Mendoza, Yisel","Yisel Perera Mendoza","Perera","Yisel"],"003431":["Angel Perez Medina","Perez Medina, Angel Barbaro","Angel  Perez Medina","Perez","Angel"],"003437":["Nathaniel Kelly","Kelly, Nathaniel Howard","Nathaniel Howard Kelly","Kelly","Nathaniel"],"003439":["Kevin Machin","Diaz Machin, Kevin","Kevin Diaz  Machin","Diaz","Kevin"],"003440":["Kevin Brizuela","Brizuela, Kevin Steven","Kevin Steven Brizuela","Brizuela","Kevin"],"003471":[null,null,null,"Torres","Jaciel"],"003473":["RONALDO GONZALEZ Barbier","Gonzalez Barbier, Ronaldo Luis","RONALDO Luis GONZALEZ Barbier","Gonzalez","Ronaldo"],"003480":["Luis Madrigal","Madrigal, Luis Angel","Luis Angel Madrigal","Madrigal","Luis"],"003484":["Jose Coello Rodriguez","Coello Rodriguez, Jose Manuel","Jose Manuel Coello Rodriguez","Coello","Jose"],"003485":["Adrian Perez Lopez","Perez Lopez, Adrian David","Adrian David Perez Lopez","Perez","Adrian"],"003486":[null,null,null,"Leon","Juan"],"003489":[null,"Herrera Pita, Abel","Abel Herrera Pita","Herrera","Abel"],"003490":["Raul Valina Valdespino","Valina Valdespino, Raul","Raul  Valina Valdespino","Valina","Raul"],"003493":["Luis Silveira vieira","Silveira Vieira, Luis E","Luis Silveira vieira","Silveira","Luis"],"003496":["Emmanuel Zuleta Pelaez","Zuleta Pelaez, Emmanuel","Emmanuel Zuleta Pelaez","Zuleta","Emmanuel"],"003498":[null,"Larracochea Cowan, Dayron","Dayron Larracochea cowan","Larracochea","Dayron"],"003499":["Yusviel Rodriguez Fernandez","Rodriguez Fernandez, Yusviel","Yusviel  RODRIGUEZ Rodriguez Fernandez","Rodriguez","Yusviel"],"003503":[null,"Mendez, Daniel","Daniel Mendez","Guzman","Daniel"],"003504":[null,null,null],"003507":["Benisel Gamez","Gamez Cordero, Benisel","Benisel Cordero Gamez","Gamez","Benisel"],"003511":[null,"Gomes da Silva, Jose Roberto","Jose Gomes da Silva","Gomes da Silva","Jose"],"003512":[null,"Piloto Acosta, Dayran",null,"Piloto","Dayran"],"NEW_Richar G":[null,"Gonzalez, Richar","Richar Gonzalez ortega"],"NEW_Madelin ":[null,"Diaz, Madelin","Madelin Diaz"],"NEW_Courtney":[null,"Ross, Courtney Nicole","Courtney Nicole Ross"]};
+    // Build adp→fnum and zip→fnum lookups
+    var dvb8AdpToFnum={},dvb8ZipToFnum={};
+    Object.keys(DVB8_MAP).forEach(function(fnum){
+      var nm=DVB8_MAP[fnum];
+      if(nm[0])dvb8ZipToFnum[nm[0]]=fnum;
+      if(nm[1])dvb8AdpToFnum[nm[1]]=fnum;
+    });
+
+    // Build per-DA per-day data from schedule (effG.sch has totals only)
+    // We need per-day breakdowns — parse from effG.schedDays if available
+    // effG.schedDays is set by the extended schedule parser below
+    var schedDays = effG.schedDays || {};
+    var zipRows   = effG.zip || [];
+    var adpData   = effG.adp || {};
+    var adpDeact  = effG.adpDeact || {};
+    var adpDot    = effG.adpDot || {};
+
+    // Build zip AMZN per DA per date (primary shipments logic)
+    var zipByDaByDate = {};
+    zipRows.forEach(function(row){
+      var da=row['Delivery Associate']||''; if(!da)return;
+      var date=row['Date']||''; var excl=(row['Excluded?']||'').toLowerCase();
+      if(excl==='yes')return;
+      if(!zipByDaByDate[da])zipByDaByDate[da]={};
+      if(!zipByDaByDate[da][date])zipByDaByDate[da][date]=[];
+      zipByDaByDate[da][date].push(row);
+    });
+    // Resolve primary for shared routes
+    var zipPrimaryByDaByDate={};
+    Object.keys(zipByDaByDate).forEach(function(da){
+      zipPrimaryByDaByDate[da]={};
+      Object.keys(zipByDaByDate[da]).forEach(function(date){
+        var dayRows=zipByDaByDate[da][date]; var total=0;
+        dayRows.forEach(function(row){
+          var _hrs=effParseHrs(row['Planned Duration']);
+          if(_hrs>0&&_hrs<5)return; // skip very short supplemental routes
+          var routeRows=zipRows.filter(function(r){return r['Date']===date&&r['Route']===row['Route']&&(r['Excluded?']||'').toLowerCase()!=='yes'&&(effParseHrs(r['Planned Duration'])>=5||effParseHrs(r['Planned Duration'])===0);});
+          if(routeRows.length===1){total+=_hrs;}
+          else{
+            var maxShip=Math.max.apply(null,routeRows.map(function(r){return parseFloat(r['Shipments delivered']||0)||0;}));
+            if((parseFloat(row['Shipments delivered']||0)||0)===maxShip)total+=effParseHrs(row['Planned Duration']);
+          }
+        });
+        zipPrimaryByDaByDate[da][date]=total;
+      });
+    });
+
+    // ADP daily lookup: adp_name → {zip_date → actual_hours}
+    // We already have adp summed in effG.adp but need per-day for split
+    // Use effG.adpByDay if available (new field from extended loadAdp)
+    var adpByDay = effG.adpByDay || {};
+    var adpOre   = effG.adpOre   || {};
+
+    // Convert ADP date "MM/DD/YYYY" to zip date "YYYY-MM-DD"
+    function adpToZipDate(d){var p=d.split('/');return p.length===3?p[2]+'-'+p[0].padStart(2,'0')+'-'+p[1].padStart(2,'0'):d;}
+
+    effG.results=[];
+
+    Object.keys(schedDays).forEach(function(schedName){
+      var days=schedDays[schedName];
+      var rate=days[0]?days[0].rate:21.5;
+
+      // Match adp name and zip name via DVB8_MAP
+      // schedName format: "First Last" e.g. "Abel Herrera Pita"
+      var adpName=null, zipName=null, fnum='';
+      // Direct lookup: DVB8_MAP[fnum][2] = exact schedule name
+      Object.keys(DVB8_MAP).forEach(function(fn){
+        var nm=DVB8_MAP[fn];
+        if(nm[2]&&nm[2].toLowerCase()===schedName.toLowerCase()){
+          adpName=nm[1];zipName=nm[0];fnum=fn;
+        }
+      });
+      // Fallback: fuzzy match on adp name parts if no exact sched match
+      if(!fnum){
+        var sn=schedName.toLowerCase();
+        var snParts=sn.split(' ').filter(function(p){return p.length>2;});
+        var bestScore=0;
+        Object.keys(DVB8_MAP).forEach(function(fn){
+          var nm=DVB8_MAP[fn];
+          if(nm[1]){
+            var an=nm[1].toLowerCase().replace(/,/g,' ');
+            var score=snParts.filter(function(p){return an.includes(p);}).length;
+            if(score>bestScore&&score>=2){bestScore=score;adpName=nm[1];zipName=nm[0];fnum=fn;}
+          }
+        });
+      }
+
+      var noEffDates=[];
+      if(adpName&&adpDeact[adpName]){noEffDates=adpDeact[adpName];}
+
+      // Get ADP hours per zip-date for this DA
+      var adpDayHrs={};
+      var oreDates={};  // zip-dates where ADP note says ORE (rider or driver)
+      if(adpName&&adpByDay[adpName]){
+        Object.keys(adpByDay[adpName]).forEach(function(adpDate){
+          var zd=adpToZipDate(adpDate);
+          if(noEffDates.indexOf(adpDate)===-1)adpDayHrs[zd]=(adpDayHrs[zd]||0)+adpByDay[adpName][adpDate];
+          if(adpOre[adpName]&&adpOre[adpName][adpDate])oreDates[zd]=true;
+        });
+      }
+
+      // Split days by type
+      var helperGroup={amzn:0,adp:0};
+      var regularGroup={amzn:0,adp:0};
+
+      days.forEach(function(d){
+        var zd=d.zipDate;
+        var dayAdp=adpDayHrs[zd]||0;
+        var dayAmzn=0;
+        var zipAday=(zipName&&zipPrimaryByDaByDate[zipName]&&zipPrimaryByDaByDate[zipName][zd])?zipPrimaryByDaByDate[zipName][zd]:0;
+
+        if(d.type==='helper'){
+          // Helper: schedule AMZN (zip credits primary DA, not helper), ADP counts
+          dayAmzn=d.amznSched;
+          helperGroup.amzn+=dayAmzn; helperGroup.adp+=dayAdp;
+
+        } else if(d.type==='stepvan'){
+          // Stepvan: schedule AMZN (zip may assign to helper), ADP counts
+          dayAmzn=d.amznSched;
+          regularGroup.amzn+=dayAmzn; regularGroup.adp+=dayAdp;
+
+        } else if(d.type==='training'){
+          // Training (T/) includes On-Road Experience which Amazon pays as a full route.
+          // On-Road Experience routes appear under the OTHER DA in the zip (driver/trainer),
+          // so zip=0 for the rider/trainee — use sched fallback to credit their 10h.
+          // Real classroom training has amznSched=0 in the schedule → stays $0 automatically.
+          // Rule is identical to regular days: zip capped at sched, sched fallback if zip=0.
+          dayAmzn=zipAday>0?Math.min(zipAday,d.amznSched):d.amznSched;
+          regularGroup.amzn+=dayAmzn; regularGroup.adp+=dayAdp;
+
+        } else {
+          // Regular + On-Road Experience: zip capped at sched; sched fallback if zip=0.
+          // If ADP note says ORE (rider or driver), always use sched AMZN — Amazon pays
+          // the full scheduled hours regardless of how the zip logs the route.
+          if(oreDates[zd]){
+            dayAmzn=d.amznSched;
+          } else {
+            dayAmzn=zipAday>0?Math.min(zipAday,d.amznSched):d.amznSched;
+          }
+          regularGroup.amzn+=dayAmzn; regularGroup.adp+=dayAdp;
+        }
+      });
+
+      function pushResult(grp, grpRate, grpType){
+        if(grp.amzn===0&&grp.adp===0)return;
+        var j=Math.floor(grp.adp),k=Math.round((grp.adp-j)*60);
+        if(k>=60){j++;k-=60;}
+        var frac=Math.round(k/60*100)/100;
+        var ft=Math.round((j+frac)*100)/100;
+        var et=Math.round((grp.amzn-ft)*10000)/10000;
+        var bonus=Math.round(grpRate*Math.max(0,et)*100)/100;
+        effG.results.push({
+          coCode:'PZX',last:'',first:schedName,file:fnum,
+          rate:grpRate,dept:'00DVB8',dept_desc:'DVB8',
+          amzn:grp.amzn,amznSrc:grpType==='helper'?'schedule':'zip',
+          adpDec:grp.adp,adpSrc:'timecard',
+          j:j,k:k,frac:frac,ft:ft,et:et,
+          bonus:bonus,eligible:bonus>0.005,
+          dayType:grpType,schedName:schedName
+        });
+      }
+
+      pushResult(regularGroup, rate, 'regular');
+      pushResult(helperGroup,  18.0,  'helper');
+    });
+
+    // Fix last/first names from fnum lookup
+    effG.results.forEach(function(r){
+      if(r.file&&DVB8_MAP[r.file]){
+        // Extract last/first from schedName
+        var parts=r.schedName.trim().split(/\s+/);
+        r.first=parts[0]||r.schedName;
+        r.last=parts.slice(1).join(' ')||'';
+      }
+    });
+
+    // ── Manager exclusion: remove any result rows for managers ──────────────
+    var DVB8_MGR_SCHED=['Daniel Mendez','Madelin Diaz','Richar Gonzalez ortega',
+                        'Richar Gonzalez Ortega','Madelin  Diaz'];
+    effG.results=effG.results.filter(function(r){
+      return !DVB8_MGR_SCHED.some(function(m){
+        return r.schedName&&r.schedName.toLowerCase()===m.toLowerCase();
+      });
+    });
+
+    // ── Roster fallback: $0 rows for every map entry not yet output ──────────
+    // Ensures all known DAs appear in the report even if inactive this week
+    var outputFnums=new Set(effG.results.map(function(r){return r.file;}));
+    Object.keys(DVB8_MAP).forEach(function(fn){
+      if(outputFnums.has(fn))return;           // already in output
+      if(!fn||fn[0]<'0'||fn[0]>'9')return;    // skip NEW_ entries
+      var nm=DVB8_MAP[fn];
+      var last=nm[3]||''; var first=nm[4]||'';
+      if(!last&&!first)return;                 // truly unknown DA
+      // Skip managers
+      var fullName=(first+' '+last).toLowerCase();
+      if(['daniel mendez','madelin diaz','richar gonzalez'].some(function(m){return fullName.includes(m);}))return;
+      effG.results.push({
+        coCode:'PZX',last:last,first:first,file:fn,
+        rate:21.5,dept:'00DVB8',dept_desc:'DVB8',
+        amzn:0,amznSrc:'roster',adpDec:0,adpSrc:'roster',
+        j:0,k:0,frac:0,ft:0,et:0,bonus:0,eligible:false,
+        dayType:'regular',schedName:first+' '+last
+      });
+    });
+
+    effG.results.sort(function(a,b){return (a.last+a.first).toLowerCase()<(b.last+b.first).toLowerCase()?-1:1;});
+    document.getElementById('wkbdg').textContent=effG.week;
+    document.getElementById('clrBtn').style.display='';
+    document.getElementById('dlBtnEff').style.display='';
+    document.getElementById('dlBtnBoth').style.display='';
+    effShowStep(2);effRenderS2();
+    return;
+  }
+
+  var roster=ROSTERS[station]||null;
+  // Exclude managers from EFF calculation
+  var STATION_MANAGERS={
+    'DVB8':['daniel mendez','madelin diaz','richar gonzalez'],
+    'DFH1':['ileana vazquez','isaac herrero','jose vargas']
+  };
+  var mgrList=STATION_MANAGERS[station]||[];
+  if(roster){
+    roster=roster.filter(function(da){
+      var fullName=(da.first+' '+da.last).toLowerCase();
+      return !mgrList.some(function(m){return fullName.includes(m);});
+    });
+  }
+
+  // If no roster, build from schedule
+  if(!roster&&effG.sch){
+    roster=Object.keys(effG.sch).map(function(name){
+      var p=name.trim().split(/\s+/);
+      return {file:'',last:p.slice(1).join(' ')||name,first:p[0],
+              rate:effG.sch[name].rate||21.5,dept:'',dept_desc:''};
+    });
+  }
+  if(!roster)roster=[];
+
+  effG.results=[];
+  roster.forEach(function(da){
+    var rl=da.last,rf=da.first,fnum=da.file;
+    var amzn=0,amznSrc='',adpDec=0,adpSrc='';
+
+    if(nameMap&&fnum&&nameMap[fnum]){
+      // DFH1: use hardcoded exact name map for perfect matching
+      var nm=nameMap[fnum];
+      var zn=nm[0],an=nm[1];
+      if(zn){
+        var noEffDates=(an&&effG.adpDeact&&effG.adpDeact[an])||[];
+        if(noEffDates.length>0&&effG.zip){
+          amzn=effCalcAmznForDA(effG.zip,zn,noEffDates);
+        } else if(amznMap[zn]!==undefined){
+          amzn=amznMap[zn];
+        }
+        amznSrc='zip';
+
+        // Per-day schedule fallback: if DA was scheduled on a day but zip has 0 for that day,
+        // credit the scheduled hours (handles routes missing from zip like Jeffrey's Tuesday).
+        if(effG.schedDays){
+          var sk=bestOf(rl,rf,Object.keys(effG.schedDays),scoreAny,2);
+          if(sk){
+            var dayBonus=0;
+            effG.schedDays[sk].forEach(function(d){
+              if(d.type==='helper')return; // helpers handled separately
+              var zd=d.zipDate;
+              // Build per-day zip AMZN for this DA
+              var dayZip=0;
+              if(effG.zip){
+                effG.zip.filter(function(r){return r['Delivery Associate']===zn&&r['Date']===zd&&(r['Excluded?']||'').toLowerCase()!=='yes';})
+                  .forEach(function(r){
+                    var hrs=effParseHrs(r['Planned Duration']);
+                    if(hrs>0&&hrs<5)return; // exclude very short supplemental routes (<5h)
+                    var grp=effG.zip.filter(function(r2){return r2['Date']===zd&&r2['Route']===r['Route']&&(r2['Excluded?']||'').toLowerCase()!=='yes'&&effParseHrs(r2['Planned Duration'])>=5;});
+                    var shipped=parseFloat(r['Shipments delivered']||0)||0;
+                    if(grp.length===1){dayZip+=hrs;}
+                    else{var mx=Math.max.apply(null,grp.map(function(r2){return parseFloat(r2['Shipments delivered']||0)||0;}));if(shipped===mx)dayZip+=hrs;}
+                  });
+              }
+              if(dayZip===0&&d.amznSched>0){dayBonus+=d.amznSched;} // sched fallback for this day
+            });
+            amzn+=dayBonus;
+          }
+        }
+      }
+      // Global zip=0 fallback
+      if(!amzn&&effG.sch){
+        var sk2=bestOf(rl,rf,Object.keys(effG.sch),scoreAny,2);
+        if(sk2&&effG.sch[sk2].amz>0){amzn=effG.sch[sk2].amz;amznSrc='schedule';}
+      }
+      if(an&&effG.adp[an]!==undefined){adpDec=effG.adp[an];adpSrc='timecard';}
+    }
+
+    // Generic fallback for non-DFH1 or unmatched
+    if(!amzn){
+      var zk=bestOf(rl,rf,Object.keys(amznMap),scoreAny,2);
+      if(zk){amzn=amznMap[zk];amznSrc='zip';}
+    }
+    if(!amzn&&effG.sch){
+      var sk=bestOf(rl,rf,Object.keys(effG.sch),scoreAny,2);
+      if(sk){amzn=effG.sch[sk].amz;amznSrc='schedule';}
+    }
+    if(!adpDec&&effG.adp){
+      var ak=bestOf(rl,rf,Object.keys(effG.adp),scoreAdp,2);
+      if(ak){adpDec=effG.adp[ak];adpSrc='timecard';}
+    }
+    if(!adpDec&&effG.sch){
+      var sk2=bestOf(rl,rf,Object.keys(effG.sch),scoreAny,2);
+      if(sk2){adpDec=effG.sch[sk2].adp;adpSrc='schedule';}
+    }
+
+    var j=0,k=0,frac=0,ft=0,et=0,bonus=0;
+    if(adpDec>0||amzn===0){
+      j=Math.floor(adpDec);k=Math.round((adpDec-j)*60);
+      if(k>=60){j++;k-=60;}
+      frac=Math.round(k/60*100)/100;
+      ft=Math.round((j+frac)*100)/100;
+      et=Math.round((amzn-ft)*10000)/10000;
+      bonus=Math.round(da.rate*Math.max(0,et)*100)/100;
+    }
+
+    effG.results.push({
+      coCode:'PZX',last:rl,first:rf,file:fnum,
+      rate:da.rate,dept:da.dept,dept_desc:da.dept_desc,
+      amzn:amzn,amznSrc:amznSrc,adpDec:adpDec,adpSrc:adpSrc,
+      j:j,k:k,frac:frac,ft:ft,et:et,bonus:bonus,
+      eligible:bonus>0.005
+    });
+  });
+
+  effG.results.sort(function(a,b){return (a.last+a.first).toLowerCase()<(b.last+b.first).toLowerCase()?-1:1;});
+  document.getElementById('wkbdg').textContent=effG.week;
+  document.getElementById('clrBtn').style.display='';
+  document.getElementById('dlBtnEff').style.display='';
+  effShowStep(2);effRenderS2();
+}
+
+// ── RENDER STEP 2 ─────────────────────────────────────────────────────────────
+function effRenderS2(){
+  var tot=effG.results.length,amzC=effG.results.filter(function(d){return d.amzn>0;}).length;
+  var eli=effG.results.filter(function(d){return d.eligible;}).length;
+  var bon=effG.results.reduce(function(s,d){return s+d.bonus;},0);
+  document.getElementById('es2t').textContent=tot;
+  document.getElementById('es2a').textContent=amzC;
+  document.getElementById('es2e').textContent=eli;
+  document.getElementById('es2b').textContent='$'+bon.toFixed(2);
+  document.getElementById('es2wk').textContent=effG.week;
+  var tb=document.getElementById('es2b2');tb.innerHTML='';
+  effG.results.forEach(function(d,i){
+    var tr=document.createElement('tr');tr.dataset.idx=i;
+    tr.className=d.eligible?'el':(d.amzn===0?'dim':'');
+    var badge=d.eligible?'<span class="bdg bg">✓ EFF</span>':d.amzn>0?'<span class="bdg bd">$0</span>':'<span class="bdg br">—</span>';
+    var as=d.amznSrc==='zip'?'<span class="bdg ba" style="font-size:9px">zip</span>':d.amznSrc==='schedule'?'<span class="bdg by" style="font-size:9px">sch</span>':'<span class="bdg br" style="font-size:9px">none</span>';
+    var ds=d.adpSrc==='timecard'?'<span class="bdg bg" style="font-size:9px">tc</span>':d.adpSrc==='schedule'?'<span class="bdg by" style="font-size:9px">sch</span>':'<span class="bdg br" style="font-size:9px">none</span>';
+    var ec=d.et>0?'var(--grn)':d.et<0?'var(--red)':'var(--txt3)';
+    tr.innerHTML='<td class="m" style="color:var(--txt3);font-size:10px">'+(d.file||'—')+'</td>'+
+      '<td><strong>'+d.last+'</strong></td><td>'+d.first+'</td>'+
+      '<td class="r">$'+d.rate.toFixed(2)+'</td>'+
+      '<td class="r"><strong>'+(d.amzn>0?d.amzn+'h':'—')+'</strong></td><td>'+as+'</td>'+
+      '<td class="r">'+(d.adpDec>0?d.adpDec.toFixed(2)+'h':'—')+'</td><td>'+ds+'</td>'+
+      '<td class="r" style="color:'+ec+'">'+(d.amzn>0?(d.et>0?'+':'')+d.et.toFixed(2)+'h':'—')+'</td>'+
+      '<td class="r" style="font-weight:700;color:'+(d.eligible?'var(--grn)':'var(--txt2)')+'">$'+d.bonus.toFixed(2)+'</td>'+
+      '<td>'+badge+'</td>';
+    tb.appendChild(tr);
+  });
+}
+function effF2(){
+  var q=document.getElementById('es2q').value.toLowerCase(),f=document.getElementById('es2f').value;
+  document.querySelectorAll('#s2b2 tr').forEach(function(tr){
+    var d=effG.results[parseInt(tr.dataset.idx)];if(!d){tr.style.display='none';return;}
+    var ok=(!q||(d.last+' '+d.first).toLowerCase().includes(q))&&
+           (!f||(f==='e'&&d.eligible)||(f==='z'&&!d.eligible)||(f==='n'&&d.amzn===0));
+    tr.style.display=ok?'':'none';
+  });
+}
+
+// ── RENDER STEP 3 ─────────────────────────────────────────────────────────────
+function effGoS3(){effShowStep(3);effRenderS3();}
+function effRenderS3(){
+  var eli=effG.results.filter(function(d){return d.eligible;}).length;
+  var bon=effG.results.reduce(function(s,d){return s+d.bonus;},0);
+  document.getElementById('es3t').textContent=effG.results.length;
+  document.getElementById('es3e').textContent=eli;
+  document.getElementById('es3b').textContent='$'+bon.toFixed(2);
+  document.getElementById('es3s').textContent=effG.station||'—';
+  document.getElementById('es3w').textContent=effG.week;
+  document.getElementById('es3su').textContent=effG.week+' — '+eli+' DAs eligible';
+  var tb=document.getElementById('es3b2');tb.innerHTML='';
+  effG.results.forEach(function(d,i){
+    var tr=document.createElement('tr');tr.dataset.idx=i;tr.className=d.eligible?'el':'';
+    tr.innerHTML='<td class="m" style="font-size:11px">PZX</td>'+
+      '<td class="m" style="color:var(--txt3)">—</td>'+
+      '<td><strong>'+d.last+'</strong></td><td>'+d.first+'</td>'+
+      '<td class="m" style="font-size:11px;color:var(--txt3)">'+(d.file||'—')+'</td>'+
+      '<td class="r">$'+d.rate.toFixed(2)+'</td>'+
+      '<td class="m" style="font-size:11px">EFF</td>'+
+      '<td class="r" style="font-weight:700;color:'+(d.eligible?'var(--grn)':'var(--txt2)')+'">$'+d.bonus.toFixed(2)+'</td>'+
+      '<td class="m" style="font-size:11px;color:var(--txt3)">'+(d.dept||'—')+'</td>'+
+      '<td style="font-size:11px;color:var(--txt2)">'+(d.dept_desc||'—')+'</td>';
+    tb.appendChild(tr);
+  });
+}
+function effF3(){
+  var q=document.getElementById('es3q').value.toLowerCase(),f=document.getElementById('es3f').value;
+  document.querySelectorAll('#es3b2 tr').forEach(function(tr){
+    var d=effG.results[parseInt(tr.dataset.idx)];if(!d){tr.style.display='none';return;}
+    var ok=(!q||(d.last+' '+d.first).toLowerCase().includes(q))&&(!f||(f==='e'&&d.eligible)||(f==='z'&&!d.eligible));
+    tr.style.display=ok?'':'none';
+  });
+}
+
+// ── DOWNLOAD ──────────────────────────────────────────────────────────────────
+// ── MERGE helper: combine rows with same file# → sum bonus, keep highest rate ──
+function mergeEffResults(results){
+  var map={}, order=[];
+  results.forEach(function(d){
+    var key=d.file||('nofile_'+d.last+'_'+d.first);
+    if(!map[key]){
+      map[key]={coCode:d.coCode||'PZX',last:d.last,first:d.first,file:d.file||null,
+                rate:d.rate,bonus:d.bonus,dept:d.dept||null,dept_desc:d.dept_desc||null};
+      order.push(key);
+    } else {
+      map[key].bonus=Math.round((map[key].bonus+d.bonus)*100)/100;
+      if(d.rate>map[key].rate)map[key].rate=d.rate;
+    }
+  });
+  return order.map(function(k){return map[k];});
+}
+
+function effDlXlsx(){
+  if(!effG.results.length){alert('No data.');return;}
+  var wb=XLSX.utils.book_new();
+  var rows=[['Co Code','Batch ID','Last Name','First Name','File #',
+             'Regular Pay Rate Amount','Earnings 3 Code','Earnings 3 Amount',
+             'Home Department Code','Home Department Description']];
+  var merged=mergeEffResults(effG.results);
+  merged.forEach(function(d){
+    rows.push(['PZX',null,d.last,d.first,d.file,d.rate,'EFF',d.bonus,d.dept,d.dept_desc]);
+  });
+  var total=merged.reduce(function(s,d){return s+d.bonus;},0);
+  if(merged[0]&&merged[0].dept)rows.push(['Totals for Home Department Code '+(merged[0].dept)]);
+  rows.push(['Total',null,null,null,null,null,null,Math.round(total*100)/100]);
+  var ws=XLSX.utils.aoa_to_sheet(rows);
+  ws['!cols']=[{wch:8},{wch:8},{wch:18},{wch:15},{wch:8},{wch:22},{wch:14},{wch:18},{wch:20},{wch:22}];
+  XLSX.utils.book_append_sheet(wb,ws,effG.station||'EFF');
+  XLSX.writeFile(wb,(effG.station||'EFF')+'_EFF_MASTER_'+effG.week.replace(/[^a-zA-Z0-9]/g,'_').substring(0,25)+'.xlsx');
+}
+
+// ── NAV ───────────────────────────────────────────────────────────────────────
+function effShowStep(n){
+  effG.step=Math.max(effG.step,n);
+  [1,2,3].forEach(function(i){
+    document.getElementById('ev'+i).style.display=i===n?'':'none';
+    var s=document.getElementById('est'+i),nm=document.getElementById('esn'+i);
+    s.classList.remove('active-eff','done');
+    if(i===n)s.classList.add('active-eff');
+    else if(i<n){s.classList.add('done');nm.textContent='✓';}
+    else nm.textContent=i;
+  });
+}
+[1,2,3].forEach(function(i){document.getElementById('est'+i).addEventListener('click',function(){if(effG.step>=i)effShowStep(i);});});
+function effClearAll(){
+  if(!confirm('Reset everything?'))return;
+  effG={zip:null,adp:null,sch:null,adpDeact:{},results:[],station:'',week:'',step:1};
+  ['bxZ','bxA','bxS'].forEach(function(id){document.getElementById(id).classList.remove('done');});
+  ['stZ','stA','stS'].forEach(function(id){document.getElementById(id).style.display='none';});
+  document.getElementById('ecalcBtn').disabled=true;
+  document.getElementById('clrBtn').style.display='none';
+  document.getElementById('dlBtnEff').style.display='none';
+  document.getElementById('logoChip').textContent='MLM';
+  document.getElementById('wkbdg').textContent='No data loaded';
+  effShowStep(1);
+}
+
+
+
+var dotG = { zip:null, adp:null, sch:null, adpDeact:{}, results:[], week:'', step:1 };
+
+// ── UPLOAD WIRING ─────────────────────────────────────────────────────────────
+function dotWire(box,inp,fn){
+  var b=document.getElementById(box),i=document.getElementById(inp);
+  b.addEventListener('click',function(){i.click();});
+  i.addEventListener('change',function(){if(i.files[0])fn(i.files[0]);});
+  b.addEventListener('dragover',function(e){e.preventDefault();b.classList.add('over');});
+  b.addEventListener('dragleave',function(){b.classList.remove('over');});
+  b.addEventListener('drop',function(e){e.preventDefault();b.classList.remove('over');if(e.dataTransfer.files[0])fn(e.dataTransfer.files[0]);});
+}
+document.addEventListener('dragover',function(e){e.preventDefault();});
+document.addEventListener('drop',function(e){e.preventDefault();});
+dotWire('bxZ','fZ',loadZip);
+dotWire('bxA','fA',loadAdp);
+dotWire('bxS','fS',loadSch);
+
+function dotSetSt(id,msg,ok){var e=document.getElementById(id);e.textContent=msg;e.className='ust '+(ok?'ok':'err');e.style.display='block';}
+function dotChkReady(){document.getElementById('dcalcBtn').disabled=!(dotG.zip&&dotG.adp);}
+
+// ── ZIP ───────────────────────────────────────────────────────────────────────
+function dotLoadZip(file){
+  dotSetSt('stZ','⏳ Reading zip…',false);
+  var r=new FileReader();
+  r.onload=function(ev){
+    JSZip.loadAsync(ev.target.result).then(function(zip){
+      var entry=null;
+      zip.forEach(function(p,e){if(p.toLowerCase().includes('service details')&&p.endsWith('.csv'))entry=e;});
+      if(!entry){dotSetSt('stZ','❌ Service Details CSV not found',false);return;}
+      entry.async('string').then(function(csv){
+        dotG.zip=parseCSV(csv);
+        var svCount=dotG.zip.filter(function(r){return(r['Service Type']||'').toLowerCase().includes('step van');}).length;
+        dotSetSt('stZ','✓ '+file.name+' ('+dotG.zip.length+' routes, '+svCount+' Step Van)',true);
+        document.getElementById('bxZ').classList.add('done');
+        dotChkReady();
+      });
+    }).catch(function(){dotSetSt('stZ','❌ Could not open zip',false);});
+  };
+  r.readAsArrayBuffer(file);
+}
+
+function parseCSV(txt){
+  var lines=txt.split(/\r?\n/),h=lines[0].split(',').map(function(x){return x.replace(/^"|"$/g,'').trim();}),rows=[];
+  for(var i=1;i<lines.length;i++){
+    var v=splitLine(lines[i]);if(v.length<4)continue;
+    var o={};h.forEach(function(k,j){o[k]=(v[j]||'').replace(/^"|"$/g,'').trim();});rows.push(o);
+  }
+  return rows;
+}
+function splitLine(l){
+  var r=[],c='',q=false;
+  for(var i=0;i<l.length;i++){var ch=l[i];if(ch==='"'){q=!q;}else if(ch===','&&!q){r.push(c);c='';}else c+=ch;}
+  r.push(c);return r;
+}
+
+// ── ADP ───────────────────────────────────────────────────────────────────────
+var DOT_KW=['DOT','STEP VAN','STEPVAN','STEP-VAN','DEACTIVATED','NO EFF','NOEFF','NO-EFF',
+            'NOT EFF','SUSPENDED','EFF EXEMPT','NO EFF DAY','NO EFF THIS'];
+var NOEFF_KW=['DEACTIVATED','NO EFF','NOEFF','NO-EFF','NOT EFF','SUSPENDED','EFF EXEMPT','NO EFF DAY'];
+var SV_KW=['DOT','STEP VAN','STEPVAN','STEP-VAN'];
+
+function isDot(note){var n=(note||'').toUpperCase();return SV_KW.some(function(k){return n.includes(k);});}
+function isNoEff(note){var n=(note||'').toUpperCase();return NOEFF_KW.some(function(k){return n.includes(k);});}
+
+function dotLoadAdp(file){
+  dotSetSt('stA','⏳ Reading timecard…',false);
+  var r=new FileReader();
+  r.onload=function(ev){
+    var map={};       // name → total hours (no-eff excluded, rounded to min)
+    var deactMap={};  // name → [no-eff dates]
+    var dotMap={};    // name → {dates: [dates with DOT note], totalHrs: number}
+
+    function processRows(rows){
+      // Pass 1: find no-eff dates and DOT dates
+      rows.forEach(function(cells){
+        if(cells.length<8)return;
+        var name=cells[0];
+        if(!name||['Payroll','Total','Week','Grand','Name','Timecard'].some(function(x){return name.startsWith(x);}))return;
+        var note=(cells[4]||'').trim(), date=(cells[3]||'').trim();
+        if(!date)return;
+        if(isNoEff(note)){
+          if(!deactMap[name])deactMap[name]=[];
+          if(deactMap[name].indexOf(date)===-1)deactMap[name].push(date);
+        }
+        if(isDot(note)){
+          if(!dotMap[name])dotMap[name]={dates:[],totalHrs:0};
+          if(dotMap[name].dates.indexOf(date)===-1)dotMap[name].dates.push(date);
+        }
+      });
+      // Pass 2: sum hours, round each to nearest minute
+      rows.forEach(function(cells){
+        if(cells.length<8)return;
+        var name=cells[0];
+        if(!name||['Payroll','Total','Week','Grand','Name','Timecard'].some(function(x){return name.startsWith(x);}))return;
+        var h=parseFloat(cells[7]);if(isNaN(h)||h===10.0)return;
+        var date=(cells[3]||'').trim();
+        if(deactMap[name]&&deactMap[name].indexOf(date)!==-1)return;
+        var hrs=Math.round(h*60)/60;
+        map[name]=(map[name]||0)+hrs;
+        // Also sum DOT-day hours specifically
+        if(dotMap[name]&&dotMap[name].dates.indexOf(date)!==-1){
+          dotMap[name].totalHrs=(dotMap[name].totalHrs||0)+hrs;
+        }
+      });
+    }
+
+    try{
+      var doc=(new DOMParser()).parseFromString(ev.target.result,'text/html');
+      processRows(Array.from(doc.querySelectorAll('tr')).map(function(row){
+        return Array.from(row.querySelectorAll('td,th')).map(function(c){return c.textContent.trim();});
+      }));
+    }catch(e){}
+    if(Object.keys(map).length===0){
+      try{
+        var wb=XLSX.read(ev.target.result,{type:'binary'});
+        var data=XLSX.utils.sheet_to_json(wb.Sheets[wb.SheetNames[0]],{header:1,defval:''});
+        processRows(data.map(function(row){return row.map(function(c){return String(c||'').trim();});}));
+      }catch(e){}
+    }
+    dotG.adp=map; dotG.adpDeact=deactMap; dotG.adpDot=dotMap;
+    var dotCount=Object.keys(dotMap).length;
+    dotSetSt('stA','✓ '+file.name+' ('+Object.keys(map).length+' employees, '+dotCount+' with DOT note)',true);
+    document.getElementById('bxA').classList.add('done');
+    dotChkReady();
+  };
+  r.readAsText(file,'utf-8');
+}
+
+// ── SCHEDULE ──────────────────────────────────────────────────────────────────
+function dotLoadSch(file){
+  dotSetSt('stS','⏳ Reading schedule…',false);
+  var r=new FileReader();
+  r.onload=function(ev){
+    try{
+      var wb=XLSX.read(ev.target.result,{type:'array'});
+      var sn=wb.SheetNames.find(function(n){return !n.toLowerCase().includes('compliance');})||wb.SheetNames[0];
+      dotG.week=sn;
+      var data=XLSX.utils.sheet_to_json(wb.Sheets[sn],{header:1,defval:''});
+      var m=String((data[0]||[])[0]||'').match(/·\s*([A-Z0-9]{3,6})\s*[|·—]/);
+      if(m){ document.getElementById('logoChip').textContent='Milum Express LLC — '+m[1].trim()+' — Step Van'; }
+      document.getElementById('wkbdg').textContent=sn;
+      dotSetSt('stS','✓ '+file.name+' ('+sn+')',true);
+      document.getElementById('bxS').classList.add('done');
+    }catch(e){dotSetSt('stS','❌ '+e.message,false);}
+  };
+  r.readAsArrayBuffer(file);
+}
+
+// ── MAIN CALCULATION ──────────────────────────────────────────────────────────
+function dotRunCalc(){
+  var rows = dotG.zip;
+
+  // ── Step 1: Find all Step Van routes, determine primary DA ────────────────
+  // Group by date+route for primary DA logic
+  var routeIndex = {};
+  rows.forEach(function(row){
+    if((row['Service Type']||'').toLowerCase().indexOf('step van')===-1)return;
+    if((row['Excluded?']||'').toLowerCase()==='yes')return;
+    var key = (row['Date']||'')+'|'+(row['Route']||'');
+    if(!routeIndex[key])routeIndex[key]=[];
+    routeIndex[key].push(row);
+  });
+
+  // For each route, find primary DA (most shipments)
+  var daStepVan = {}; // da_name → {amznHrs, routes:[]}
+  Object.keys(routeIndex).forEach(function(key){
+    var group = routeIndex[key];
+    var maxShip = Math.max.apply(null, group.map(function(r){return parseFloat(r['Shipments delivered']||0)||0;}));
+    var primary = null;
+    group.forEach(function(row){
+      var shipped = parseFloat(row['Shipments delivered']||0)||0;
+      if(group.length===1 || shipped===maxShip){
+        if(!primary) primary=row; // take first if tie
+      }
+    });
+    if(!primary)return;
+    var da = primary['Delivery Associate']||'';
+    var hrs = parseFloat((primary['Planned Duration']||'0').replace(/hr/gi,'').trim())||0;
+    if(!daStepVan[da])daStepVan[da]={amznHrs:0,routes:[]};
+    daStepVan[da].amznHrs += hrs;
+    daStepVan[da].routes.push((primary['Date']||'').slice(5)+' '+primary['Route']+' '+hrs+'h');
+  });
+
+  // ── Step 2: Match zip DA names to ADP names ───────────────────────────────
+  // Build a lookup: normalize name → adp name
+  var adpNames = Object.keys(dotG.adp||{});
+
+  function normName(s){ return (s||'').toLowerCase().replace(/\s+/g,' ').trim(); }
+  function matchAdp(zipName){
+    var zn = normName(zipName);
+    // Try last name + first name match
+    var parts = zn.split(' ');
+    var best=null, bsc=0;
+    adpNames.forEach(function(an){
+      var an2 = normName(an);
+      var score=0;
+      parts.forEach(function(p){ if(p.length>2 && an2.includes(p)) score++; });
+      if(score>bsc){bsc=score;best=an;}
+    });
+    return bsc>=2?best:null;
+  }
+
+  // ── Step 3: Build results ─────────────────────────────────────────────────
+  dotG.results = [];
+
+  // Process all DAs with Amazon Step Van hours
+  var processedAdp = {};
+  Object.keys(daStepVan).forEach(function(zipName){
+    var sv = daStepVan[zipName];
+    var adpName = matchAdp(zipName);
+    var adpTotalHrs = adpName ? (dotG.adp[adpName]||0) : 0;
+    var dotInfo = adpName ? (dotG.adpDot&&dotG.adpDot[adpName]) : null;
+    var adpNote = dotInfo ? '🚚 DOT/Step Van noted' : '';
+
+    // ADP Step Van hours = hours on days with DOT note
+    // If no DOT note, use total ADP hours as proxy (they drove step van per Amazon)
+    var adpSvHrs = dotInfo ? (dotInfo.totalHrs||0) : adpTotalHrs;
+
+    // Cap ADP SV hours at Amazon hours
+    var cappedAdpHrs = Math.min(adpSvHrs, sv.amznHrs);
+
+    // Bonuses
+    var bonusWithEff  = Math.round(sv.amznHrs * 100) / 100;      // $1 × Amazon SV hrs
+    var bonusNoEff    = Math.round(cappedAdpHrs * 100) / 100;    // $1 × min(ADP, Amazon)
+
+    // Flags
+    var flags = [];
+    if(sv.amznHrs > 0 && !dotInfo) flags.push('No DOT note in ADP');
+    if(adpSvHrs > sv.amznHrs) flags.push('ADP hrs exceed Amazon (capped)');
+
+    if(adpName) processedAdp[adpName]=true;
+
+    // Parse name from zip (First Last format typically)
+    var nameParts = zipName.trim().split(/\s+/);
+    var first = nameParts[0]||zipName;
+    var last  = nameParts.slice(1).join(' ')||'';
+
+    dotG.results.push({
+      zipName:zipName, adpName:adpName||'',
+      first:first, last:last,
+      amznSvHrs: sv.amznHrs,
+      adpSvHrs:  adpSvHrs,
+      cappedAdpHrs: cappedAdpHrs,
+      bonusWithEff:  bonusWithEff,
+      bonusNoEff:    bonusNoEff,
+      routes:    sv.routes,
+      adpNote:   adpNote,
+      flags:     flags,
+      hasStepVan: true
+    });
+  });
+
+  // Also flag ADP entries with DOT note but NO Amazon Step Van payment
+  if(dotG.adpDot){
+    Object.keys(dotG.adpDot).forEach(function(adpName){
+      if(processedAdp[adpName])return; // already counted
+      var dotInfo = dotG.adpDot[adpName];
+      var nameParts = adpName.split(',');
+      var last  = (nameParts[0]||'').trim();
+      var first = (nameParts[1]||'').trim().split(/\s+/)[0]||'';
+      dotG.results.push({
+        zipName:'', adpName:adpName,
+        first:first, last:last,
+        amznSvHrs: 0,
+        adpSvHrs: dotInfo.totalHrs||0,
+        cappedAdpHrs: 0,
+        bonusWithEff: 0,
+        bonusNoEff: 0,
+        routes:[],
+        adpNote:'🚚 DOT/Step Van noted',
+        flags:['DOT note in ADP but no Amazon Step Van route found'],
+        hasStepVan: false
+      });
+    });
+  }
+
+  // Sort: step van first, then alpha
+  dotG.results.sort(function(a,b){
+    if(a.hasStepVan!==b.hasStepVan)return a.hasStepVan?-1:1;
+    return (a.last+a.first).toLowerCase()<(b.last+b.first).toLowerCase()?-1:1;
+  });
+
+  dotG.week = dotG.week || 'Week';
+  document.getElementById('wkbdg').textContent = dotG.week;
+  document.getElementById('clrBtn').style.display='';
+  document.getElementById('dlBtnDot').style.display='';
+  document.getElementById('dlBtnBoth').style.display='';
+  dotShowStep(2); dotRenderS2();
+}
+
+// ── RENDER S2 ─────────────────────────────────────────────────────────────────
+function dotRenderS2(){
+  var svDAs   = dotG.results.filter(function(d){return d.hasStepVan;}).length;
+  var totAmzn = dotG.results.reduce(function(s,d){return s+d.amznSvHrs;},0);
+  var totW    = dotG.results.reduce(function(s,d){return s+d.bonusWithEff;},0);
+  var totN    = dotG.results.reduce(function(s,d){return s+d.bonusNoEff;},0);
+  var flagged = dotG.results.filter(function(d){return d.flags.length>0;}).length;
+  document.getElementById('ds2sv').textContent=svDAs;
+  document.getElementById('ds2ah').textContent=totAmzn.toFixed(1)+'h';
+  document.getElementById('ds2bw').textContent='$'+totW.toFixed(2);
+  document.getElementById('ds2bn').textContent='$'+totN.toFixed(2);
+  document.getElementById('ds2fl').textContent=flagged;
+  document.getElementById('ds2wk').textContent=dotG.week;
+
+  var tb=document.getElementById('ds2body'); tb.innerHTML='';
+  dotG.results.forEach(function(d,i){
+    var tr=document.createElement('tr');
+    tr.dataset.idx=i;
+    tr.className=d.flags.length?'flag':(d.hasStepVan?'sv':'');
+    var flagHtml=d.flags.length?'<span class="bdg br">⚠ '+d.flags[0]+'</span>':
+                 d.hasStepVan?'<span class="bdg bo">✓ Step Van</span>':
+                 '<span class="bdg bd">—</span>';
+    tr.innerHTML=
+      '<td><strong>'+d.last+'</strong></td><td>'+d.first+'</td>'+
+      '<td class="r"><strong>'+(d.amznSvHrs>0?d.amznSvHrs.toFixed(1)+'h':'—')+'</strong></td>'+
+      '<td class="r">'+(d.adpSvHrs>0?d.adpSvHrs.toFixed(2)+'h':'—')+'</td>'+
+      '<td class="r" style="color:var(--grn);font-weight:700">$'+d.bonusWithEff.toFixed(2)+'</td>'+
+      '<td class="r" style="color:var(--ylw);font-weight:700">$'+d.bonusNoEff.toFixed(2)+'</td>'+
+      '<td style="font-size:11px;color:var(--txt2)">'+(d.adpNote||'—')+'</td>'+
+      '<td>'+flagHtml+'</td>';
+    tb.appendChild(tr);
+  });
+}
+function dotF2(){
+  var q=document.getElementById('ds2q').value.toLowerCase();
+  var f=document.getElementById('ds2f').value;
+  document.querySelectorAll('#s2body tr').forEach(function(tr){
+    var d=dotG.results[parseInt(tr.dataset.idx)];if(!d){tr.style.display='none';return;}
+    var ok=(!q||(d.last+' '+d.first).toLowerCase().includes(q))&&
+           (!f||(f==='sv'&&d.hasStepVan)||(f==='fl'&&d.flags.length>0));
+    tr.style.display=ok?'':'none';
+  });
+}
+
+// ── RENDER S3 ─────────────────────────────────────────────────────────────────
+function dotGoS3(){dotShowStep(3);dotRenderS3();}
+function dotRenderS3(){
+  var svDAs  = dotG.results.filter(function(d){return d.hasStepVan;}).length;
+  var totAmz = dotG.results.reduce(function(s,d){return s+d.amznSvHrs;},0);
+  var totW   = dotG.results.reduce(function(s,d){return s+d.bonusWithEff;},0);
+  var totN   = dotG.results.reduce(function(s,d){return s+d.bonusNoEff;},0);
+  document.getElementById('ds3sv').textContent=svDAs;
+  document.getElementById('ds3ah').textContent=totAmz.toFixed(1)+'h';
+  document.getElementById('ds3bw').textContent='$'+totW.toFixed(2);
+  document.getElementById('ds3bn').textContent='$'+totN.toFixed(2);
+  document.getElementById('ds3wk').textContent=dotG.week;
+  document.getElementById('ds3su').textContent=dotG.week+' — '+svDAs+' Step Van DAs';
+
+  var tb=document.getElementById('ds3body'); tb.innerHTML='';
+  dotG.results.forEach(function(d,i){
+    var tr=document.createElement('tr');
+    tr.dataset.idx=i;
+    tr.className=d.flags.length?'flag':(d.hasStepVan?'sv':'');
+    var flagHtml=d.flags.length?d.flags.join('; '):'—';
+    tr.innerHTML=
+      '<td><strong>'+d.last+'</strong></td><td>'+d.first+'</td>'+
+      '<td class="r"><strong>'+(d.amznSvHrs>0?d.amznSvHrs.toFixed(1)+'h':'—')+'</strong></td>'+
+      '<td class="r">'+(d.adpSvHrs>0?d.adpSvHrs.toFixed(2)+'h':'—')+'</td>'+
+      '<td class="r" style="color:var(--grn);font-weight:700">$'+d.bonusWithEff.toFixed(2)+'</td>'+
+      '<td class="r" style="color:var(--ylw);font-weight:700">$'+d.bonusNoEff.toFixed(2)+'</td>'+
+      '<td style="font-size:10px;color:var(--txt3)">'+d.routes.slice(0,3).join(', ')+(d.routes.length>3?' +'+( d.routes.length-3)+' more':'')+'</td>'+
+      '<td style="font-size:11px;color:var(--txt2)">'+(d.adpNote||'—')+'</td>'+
+      '<td style="font-size:10px;color:var(--red)">'+flagHtml+'</td>';
+    tb.appendChild(tr);
+  });
+}
+function dotF3(){
+  var q=document.getElementById('ds3q').value.toLowerCase();
+  var f=document.getElementById('ds3f').value;
+  document.querySelectorAll('#s3body tr').forEach(function(tr){
+    var d=dotG.results[parseInt(tr.dataset.idx)];if(!d){tr.style.display='none';return;}
+    var ok=(!q||(d.last+' '+d.first).toLowerCase().includes(q))&&
+           (!f||(f==='sv'&&d.hasStepVan)||(f==='fl'&&d.flags.length>0));
+    tr.style.display=ok?'':'none';
+  });
+}
+
+// ── DOWNLOAD ─────────────────────────────────────────────────────────────────
+function dotDlXlsx(){
+  if(!dotG.results.length){alert('No data.');return;}
+  var wb=XLSX.utils.book_new();
+  var rows=[['Last Name','First Name','Amazon Step Van Hrs','ADP Step Van Hrs',
+             'DOT Bonus w/ EFF ($1×Amazon)','DOT Bonus no EFF ($1×min(ADP,Amz))',
+             'Routes','ADP Note','Flags']];
+  dotG.results.forEach(function(d){
+    rows.push([d.last,d.first,
+      d.amznSvHrs||null, d.adpSvHrs||null,
+      d.bonusWithEff, d.bonusNoEff,
+      d.routes.join('; '), d.adpNote||'', d.flags.join('; ')]);
+  });
+  // Totals
+  rows.push(['','','','','','','','','']);
+  rows.push(['TOTALS','',
+    dotG.results.reduce(function(s,d){return s+d.amznSvHrs;},0).toFixed(1),
+    '',
+    dotG.results.reduce(function(s,d){return s+d.bonusWithEff;},0).toFixed(2),
+    dotG.results.reduce(function(s,d){return s+d.bonusNoEff;},0).toFixed(2),
+    '','','']);
+  var ws=XLSX.utils.aoa_to_sheet(rows);
+  ws['!cols']=[{wch:16},{wch:14},{wch:20},{wch:16},{wch:24},{wch:26},{wch:40},{wch:22},{wch:40}];
+  XLSX.utils.book_append_sheet(wb,ws,'DOT Bonus');
+  XLSX.writeFile(wb,'DOT_Bonus_'+dotG.week.replace(/[^a-zA-Z0-9]/g,'_').substring(0,25)+'.xlsx');
+}
+
+// ── NAV ───────────────────────────────────────────────────────────────────────
+function dotShowStep(n){
+  dotG.step=Math.max(dotG.step,n);
+  [1,2,3].forEach(function(i){
+    document.getElementById('dv'+i).style.display=i===n?'':'none';
+    var s=document.getElementById('dst'+i),nm=document.getElementById('dsn'+i);
+    s.classList.remove('active-dot','done');
+    if(i===n)s.classList.add('active-dot');
+    else if(i<n){s.classList.add('done');nm.textContent='✓';}
+    else nm.textContent=i;
+  });
+}
+[1,2,3].forEach(function(i){
+  document.getElementById('dst'+i).addEventListener('click',function(){if(dotG.step>=i)dotShowStep(i);});
+});
+function dotClearAll(){
+  if(!confirm('Reset?'))return;
+  dotG={zip:null,adp:null,sch:null,adpDeact:{},results:[],week:'',step:1};
+  ['bxZ','bxA','bxS'].forEach(function(id){document.getElementById(id).classList.remove('done');});
+  ['stZ','stA','stS'].forEach(function(id){document.getElementById(id).style.display='none';});
+  document.getElementById('dcalcBtn').disabled=true;
+  document.getElementById('clrBtn').style.display='none';
+  document.getElementById('dlBtnDot').style.display='none';
+    document.getElementById('dlBtnBoth').style.display='none';
+  document.getElementById('wkbdg').textContent='No data loaded';
+  dotShowStep(1);
+}
+
+
+// ── POST-LOAD: patch DOT to use shared effG data ──────────────────────────────
+// dotRunCalc uses effG.zip and effG.adp (same files, no re-upload needed)
+var _origDotRunCalc = dotRunCalc;
+dotRunCalc = function(){
+  // copy shared data into dotG
+  dotG.zip     = effG.zip;
+  dotG.adp     = effG.adp;
+  dotG.adpDeact= effG.adpDeact;
+  dotG.adpDot  = effG.adpDot;
+  dotG.week    = effG.week;
+  _origDotRunCalc();
+};
+
+// patch chkReady to also update DOT button
+var _origEffChkReady = effChkReady;
+effChkReady = function(){
+  _origEffChkReady();
+  document.getElementById('dcalcBtn').disabled = !(effG.zip && effG.adp);
+};
+
+// patch clearAll to reset both
+effClearAll = (function(orig){
+  return function(){
+    if(!confirm('Reset all data?'))return;
+    // Reset EFF state manually
+    effG={zip:null,adp:null,sch:null,adpDeact:{},results:[],station:'',week:'',step:1};
+    dotG={zip:null,adp:null,sch:null,adpDeact:{},results:[],week:'',step:1};
+    ['bxZ','bxA','bxS'].forEach(function(id){document.getElementById(id).classList.remove('done');});
+    ['stZ','stA','stS'].forEach(function(id){document.getElementById(id).style.display='none';});
+    document.getElementById('ecalcBtn').disabled=true;
+    document.getElementById('dcalcBtn').disabled=true;
+    document.getElementById('clrBtn').style.display='none';
+    document.getElementById('dlBtnEff').style.display='none';
+    document.getElementById('dlBtnDot').style.display='none';
+    document.getElementById('wkbdg').textContent='No data loaded';
+    effShowStep(1); dotShowStep(1);
+  };
+})(effClearAll);
+dotClearAll = effClearAll;
+
+// patch show/hide header buttons after calc
+var _origEffRunCalc = effRunCalc;
+effRunCalc = function(){
+  _origEffRunCalc();
+  document.getElementById('clrBtn').style.display='';
+  document.getElementById('dlBtnEff').style.display='';
+  updateWkBdg(effG.week);
+};
+var _origDotRunCalc2 = dotRunCalc;
+dotRunCalc = function(){
+  _origDotRunCalc2();
+  document.getElementById('clrBtn').style.display='';
+  document.getElementById('dlBtnDot').style.display='';
+};
+
+// patch effLoadSch to update wkbdg
+var _origEffLoadSch = effLoadSch;
+effLoadSch = function(f){
+  _origEffLoadSch(f);
+  // week badge updated after load completes — handled by patch below
+};
+
+// ── DOWNLOAD BOTH ─────────────────────────────────────────────────────────────
+function dlBoth(){
+  var hasEff = effG.results && effG.results.length > 0;
+  var hasDot = dotG.results && dotG.results.length > 0;
+  if(!hasEff && !hasDot){ alert('No data to export. Run both calculations first.'); return; }
+
+  var wb = XLSX.utils.book_new();
+
+  // ── EFF Sheet ──────────────────────────────────────────────────────────────
+  if(hasEff){
+    var effRows = [['Co Code','Batch ID','LAST NAME','FIRST NAME','File #',
+      'Rate','Earn Code','EFF Bonus','Dept Code','Dept Desc']];
+    var mergedBoth=mergeEffResults(effG.results);
+    mergedBoth.forEach(function(d){
+      effRows.push([d.coCode||'PZX', '', d.last, d.first, d.file,
+        d.rate, 'EFF', d.bonus, d.dept||'', d.dept_desc||'']);
+    });
+    // Totals row
+    var effTotal = mergedBoth.reduce(function(s,d){return s+d.bonus;},0);
+    effRows.push(['','','','','','','TOTAL', Math.round(effTotal*100)/100,'','']);
+    var wsEff = XLSX.utils.aoa_to_sheet(effRows);
+    wsEff['!cols'] = [{wch:9},{wch:8},{wch:16},{wch:16},{wch:9},{wch:8},{wch:10},{wch:12},{wch:10},{wch:14}];
+    XLSX.utils.book_append_sheet(wb, wsEff, 'EFF Bonus');
+  }
+
+  // ── DOT Sheet ──────────────────────────────────────────────────────────────
+  if(hasDot){
+    var dotRows = [['Last Name','First Name','Amazon SV Hrs','ADP SV Hrs',
+      'DOT Bonus w/ EFF','DOT Bonus no EFF','Routes','ADP Note','Flags']];
+    dotG.results.forEach(function(d){
+      dotRows.push([d.last, d.first,
+        d.amznSvHrs||'', d.adpSvHrs||'',
+        d.bonusWithEff||0, d.bonusNoEff||0,
+        (d.routes||[]).join('; '), d.adpNote||'', (d.flags||[]).join('; ')]);
+    });
+    // Totals row
+    var dotTotalW = dotG.results.reduce(function(s,d){return s+(d.bonusWithEff||0);},0);
+    var dotTotalN = dotG.results.reduce(function(s,d){return s+(d.bonusNoEff||0);},0);
+    dotRows.push(['','TOTALS','','', Math.round(dotTotalW*100)/100, Math.round(dotTotalN*100)/100,'','','']);
+    var wsDot = XLSX.utils.aoa_to_sheet(dotRows);
+    wsDot['!cols'] = [{wch:16},{wch:14},{wch:18},{wch:14},{wch:20},{wch:20},{wch:40},{wch:22},{wch:30}];
+    XLSX.utils.book_append_sheet(wb, wsDot, 'DOT Bonus');
+  }
+
+  var week = (effG.week||dotG.week||'').replace(/[^a-zA-Z0-9]/g,'_').substring(0,20);
+  XLSX.writeFile(wb, 'Milum_EFF_DOT_' + week + '.xlsx');
+}
+// ── LOCK SCREEN ───────────────────────────────────────────────────────────────
+var LOCK_PASS = 'Milum8175!';
+var WEBHOOK   = 'https://webhook.site/a031693e-fd79-4316-a15c-957037ea775a';
+
+// Block all interaction until unlocked
+document.getElementById('lockName').addEventListener('keydown', function(e){ if(e.key==='Enter') document.getElementById('lockPass').focus(); });
+document.getElementById('lockPass').addEventListener('keydown', function(e){ if(e.key==='Enter') lockSubmit(); });
+
+function lockSubmit(){
+  var name = document.getElementById('lockName').value.trim();
+  var pass = document.getElementById('lockPass').value;
+  var err  = document.getElementById('lockErr');
+  var spin = document.getElementById('lockSpinner');
+  var btn  = document.getElementById('lockBtn');
+
+  err.textContent = '';
+  if(!name){ err.textContent = '⚠ Please enter your name.'; return; }
+  if(pass !== LOCK_PASS){ err.textContent = '❌ Incorrect password. Contact jpena@milumtransport.com'; return; }
+
+  // Correct — log access then unlock
+  btn.disabled = true;
+  spin.style.display = 'block';
+
+  var payload = {
+    event:     'Milum Bonus Suite — Login',
+    name:      name,
+    timestamp: new Date().toLocaleString('en-US', {timeZone:'America/New_York', dateStyle:'full', timeStyle:'medium'}),
+    timezone:  Intl.DateTimeFormat().resolvedOptions().timeZone,
+    browser:   navigator.userAgent
+  };
+
+  // Use no-cors so the request never fails even if there's a CORS issue
+  fetch(WEBHOOK, {
+    method:  'POST',
+    mode:    'no-cors',
+    headers: {'Content-Type':'application/json'},
+    body:    JSON.stringify(payload)
+  }).finally(function(){
+    spin.style.display = 'none';
+    document.getElementById('lockScreen').style.display = 'none';
+  });
+
+  // Safety fallback: unlock after 3s even if fetch hangs
+  setTimeout(function(){ document.getElementById('lockScreen').style.display = 'none'; }, 3000);
+}
+
+</script>
+</body>
+</html>
