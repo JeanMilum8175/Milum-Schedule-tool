@@ -1,0 +1,2558 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Milum Schedule Tool</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Syne:wght@400;600;700;800&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+
+:root {
+  --bg:#0d0f14; --surface:#161922; --surface2:#1e2330; --surface3:#252b3a;
+  --border:#2a3045; --border2:#333c54;
+  --accent:#4f8ef7; --green:#22c87a; --yellow:#f5c842; --orange:#f07843; --red:#f05252;
+  --text:#e8ecf4; --text2:#9aa3b8; --text3:#5f6882;
+  --sv:#4f8ef7; --tr:#f5c842; --h:#22c87a;
+  --mono:'DM Mono',monospace; --display:'Syne',sans-serif; --body:'Inter',sans-serif;
+  --r:8px; --rl:14px;
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{background:var(--bg);color:var(--text);font-family:var(--body);font-size:14px;min-height:100vh;}
+
+/* TOPBAR */
+.topbar{background:var(--surface);border-bottom:1px solid var(--border);padding:0 24px;display:flex;align-items:center;gap:16px;height:56px;position:sticky;top:0;z-index:100;}
+.logo{font-family:var(--display);font-weight:800;font-size:18px;color:var(--accent);letter-spacing:-.5px;}
+.logo-sub{font-family:var(--mono);font-size:11px;color:var(--text3);}
+.spacer{flex:1;}
+.tabs{display:flex;gap:4px;}
+.tab{font-family:var(--body);font-size:13px;font-weight:500;padding:6px 16px;border-radius:6px;border:1px solid transparent;cursor:pointer;transition:all .15s;background:transparent;color:var(--text2);}
+.tab:hover{background:var(--surface2);color:var(--text);}
+.tab.active{background:var(--accent);color:#fff;border-color:var(--accent);}
+.btn{font-family:var(--body);font-size:13px;font-weight:500;padding:7px 16px;border-radius:6px;border:1px solid var(--border2);cursor:pointer;transition:all .15s;background:var(--surface2);color:var(--text);display:flex;align-items:center;gap:6px;white-space:nowrap;}
+.btn:hover{background:var(--surface3);border-color:var(--accent);color:var(--accent);}
+.btn-primary{background:var(--accent);border-color:var(--accent);color:#fff;}
+.btn-primary:hover{background:#3a7de8;border-color:#3a7de8;color:#fff;}
+.btn-go{background:var(--green);border-color:var(--green);color:#0d0f14;font-weight:700;font-size:14px;padding:9px 22px;}
+.btn-go:hover{background:#1aad68;border-color:#1aad68;color:#0d0f14;}
+.btn-go:disabled{background:var(--surface3);border-color:var(--border2);color:var(--text3);cursor:not-allowed;}
+.btn-sm{padding:4px 10px;font-size:12px;}
+
+.page{display:none;}.page.active{display:block;}
+.main{max-width:1600px;margin:0 auto;padding:24px;}
+
+/* UPLOAD */
+.upload-section{margin-bottom:20px;}
+.up-group-label{font-family:var(--mono);font-size:10px;text-transform:uppercase;letter-spacing:.8px;color:var(--text3);margin-bottom:8px;display:flex;align-items:center;gap:8px;}
+.up-group-label::after{content:'';flex:1;height:1px;background:var(--border);}
+.upload-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px;}
+.upload-box{border:2px dashed var(--border2);border-radius:var(--rl);padding:18px 16px;text-align:center;cursor:pointer;transition:all .2s;position:relative;background:var(--surface);}
+.upload-box:hover,.upload-box.dragover{border-color:var(--accent);background:rgba(79,142,247,.05);}
+
+.upload-box.loaded{border-color:var(--green);border-style:solid;background:rgba(34,200,122,.05);}
+.up-icon{font-size:24px;margin-bottom:6px;}
+.up-title{font-family:var(--display);font-weight:600;font-size:13px;margin-bottom:3px;}
+.up-hint{color:var(--text3);font-size:11px;}
+.up-status{color:var(--green);font-size:11px;font-weight:500;margin-top:5px;font-family:var(--mono);min-height:16px;}
+.up-input{display:none;}
+.upload-label{display:block;cursor:pointer;width:100%;}
+.build-bar{display:flex;align-items:center;gap:14px;background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:14px 18px;margin-bottom:20px;}
+.build-info{flex:1;}
+.build-title{font-weight:600;font-size:14px;margin-bottom:2px;}
+.build-desc{font-size:12px;color:var(--text3);}
+.file-pills{display:flex;flex-wrap:wrap;gap:6px;margin-top:6px;}
+.file-pill{font-family:var(--mono);font-size:11px;background:var(--surface2);border:1px solid var(--border2);border-radius:999px;padding:2px 10px;color:var(--text2);}
+.file-pill.amazon{border-color:rgba(79,142,247,.4);color:var(--accent);}
+.file-pill.adp{border-color:rgba(34,200,122,.4);color:var(--green);}
+
+/* STATS */
+.stats-bar{display:flex;gap:10px;margin-bottom:18px;flex-wrap:wrap;}
+.stat-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:10px 16px;min-width:100px;}
+.stat-label{font-size:10px;color:var(--text3);text-transform:uppercase;letter-spacing:.5px;font-family:var(--mono);margin-bottom:3px;}
+.stat-value{font-family:var(--display);font-weight:700;font-size:22px;}
+.c-blue{color:var(--accent);} .c-green{color:var(--green);} .c-orange{color:var(--orange);} .c-yellow{color:var(--yellow);}
+
+/* LEGEND / RULES */
+.legend-rules{display:flex;gap:16px;margin-bottom:18px;flex-wrap:wrap;align-items:flex-start;}
+.rules-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;flex:1;min-width:320px;}
+.rule-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:12px;text-align:center;}
+.rule-icon{font-size:20px;margin-bottom:4px;}
+.rule-lbl{font-size:10px;color:var(--text3);font-family:var(--mono);text-transform:uppercase;letter-spacing:.5px;}
+.rule-val{font-family:var(--display);font-weight:700;font-size:15px;color:var(--accent);margin:3px 0;}
+.legend-box{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:12px 16px;display:flex;flex-direction:column;gap:6px;}
+.legend-title{font-family:var(--mono);font-size:10px;color:var(--text3);text-transform:uppercase;letter-spacing:.5px;}
+.legend-row{display:flex;flex-wrap:wrap;gap:10px;}
+.legend-item{display:flex;align-items:center;gap:5px;font-size:12px;color:var(--text2);}
+.ldot{width:9px;height:9px;border-radius:50%;}
+
+/* FILTER */
+.filter-bar{display:flex;gap:10px;align-items:center;margin-bottom:14px;flex-wrap:wrap;}
+.search-box{flex:1;min-width:180px;padding:7px 12px;background:var(--surface2);border:1px solid var(--border2);border-radius:6px;color:var(--text);font-size:13px;}
+.search-box:focus{outline:none;border-color:var(--accent);}
+.form-select{padding:7px 12px;background:var(--surface2);border:1px solid var(--border2);border-radius:6px;color:var(--text);font-size:13px;font-family:var(--mono);}
+.form-select:focus{outline:none;border-color:var(--accent);}
+
+/* SCHEDULE TABLE */
+.sched-wrap{overflow-x:auto;border-radius:var(--rl);border:1px solid var(--border);}
+.sched-table{width:100%;border-collapse:collapse;min-width:900px;}
+.sched-table th{background:var(--surface2);color:var(--text2);font-family:var(--mono);font-size:10px;font-weight:500;padding:8px 10px;text-align:left;border-bottom:1px solid var(--border);white-space:nowrap;text-transform:uppercase;letter-spacing:.5px;}
+.sched-table th.dcol{text-align:center;min-width:100px;}
+.sched-table td{border-bottom:1px solid var(--border);vertical-align:middle;}
+.sched-table tr:last-child td{border-bottom:none;}
+
+/* NAME / RATE cells */
+.nc{padding:6px 12px;font-weight:500;font-size:13px;white-space:nowrap;min-width:170px;background:var(--surface);border-right:1px solid var(--border);}
+.nc-inner{display:flex;align-items:center;gap:6px;}
+.sv-cert{font-family:var(--mono);font-size:9px;font-weight:700;padding:2px 5px;border-radius:3px;cursor:pointer;flex-shrink:0;transition:all .15s;user-select:none;line-height:1.4;}
+.sv-cert.yes{background:rgba(79,142,247,.2);color:var(--sv);border:1px solid rgba(79,142,247,.4);}
+.sv-cert.yes:hover{background:rgba(79,142,247,.4);}
+.sv-cert.no{background:rgba(255,255,255,.04);color:var(--text3);border:1px dashed var(--border2);}
+.sv-cert.no:hover{border-color:var(--sv);color:var(--sv);}
+.rc{padding:6px 10px;font-family:var(--mono);font-size:12px;color:var(--green);min-width:52px;text-align:center;background:var(--surface);border-right:1px solid var(--border);}
+
+/* DAY CELL — two-row layout always visible */
+.dcell{padding:3px 4px;text-align:center;min-width:100px;position:relative;}
+.dcell-inner{border-radius:6px;padding:5px 6px;cursor:pointer;transition:all .15s;display:flex;flex-direction:column;align-items:center;gap:3px;min-height:58px;justify-content:center;}
+.dcell-inner:hover{transform:scale(1.04);box-shadow:0 3px 10px rgba(0,0,0,.5);z-index:10;position:relative;}
+.dcell-inner.empty{background:transparent;cursor:default;min-height:58px;}
+.dcell-inner.empty:hover{transform:none;box-shadow:none;}
+
+/* row1 = amazon paid, row2 = adp actual — ALWAYS VISIBLE */
+.row1{font-family:var(--mono);font-size:13px;font-weight:700;color:var(--text);line-height:1.2;}
+.row2{font-family:var(--mono);font-size:11px;font-weight:600;padding:2px 6px;border-radius:4px;line-height:1.4;min-width:44px;text-align:center;}
+.row2.sv{color:var(--sv);background:rgba(79,142,247,.18);}
+.row2.tr{color:var(--tr);background:rgba(245,200,66,.18);}
+.row2.h{color:var(--h);background:rgba(34,200,122,.18);}
+.row2.std{color:var(--text2);background:rgba(255,255,255,.06);}
+.row2.blank{color:var(--text3);font-style:italic;background:transparent;font-size:10px;}
+
+/* route colors */
+.r6{background:rgba(34,200,122,.18);border:1px solid rgba(34,200,122,.28);}
+.r7{background:rgba(240,120,67,.18);border:1px solid rgba(240,120,67,.28);}
+.r8{background:rgba(34,200,122,.22);border:1px solid rgba(34,200,122,.35);}
+.r9{background:rgba(245,200,66,.18);border:1px solid rgba(245,200,66,.28);}
+.r10{background:rgba(79,142,247,.14);border:1px solid rgba(79,142,247,.24);}
+.r-off{background:rgba(255,255,255,.02);border:1px dashed var(--border);}
+
+/* TOTAL cells */
+.tc{padding:6px 8px;text-align:center;font-family:var(--mono);font-size:11px;min-width:72px;border-left:1px solid var(--border);}
+.tc-inner{display:flex;flex-direction:column;gap:2px;align-items:center;}
+.tc-amz{font-size:12px;font-weight:600;color:var(--accent);}
+.tc-adp{font-size:11px;color:var(--orange);}
+.tc-zero{color:var(--text3);}
+
+/* STATUS */
+.ok{color:var(--green);font-family:var(--mono);font-size:11px;}
+.warn{color:var(--yellow);font-family:var(--mono);font-size:11px;}
+.viol{color:var(--red);font-family:var(--mono);font-size:11px;}
+
+/* hover title on cells */
+.dcell-inner[title]:hover::after{content:attr(title);position:absolute;bottom:calc(100% + 4px);left:50%;transform:translateX(-50%);background:var(--surface3);border:1px solid var(--border2);border-radius:6px;padding:6px 10px;font-size:11px;color:var(--text);white-space:pre;pointer-events:none;z-index:50;font-family:var(--mono);min-width:160px;text-align:left;}
+
+/* MODAL */
+.overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.7);z-index:200;align-items:center;justify-content:center;backdrop-filter:blur(4px);}
+.overlay.open{display:flex;}
+.modal{background:var(--surface);border:1px solid var(--border2);border-radius:var(--rl);padding:26px;width:420px;max-width:95vw;box-shadow:0 20px 60px rgba(0,0,0,.6);}
+.modal-title{font-family:var(--display);font-weight:700;font-size:17px;margin-bottom:4px;}
+.modal-sub{color:var(--text3);font-size:12px;margin-bottom:18px;font-family:var(--mono);}
+.frow{margin-bottom:12px;}
+.flabel{font-size:12px;color:var(--text2);margin-bottom:4px;display:block;font-weight:500;}
+.finput,.fselect{width:100%;padding:8px 12px;background:var(--surface2);border:1px solid var(--border2);border-radius:6px;color:var(--text);font-size:13px;font-family:var(--mono);transition:border-color .15s;}
+.finput:focus,.fselect:focus{outline:none;border-color:var(--accent);}
+.fhint{font-size:11px;color:var(--text3);margin-top:3px;}
+.fgrid{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+.mfooter{display:flex;gap:8px;justify-content:flex-end;margin-top:18px;}
+
+/* REPORT */
+.report-empty{color:var(--text3);text-align:center;padding:80px 40px;font-family:var(--mono);font-size:13px;}
+.report-table{width:100%;border-collapse:collapse;}
+.report-table th{background:var(--surface2);color:var(--text2);font-family:var(--mono);font-size:10px;padding:8px 12px;text-align:left;border-bottom:1px solid var(--border);text-transform:uppercase;letter-spacing:.5px;white-space:nowrap;}
+.report-table th.dcol{text-align:center;min-width:90px;}
+.report-table td{padding:0;border-bottom:1px solid var(--border);vertical-align:middle;}
+.report-table tr:last-child td{border-bottom:none;}
+.report-table tr:hover td{background:rgba(255,255,255,.015);}
+.rname{padding:7px 12px;font-size:13px;font-weight:500;white-space:nowrap;min-width:170px;border-right:1px solid var(--border);}
+.rrate{padding:7px 10px;font-family:var(--mono);font-size:12px;color:var(--green);text-align:center;min-width:52px;border-right:1px solid var(--border);}
+.rdcell{padding:3px 4px;text-align:center;min-width:90px;}
+.rdcell-inner{border-radius:5px;padding:4px 6px;display:flex;flex-direction:column;align-items:center;gap:1px;min-height:46px;justify-content:center;}
+.rd-amz{font-family:var(--mono);font-size:12px;font-weight:600;color:var(--text);}
+.rd-adp{font-family:var(--mono);font-size:11px;font-weight:500;padding:1px 4px;border-radius:4px;}
+.rd-adp.sv{color:var(--sv);background:rgba(79,142,247,.15);}
+.rd-adp.tr{color:var(--tr);background:rgba(245,200,66,.15);}
+.rd-adp.h{color:var(--h);background:rgba(34,200,122,.15);}
+.rd-adp.std{color:var(--text2);}
+.rd-adp.edit{cursor:pointer;border:1px dashed transparent;}
+.rd-adp.edit:hover{border-color:var(--accent);}
+.rtotal{padding:6px 8px;text-align:center;border-left:1px solid var(--border);}
+.rt-inner{display:flex;flex-direction:column;gap:2px;align-items:center;}
+.rt-amz{font-family:var(--mono);font-size:12px;font-weight:600;color:var(--accent);}
+.rt-adp{font-family:var(--mono);font-size:11px;color:var(--orange);}
+
+/* inline edit in report */
+.inline-edit{font-family:var(--mono);font-size:11px;width:60px;background:var(--surface2);border:1px solid var(--accent);border-radius:4px;color:var(--text);padding:2px 4px;text-align:center;}
+.inline-edit:focus{outline:none;}
+
+/* download bar */
+.dl-bar{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:14px 20px;display:flex;align-items:center;gap:14px;margin-bottom:20px;flex-wrap:wrap;}
+.dl-info{flex:1;min-width:200px;}
+.dl-title{font-weight:600;font-size:14px;margin-bottom:2px;}
+.dl-desc{font-size:12px;color:var(--text3);}
+
+/* add row */
+.add-da-btn{background:transparent;border:1px dashed var(--border2);color:var(--text3);font-size:12px;padding:6px 14px;border-radius:6px;cursor:pointer;transition:all .15s;font-family:var(--body);}
+.add-da-btn:hover{border-color:var(--accent);color:var(--accent);background:rgba(79,142,247,.05);}
+
+/* scrollbar */
+::-webkit-scrollbar{width:6px;height:6px;}
+::-webkit-scrollbar-track{background:var(--bg);}
+::-webkit-scrollbar-thumb{background:var(--border2);border-radius:3px;}
+::-webkit-scrollbar-thumb:hover{background:var(--text3);}
+
+/* week nav */
+.wk-sel{display:flex;gap:6px;align-items:center;}
+.wk-lbl{font-family:var(--mono);font-size:11px;color:var(--text2);padding:0 6px;max-width:200px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.wk-nav{background:var(--surface2);border:1px solid var(--border2);color:var(--text);width:28px;height:28px;border-radius:6px;cursor:pointer;font-size:15px;display:flex;align-items:center;justify-content:center;transition:all .15s;}
+.wk-nav:hover{background:var(--surface3);border-color:var(--accent);color:var(--accent);}
+
+/* dual week header bands */
+.wk-band-a{background:rgba(79,142,247,.08);border-bottom:2px solid rgba(79,142,247,.3);}
+.wk-band-b{background:rgba(123,94,248,.08);border-bottom:2px solid rgba(123,94,248,.3);}
+.wk-band-a .dcell-inner:not(.empty){border-top:2px solid rgba(79,142,247,.4)!important;}
+.wk-band-b .dcell-inner:not(.empty){border-top:2px solid rgba(123,94,248,.4)!important;}
+th.wk-a{background:rgba(79,142,247,.12)!important;color:var(--accent)!important;}
+th.wk-b{background:rgba(123,94,248,.12)!important;color:#a78bf8!important;}
+.wk-divider{border-left:3px solid var(--border2)!important;}
+
+/* COMPLIANCE PANEL — compact collapsible drawer */
+.cp-toggle{position:fixed;bottom:24px;right:24px;z-index:150;display:none;flex-direction:column;align-items:flex-end;gap:8px;width:auto;pointer-events:none;}
+.cp-toggle.visible{display:flex;}
+.cp-fab{display:flex;align-items:center;gap:8px;background:var(--surface);border:1px solid var(--border2);border-radius:999px;padding:9px 16px;cursor:pointer;box-shadow:0 4px 20px rgba(0,0,0,.5);transition:all .18s;font-family:var(--body);color:var(--text);font-size:13px;font-weight:600;pointer-events:all;white-space:nowrap;}
+.cp-fab:hover{transform:translateY(-2px);box-shadow:0 6px 24px rgba(0,0,0,.6);}
+.cp-fab.has-viol{border-color:var(--red);color:var(--red);}
+.cp-fab.has-warn{border-color:var(--yellow);color:var(--yellow);}
+.cp-fab.all-ok{border-color:var(--green);color:var(--green);}
+.cp-bubble{font-family:var(--mono);font-size:11px;font-weight:700;padding:2px 8px;border-radius:999px;min-width:22px;text-align:center;}
+.cp-bubble.viol{background:var(--red);color:#fff;}
+.cp-bubble.warn{background:var(--yellow);color:#0d0f14;}
+.cp-bubble.ok{background:var(--green);color:#0d0f14;}
+
+.cp-drawer{background:var(--surface);border:1px solid var(--border2);border-radius:var(--rl);width:340px;max-height:500px;display:flex;flex-direction:column;box-shadow:0 8px 40px rgba(0,0,0,.6);overflow:hidden;transform:translateY(10px) scale(.97);opacity:0;pointer-events:none;transition:all .18s;}
+.cp-drawer.open{transform:translateY(0) scale(1);opacity:1;pointer-events:all;}
+.cp-dhead{padding:12px 14px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:8px;flex-shrink:0;}
+.cp-dhead-title{font-family:var(--display);font-weight:700;font-size:13px;flex:1;}
+.cp-search-wrap{padding:8px 10px;border-bottom:1px solid var(--border);flex-shrink:0;}
+.cp-search{width:100%;padding:6px 10px;background:var(--surface2);border:1px solid var(--border2);border-radius:6px;color:var(--text);font-size:12px;font-family:var(--mono);}
+.cp-search:focus{outline:none;border-color:var(--accent);}
+.cp-list{overflow-y:auto;flex:1;}
+.cp-item{padding:9px 12px;border-bottom:1px solid var(--border);cursor:pointer;transition:background .12s;}
+.cp-item:last-child{border-bottom:none;}
+.cp-item:hover{background:var(--surface2);}
+.cp-item-name{font-size:12px;font-weight:600;margin-bottom:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.cp-item-meta{font-family:var(--mono);font-size:10px;margin-bottom:1px;}
+.cp-item-detail{font-size:10px;color:var(--text3);line-height:1.3;}
+.cp-tag{font-family:var(--mono);font-size:9px;font-weight:700;padding:1px 5px;border-radius:3px;margin-right:4px;display:inline-block;}
+.cp-tag.viol{background:rgba(240,82,82,.2);color:var(--red);}
+.cp-tag.warn{background:rgba(245,200,66,.15);color:var(--yellow);}
+.cp-empty{padding:24px;text-align:center;color:var(--green);font-family:var(--mono);font-size:12px;}
+
+/* ZOOM CONTROL */
+.zoom-bar{display:flex;align-items:center;gap:10px;padding:6px 0 10px 0;}
+.zoom-label{font-family:var(--mono);font-size:11px;color:var(--text3);white-space:nowrap;}
+.zoom-slider{-webkit-appearance:none;appearance:none;height:4px;border-radius:2px;background:var(--border2);outline:none;cursor:pointer;width:120px;}
+.zoom-slider::-webkit-slider-thumb{-webkit-appearance:none;width:14px;height:14px;border-radius:50%;background:var(--accent);cursor:pointer;}
+.zoom-slider::-moz-range-thumb{width:14px;height:14px;border-radius:50%;background:var(--accent);cursor:pointer;border:none;}
+.zoom-val{font-family:var(--mono);font-size:11px;color:var(--accent);min-width:36px;}
+.sched-zoom-wrap{overflow:auto;border-radius:var(--rl);border:1px solid var(--border);}
+.sched-zoom-inner{transform-origin:top left;transition:transform .15s;}
+
+@media print{
+  .topbar,.upload-section,.build-bar,.filter-bar,.dl-bar,.btn,.tab,.tabs,.wk-sel{display:none!important;}
+  body{background:#fff;color:#000;}
+}
+
+
+/* ── LOCK SCREEN ─────────────────────────────────────────────────────────── */
+#lockScreen{position:fixed;inset:0;z-index:9999;background:#0d0f14;
+  display:flex;align-items:center;justify-content:center;
+  background-image:radial-gradient(ellipse 60% 40% at 10% 0%,rgba(79,142,247,.08) 0%,transparent 60%),
+                   radial-gradient(ellipse 40% 30% at 90% 100%,rgba(34,200,122,.06) 0%,transparent 55%);}
+.lock-box{background:#161922;border:1px solid #2a3045;border-radius:14px;
+  padding:44px 48px;width:100%;max-width:420px;text-align:center;
+  box-shadow:0 8px 60px rgba(0,0,0,.7);}
+.lock-logo{font-family:'Syne',sans-serif;font-weight:800;font-size:20px;
+  color:#4f8ef7;letter-spacing:-.5px;margin-bottom:4px;}
+.lock-sub{font-family:'DM Mono',monospace;font-size:11px;color:#5f6882;margin-bottom:28px;}
+.lock-label{display:block;text-align:left;font-size:11px;font-weight:600;
+  color:#5f6882;text-transform:uppercase;letter-spacing:.5px;
+  margin-bottom:6px;font-family:'DM Mono',monospace;}
+.lock-input{width:100%;padding:11px 14px;background:#1e2330;border:1px solid #2a3045;
+  border-radius:7px;color:#e8ecf4;font-family:'Inter',sans-serif;font-size:13px;
+  outline:none;transition:border .15s;margin-bottom:16px;}
+.lock-input:focus{border-color:#4f8ef7;}
+.lock-btn{width:100%;padding:13px;background:#4f8ef7;
+  color:#fff;font-family:'Syne',sans-serif;font-size:14px;font-weight:700;
+  border:none;border-radius:7px;cursor:pointer;letter-spacing:.3px;
+  transition:all .2s;margin-top:4px;}
+.lock-btn:hover{background:#6aa3f9;transform:translateY(-1px);box-shadow:0 4px 24px rgba(79,142,247,.35);}
+.lock-btn:disabled{opacity:.4;cursor:not-allowed;transform:none;}
+.lock-err{color:#f05252;font-size:12px;margin-top:10px;min-height:18px;font-family:'DM Mono',monospace;}
+.lock-spinner{display:none;font-size:12px;color:#5f6882;margin-top:10px;font-family:'DM Mono',monospace;}
+</style>
+</head>
+<body>
+
+<!-- ── LOCK SCREEN ── -->
+<div id="lockScreen">
+  <div class="lock-box">
+    <div class="lock-logo">Milum Schedule Tool</div>
+    <div class="lock-sub">MILUM EXPRESS LLC — Restricted Access</div>
+    <label class="lock-label" for="lockName">Your Full Name</label>
+    <input class="lock-input" id="lockName" type="text" placeholder="e.g. John Smith" autocomplete="name">
+    <label class="lock-label" for="lockPass">Password</label>
+    <input class="lock-input" id="lockPass" type="password" placeholder="Enter password">
+    <button class="lock-btn" id="lockBtn" onclick="lockSubmit()">🔓 Unlock</button>
+    <div class="lock-err" id="lockErr"></div>
+    <div class="lock-spinner" id="lockSpinner">⏳ Logging access…</div>
+  </div>
+</div>
+
+
+<!-- TOPBAR -->
+<div class="topbar">
+  <div><div class="logo">DVB8</div><div class="logo-sub">MILUM EXPRESS LLC</div></div>
+  <div class="tabs">
+    <button class="tab active" onclick="showPage('schedule')">&#x1F4CB; Schedule</button>
+    <button class="tab" onclick="showPage('report')">&#x1F4CA; Report</button>
+    <button class="tab" onclick="showPage('settings')">&#x2699;&#xFE0F; Settings</button>
+  </div>
+  <div class="spacer"></div>
+  <div class="wk-sel">
+    <button class="wk-nav" onclick="changeWeek(-1)">&#x2039;</button>
+    <span class="wk-lbl" id="weekLabel">No data loaded</span>
+    <button class="wk-nav" onclick="changeWeek(1)">&#x203A;</button>
+  </div>
+  <button class="btn btn-primary" onclick="downloadTool()">&#x2B07; Download Tool</button>
+</div>
+
+<!-- FILE INPUTS: hidden off-screen, outside all drop zones -->
+<input type="file" id="f-amz1" style="position:absolute;left:-9999px;top:-9999px;" accept=".xlsx,.xls,.csv">
+<input type="file" id="f-amz2" style="position:absolute;left:-9999px;top:-9999px;" accept=".xlsx,.xls,.csv">
+<input type="file" id="f-adp1" style="position:absolute;left:-9999px;top:-9999px;" accept=".xlsx,.xls,.csv">
+<input type="file" id="f-adp2" style="position:absolute;left:-9999px;top:-9999px;" accept=".xlsx,.xls,.csv">
+
+<!-- SCHEDULE PAGE -->
+<div id="page-schedule" class="page active">
+<div class="main">
+
+  <!-- UPLOADS -->
+  <div class="upload-section">
+    <div class="up-group-label">&#x1F4E6; Amazon Schedule Files &mdash; one per week</div>
+    <div class="upload-grid">
+      <div class="upload-box" id="box-amz1">
+        <div class="up-icon">&#x1F4E6;</div>
+        <div class="up-title">Amazon &mdash; Week A</div>
+        <div class="up-hint">Click or drag &amp; drop &middot; Week-XX-Schedule.xlsx</div>
+        <div class="up-status" id="st-amz1"></div>
+      </div>
+      <div class="upload-box" id="box-amz2">
+        <div class="up-icon">&#x1F4E6;</div>
+        <div class="up-title">Amazon &mdash; Week B</div>
+        <div class="up-hint">Click or drag &amp; drop &middot; Week-XX-Schedule.xlsx</div>
+        <div class="up-status" id="st-amz2"></div>
+      </div>
+    </div>
+    <div class="up-group-label">&#x23F1; ADP Hours Files &mdash; one or two</div>
+    <div class="upload-grid">
+      <div class="upload-box" id="box-adp1">
+        <div class="up-icon">&#x23F1;</div>
+        <div class="up-title">ADP Hours &mdash; File A</div>
+        <div class="up-hint">Click or drag &amp; drop &middot; .xlsx or .xls</div>
+        <div class="up-status" id="st-adp1"></div>
+      </div>
+      <div class="upload-box" id="box-adp2">
+        <div class="up-icon">&#x23F1;</div>
+        <div class="up-title">ADP Hours &mdash; File B</div>
+        <div class="up-hint">Click or drag &amp; drop &middot; .xlsx or .xls</div>
+        <div class="up-status" id="st-adp2"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- BUILD BAR -->
+  <div class="build-bar">
+    <div class="build-info">
+      <div class="build-title">Ready to build?</div>
+      <div class="build-desc">Drop your files above, then click <b>Build Schedule</b> to process them all at once.</div>
+      <div class="file-pills" id="filePills"></div>
+    </div>
+    <button class="btn btn-go" id="buildBtn" onclick="buildSchedule()" disabled>&#x25B6; Build Schedule</button>
+    <button class="btn btn-sm" onclick="clearAllData()" style="color:var(--red);border-color:var(--red);">&#x2715; Clear</button>
+  </div>
+
+  <!-- LEGEND -->
+  <div class="legend-rules">
+    <div class="rules-grid">
+      <div class="rule-card"><div class="rule-icon">&#x23F1;</div><div class="rule-lbl">Max/Day</div><div class="rule-val">12h</div></div>
+      <div class="rule-card"><div class="rule-icon">&#x1F634;</div><div class="rule-lbl">Min Rest</div><div class="rule-val">10h</div></div>
+      <div class="rule-card"><div class="rule-icon">&#x1F4C5;</div><div class="rule-lbl">Max Consec</div><div class="rule-val">6d</div></div>
+      <div class="rule-card"><div class="rule-icon">&#x1F4CA;</div><div class="rule-lbl">Max 7-Day</div><div class="rule-val">60h</div></div>
+    </div>
+    <div class="legend-box">
+      <div class="legend-title">Color Guide</div>
+      <div class="legend-row">
+        <div class="legend-item"><div class="ldot" style="background:rgba(34,200,122,.6)"></div>8h</div>
+        <div class="legend-item"><div class="ldot" style="background:rgba(245,200,66,.6)"></div>9h</div>
+        <div class="legend-item"><div class="ldot" style="background:rgba(240,120,67,.6)"></div>7h</div>
+        <div class="legend-item"><div class="ldot" style="background:rgba(79,142,247,.6)"></div>10h</div>
+      </div>
+      <div style="height:1px;background:var(--border);margin:4px 0;"></div>
+      <div class="legend-row">
+        <div class="legend-item"><span style="font-family:var(--mono);font-size:11px;color:var(--sv);background:rgba(79,142,247,.15);padding:1px 5px;border-radius:4px;">S/</span>Step Van</div>
+        <div class="legend-item"><span style="font-family:var(--mono);font-size:11px;color:var(--tr);background:rgba(245,200,66,.15);padding:1px 5px;border-radius:4px;">T/</span>Training</div>
+        <div class="legend-item"><span style="font-family:var(--mono);font-size:11px;color:var(--h);background:rgba(34,200,122,.15);padding:1px 5px;border-radius:4px;">H/</span>Helper</div>
+      </div>
+      <div style="height:1px;background:var(--border);margin:4px 0;"></div>
+      <div style="font-size:11px;color:var(--text3);font-family:var(--mono);">Top = Amazon paid &middot; Bottom = ADP actual &middot; Click cell to edit</div>
+    </div>
+  </div>
+
+  <!-- STATS -->
+  <div class="stats-bar" id="statsBar" style="display:none;">
+    <div class="stat-card"><div class="stat-label">DAs</div><div class="stat-value c-blue" id="s-das">--</div></div>
+    <div class="stat-card"><div class="stat-label">Amz Paid Hrs</div><div class="stat-value" id="s-amz">--</div></div>
+    <div class="stat-card"><div class="stat-label">ADP Hrs</div><div class="stat-value c-orange" id="s-adp">--</div></div>
+    <div class="stat-card"><div class="stat-label">Compliance</div><div class="stat-value c-green" id="s-comp">--</div></div>
+    <div class="stat-card"><div class="stat-label">Step Van</div><div class="stat-value c-blue" id="s-sv">--</div></div>
+    <div class="stat-card"><div class="stat-label">Training</div><div class="stat-value c-yellow" id="s-tr">--</div></div>
+    <div class="stat-card"><div class="stat-label">Helper</div><div class="stat-value c-green" id="s-h">--</div></div>
+  </div>
+
+  <!-- FILTER -->
+  <div class="filter-bar" id="filterBar" style="display:none;">
+    <input class="search-box" type="text" placeholder="&#x1F50D; Search DA name..." id="searchInput" oninput="renderSchedule()">
+    <select class="form-select" id="filterType" onchange="renderSchedule()">
+      <option value="">All Types</option>
+      <option value="S">Step Van (S/)</option>
+      <option value="T">Training (T/)</option>
+      <option value="H">Helper (H/)</option>
+    </select>
+    <select class="form-select" id="filterCert" onchange="renderSchedule()">
+      <option value="">All Drivers</option>
+      <option value="sv">&#x1F690; SV Certified Only</option>
+      <option value="nosv">Non-SV Only</option>
+    </select>
+    <button class="btn btn-sm" id="dualWeekBtn" onclick="toggleDualWeek()" style="display:none;">&#x229E; Both Weeks</button>
+    <button class="btn btn-sm" onclick="openAddDA()">+ Add DA</button>
+  </div>
+
+  <!-- SCHEDULE TABLE -->
+  <div id="schedLayoutArea" style="display:none;">
+    <div class="zoom-bar">
+      <span class="zoom-label">&#x1F50D; Zoom</span>
+      <input type="range" class="zoom-slider" id="zoomSlider" min="45" max="100" value="100" oninput="applyZoom(this.value)">
+      <span class="zoom-val" id="zoomVal">100%</span>
+      <span style="font-size:11px;color:var(--text3);font-family:var(--mono);margin-left:4px;">&mdash; zoom out to fit both weeks without scrolling</span>
+    </div>
+    <div class="sched-zoom-wrap" id="schedWrap">
+      <div class="sched-zoom-inner" id="schedZoomInner">
+        <table class="sched-table">
+          <thead id="schedHead"></thead>
+          <tbody id="schedBody"></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <div id="schedEmpty" style="color:var(--text3);text-align:center;padding:60px;font-family:var(--mono);font-size:13px;">
+    Drop files above and click <b style="color:var(--green);">&#x25B6; Build Schedule</b> to get started
+  </div>
+
+</div>
+</div>
+
+<!-- COMPLIANCE FLOATING BUTTON -->
+<div class="cp-toggle" id="cpToggle">
+  <div class="cp-drawer" id="cpDrawer">
+    <div class="cp-dhead">
+      <span style="font-size:15px;">&#x1F6A8;</span>
+      <span class="cp-dhead-title">Compliance Watch</span>
+      <span id="cpBubble" class="cp-bubble ok">0</span>
+      <button onclick="closeCP()" style="background:none;border:none;color:var(--text3);cursor:pointer;font-size:18px;padding:0 4px;line-height:1;margin-left:auto;">&times;</button>
+    </div>
+    <div class="cp-search-wrap">
+      <input class="cp-search" id="cpSearch" type="text" placeholder="&#x1F50D; Search DA name..." oninput="filterCPList()">
+    </div>
+    <div class="cp-list" id="cpList"><div class="cp-empty">&#x2713; No issues detected</div></div>
+  </div>
+  <button class="cp-fab all-ok" id="cpFab" onclick="toggleCP()">&#x1F6A8; Compliance <span id="cpFabBubble" class="cp-bubble ok">0</span></button>
+</div>
+
+<!-- REPORT PAGE -->
+<div id="page-report" class="page">
+<div class="main">
+  <div style="display:flex;align-items:center;gap:16px;margin-bottom:16px;flex-wrap:wrap;">
+    <div style="font-family:var(--display);font-weight:700;font-size:22px;">Weekly Report</div>
+    <span id="reportBadge" style="font-family:var(--mono);font-size:10px;padding:3px 9px;border-radius:999px;border:1px solid var(--accent);color:var(--accent);background:rgba(79,142,247,.1);text-transform:uppercase;letter-spacing:.5px;"></span>
+  </div>
+  <div class="dl-bar" id="reportDlBar" style="display:none;">
+    <div class="dl-info"><div class="dl-title">Export Report</div><div class="dl-desc">Choose week(s), then download as Excel or share the HTML tool.</div></div>
+    <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;">
+      <select class="form-select" id="exportWeekSelect" style="font-size:12px;padding:6px 10px;"><option value="all">&#x1F4C5; Both Weeks</option></select>
+      <button class="btn" onclick="downloadExcel()" style="background:rgba(34,200,122,.15);border-color:var(--green);color:var(--green);font-weight:600;">&#x2B07; Excel (.xlsx)</button>
+      <button class="btn" onclick="window.print()">&#x1F5A8; Print / PDF</button>
+      <button class="btn btn-primary" onclick="downloadTool()">&#x2B07; Share Tool (HTML)</button>
+    </div>
+  </div>
+  <div id="reportContent"><div class="report-empty">Upload files and build the schedule first.</div></div>
+</div>
+</div>
+
+<!-- SETTINGS PAGE -->
+<div id="page-settings" class="page">
+<div class="main">
+  <div style="font-family:var(--display);font-weight:700;font-size:22px;margin-bottom:20px;">Settings</div>
+  <div style="background:var(--surface);border:1px solid var(--border);border-radius:var(--rl);padding:20px;max-width:580px;margin-bottom:16px;">
+    <div style="font-family:var(--display);font-weight:600;font-size:14px;margin-bottom:14px;">Station Info</div>
+    <div class="frow"><label class="flabel">Station Code</label><input class="finput" id="set-station" value="DVB8" oninput="saveSettings()"></div>
+    <div class="frow"><label class="flabel">DSP Name</label><input class="finput" id="set-dsp" value="Milum Express LLC" oninput="saveSettings()"></div>
+  </div>
+  <div style="background:var(--surface);border:1px solid var(--border);border-radius:var(--rl);padding:20px;max-width:580px;">
+    <div style="font-family:var(--display);font-weight:600;font-size:14px;margin-bottom:14px;">Data Management</div>
+    <button class="btn" onclick="clearAllData()" style="color:var(--red);border-color:var(--red);">&#x1F5D1; Clear All Data</button>
+  </div>
+</div>
+</div>
+
+<!-- EDIT MODAL -->
+<div class="overlay" id="editModal">
+  <div class="modal">
+    <div class="modal-title" id="editTitle">Edit Entry</div>
+    <div class="modal-sub" id="editSub"></div>
+    <div class="frow">
+      <label class="flabel">Amazon Paid Route (hours)</label>
+      <select class="fselect" id="e-route">
+        <option value="">-- Day Off / Clear --</option>
+        <option value="1">1h route</option><option value="2">2h route</option>
+        <option value="3">3h route</option><option value="4">4h route</option>
+        <option value="5">5h route</option><option value="6">6h route</option>
+        <option value="7">7h route</option><option value="8">8h route</option>
+        <option value="9">9h route</option><option value="10">10h route</option>
+      </select>
+    </div>
+    <div class="frow">
+      <label class="flabel">ADP Actual Hours Worked</label>
+      <input class="finput" type="number" id="e-hours" step="0.01" placeholder="e.g. 9.17" min="0" max="24">
+    </div>
+    <div class="frow">
+      <label class="flabel">DA Type</label>
+      <select class="fselect" id="e-type">
+        <option value="">Standard / Rivian</option>
+        <option value="S">S/ &mdash; Step Van</option>
+        <option value="T">T/ &mdash; Training</option>
+        <option value="H">H/ &mdash; Helper</option>
+      </select>
+    </div>
+    <div class="mfooter">
+      <button class="btn" onclick="closeEdit()">Cancel</button>
+      <button class="btn" onclick="clearEditCell()" style="color:var(--red);border-color:var(--red);">Clear Day</button>
+      <button class="btn btn-primary" onclick="saveEdit()">Save</button>
+    </div>
+  </div>
+</div>
+
+<!-- ADD DA MODAL -->
+<div class="overlay" id="addModal">
+  <div class="modal">
+    <div class="modal-title">Add Delivery Associate</div>
+    <div class="modal-sub">Manually add a DA to the roster</div>
+    <div class="frow"><label class="flabel">Full Name</label><input class="finput" id="da-name" placeholder="e.g. John Smith"></div>
+    <div class="frow"><label class="flabel">Transporter ID</label><input class="finput" id="da-id" placeholder="e.g. A1XXXXX"></div>
+    <div class="frow"><label class="flabel">Hourly Rate ($)</label><input class="finput" type="number" id="da-rate" step="0.01" placeholder="e.g. 21.50"></div>
+    <div class="frow">
+      <label class="flabel">Step Van Certified?</label>
+      <select class="fselect" id="da-svcert">
+        <option value="0">No &mdash; Standard driver</option>
+        <option value="1">Yes &mdash; Step Van certified &#x1F690;</option>
+      </select>
+    </div>
+    <div class="mfooter">
+      <button class="btn" onclick="closeAddDA()">Cancel</button>
+      <button class="btn btn-primary" onclick="saveNewDA()">Add DA</button>
+    </div>
+  </div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<script>
+
+// ═══════════════════════════════════════════════════════
+// STATE
+// ═══════════════════════════════════════════════════════
+let state = {
+  weeks: [],
+  currentWeekIdx: 0,
+  das: [],
+  cachedExcel: null,
+  settings: { station:'DVB8', dsp:'Milum Express LLC', kwSV:'step van,step-van,stepvan', kwTR:'training,trainer,new hire', kwH:'helper,helper:' }
+};
+
+// file queue: raw ArrayBuffers waiting to be processed on Build
+let fileQueue = { amz:[], adp:[] }; // [{name, buffer}]
+
+let editTarget = null;
+
+function saveState() { try { localStorage.setItem('dvb8_v2', JSON.stringify(state)); } catch(e){} }
+function loadState() { try { const s=localStorage.getItem('dvb8_v2'); if(s){ const p=JSON.parse(s); if(p.das) state=p; } } catch(e){} }
+
+// ═══════════════════════════════════════════════════════
+// PAGE NAV
+// ═══════════════════════════════════════════════════════
+function showPage(name) {
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.tab').forEach(b=>b.classList.remove('active'));
+  document.getElementById('page-'+name).classList.add('active');
+  ['schedule','report','settings'].forEach((n,i)=>{ if(n===name) document.querySelectorAll('.tab')[i].classList.add('active'); });
+  if(name==='report') renderReport();
+}
+
+function changeWeek(dir) {
+  if(!state.weeks.length) return;
+  state.currentWeekIdx = Math.max(0, Math.min(state.weeks.length-1, state.currentWeekIdx+dir));
+  renderSchedule();
+}
+function getCurrentWeek() { return state.weeks[state.currentWeekIdx]||null; }
+
+// ═══════════════════════════════════════════════════════
+// FILE QUEUE
+// ═══════════════════════════════════════════════════════
+function queueFile(type, slot, e) {
+  const file = e.target.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = function(ev) {
+    const buffer = ev.target.result;
+    // Detect if this is actually an HTML file saved as .xls
+    const firstBytes = new Uint8Array(buffer).slice(0, 5);
+    const firstStr = String.fromCharCode.apply(null, firstBytes);
+    const isHTML = firstStr.startsWith('<') || firstStr.toLowerCase().includes('<!do');
+
+    fileQueue[type][slot-1] = { name: file.name, buffer: buffer, isHTML: isHTML };
+    document.getElementById('box-'+type+slot).classList.add('loaded');
+    document.getElementById('st-'+type+slot).textContent = '✓ ' + file.name;
+    updateFilePills();
+    document.getElementById('buildBtn').disabled = false;
+  };
+  reader.readAsArrayBuffer(file);
+}
+
+function updateFilePills() {
+  const pills = document.getElementById('filePills');
+  let html = '';
+  fileQueue.amz.forEach((f,i)=>{ if(f) html+=`<span class="file-pill amazon">📦 ${f.name}</span>`; });
+  fileQueue.adp.forEach((f,i)=>{ if(f) html+=`<span class="file-pill adp">⏱ ${f.name}</span>`; });
+  pills.innerHTML = html;
+}
+
+// ═══════════════════════════════════════════════════════
+// BUILD SCHEDULE — process all queued files
+// ═══════════════════════════════════════════════════════
+function buildSchedule() {
+  const btn = document.getElementById('buildBtn');
+  btn.textContent = '⏳ Building...';
+  btn.disabled = true;
+
+  setTimeout(function() {
+    try {
+      // IMPORTANT: Always process Amazon files FIRST so state.das is populated
+      // before ADP tries to match names
+      var amzProcessed = 0;
+      fileQueue.amz.forEach(function(f) {
+        if (!f) return;
+        if (f.isHTML) {
+          parseHTMLTableFile(f.buffer, f.name, 'amazon');
+        } else {
+          const wb = XLSX.read(f.buffer, {type:'array'});
+          parseAmazonWB(wb, f.name);
+        }
+        amzProcessed++;
+      });
+
+      // Then process ADP — by now all Amazon DAs are in state.das
+      var adpProcessed = 0;
+      fileQueue.adp.forEach(function(f) {
+        if (!f) return;
+        if (f.isHTML) {
+          parseHTMLTableFile(f.buffer, f.name, 'adp');
+        } else {
+          const wb = XLSX.read(f.buffer, {type:'array'});
+          parseADPWB(wb, f.name);
+        }
+        adpProcessed++;
+      });
+
+      var processed = amzProcessed + adpProcessed;
+
+      if (processed === 0) {
+        alert('No files queued. Please add files first.');
+        btn.textContent = '▶ Build Schedule';
+        btn.disabled = false;
+        return;
+      }
+      saveState();
+      showScheduleUI();
+      renderSchedule();
+      renderReport();
+      btn.textContent = '✓ Built!';
+      setTimeout(function(){ btn.textContent = '▶ Build Schedule'; btn.disabled = false; }, 2000);
+    } catch(err) {
+      alert('Error processing files: ' + err.message + '\n\nCheck the browser console for details.');
+      console.error(err);
+      btn.textContent = '▶ Build Schedule';
+      btn.disabled = false;
+    }
+  }, 50);
+}
+
+// Parse an HTML file (ADP exports .xls files that are actually HTML tables)
+function parseHTMLTableFile(buffer, filename, fileType) {
+  const decoder = new TextDecoder('utf-8');
+  const html = decoder.decode(buffer);
+  const parser = new DOMParser();
+  const doc = parser.parseFromString(html, 'text/html');
+  const tables = doc.querySelectorAll('table');
+  console.log('HTML file:', filename, '| tables:', tables.length);
+
+  if (tables.length === 0) { console.warn('No tables found'); return; }
+
+  // Pick the largest table
+  let bestTable = null, bestRows = 0;
+  tables.forEach(function(t) {
+    const rc = t.querySelectorAll('tr').length;
+    if (rc > bestRows) { bestRows = rc; bestTable = t; }
+  });
+
+  if (fileType === 'adp') {
+    parseADPTimecardHTML(bestTable);
+  }
+}
+
+// ── ADP TIMECARD HTML PARSER ─────────────────────────────────────────────────
+// Format: one row per punch. Cols: 0=Name(Last,First) 1=Week 2=Dept 3=PayDate 4=Notes 5=In 6=Out 7=Hours 8=Rate
+// Multiple punches per person per day → SUM hours by person+date
+function parseADPTimecardHTML(table) {
+  const rows = table.querySelectorAll('tr');
+  // daily map: normalizedName -> dateKey -> totalHours
+  const dailyMap = {};
+  // rate map: normalizedName -> rate
+  const rateMap = {};
+
+  rows.forEach(function(tr) {
+    const cells = Array.from(tr.querySelectorAll('td,th')).map(function(td){ return td.textContent.trim(); });
+    if (cells.length < 8) return;
+    const nameRaw = cells[0];
+    const payDate = cells[3];  // "03/10/2026"
+    const hoursStr = cells[7]; // "3.75"
+    const rateStr = cells[8];  // "$ 21.50"
+
+    // Skip header/total rows
+    if (!nameRaw || nameRaw.startsWith('Payroll') || nameRaw.startsWith('Total') || nameRaw.startsWith('Week')) return;
+
+    const hours = parseFloat(hoursStr);
+    if (isNaN(hours) || hours <= 0) return;
+
+    // Parse pay date "03/10/2026" → "3/10"
+    const dm = payDate.match(/^0?(\d+)\/0?(\d+)\//);
+    if (!dm) return;
+    const dateKey = dm[1] + '/' + dm[2];
+
+    // Convert "Last, First" → "First Last" to match Amazon names
+    const normalName = adpNameToFirstLast(nameRaw);
+
+    if (!dailyMap[normalName]) dailyMap[normalName] = {};
+    dailyMap[normalName][dateKey] = (dailyMap[normalName][dateKey] || 0) + hours;
+
+    // Parse rate "$ 21.50" → 21.50
+    if (rateStr && !rateMap[normalName]) {
+      const rm = rateStr.replace('$','').trim();
+      const rv = parseFloat(rm);
+      if (!isNaN(rv)) rateMap[normalName] = rv;
+    }
+  });
+
+  console.log('ADP timecard: found', Object.keys(dailyMap).length, 'people');
+
+  // Merge into state.das — match by name (with fuzzy fallback)
+  Object.keys(dailyMap).forEach(function(adpName) {
+    const da = findOrCreateDA(adpName, rateMap[adpName]);
+    const dates = dailyMap[adpName];
+    Object.keys(dates).forEach(function(dk) {
+      const hrs = Math.round(dates[dk] * 100) / 100;
+      if (!da.cells[dk]) da.cells[dk] = {};
+      da.cells[dk].hours = hrs;
+      // type already set by Amazon parser — don't overwrite
+    });
+  });
+
+  console.log('ADP timecard merge done. Total DAs:', state.das.length);
+}
+
+// Convert "Last, First Middle" → "First Middle Last"
+function adpNameToFirstLast(name) {
+  if (!name || name.indexOf(',') === -1) return name.trim();
+  var comma = name.indexOf(',');
+  var last  = name.substring(0, comma).trim();
+  var first = name.substring(comma + 1).trim();
+  return normalizeTypos(first) + ' ' + normalizeTypos(last);
+}
+
+// Fix common ADP data entry typos so name matching works correctly
+function normalizeTypos(str) {
+  if (!str) return str;
+  // Fix ADP typo: "Crhistian" should be "Christian"
+  return str.replace(/crhistian/gi, 'Christian').replace(/crhristian/gi, 'Christian').trim();
+}
+
+// Normalize: lowercase, collapse whitespace
+function normName(n) { return n.toLowerCase().replace(/\s+/g,' ').trim(); }
+
+// Remove ALL spaces, hyphens, punctuation
+function noSpaceName(n) { return n.toLowerCase().replace(/[\s\-\.]/g,''); }
+
+// Get meaningful words (len > 1)
+function nameWords(n) {
+  return n.toLowerCase().replace(/[^a-z\s]/g,' ').split(/\s+/).filter(function(w){ return w.length > 1; });
+}
+
+// Score how well adpFL matches amzName (returns 0-1)
+function nameMatchScore(adpFL, amzName) {
+  // Normalize typos on both sides BEFORE any comparison
+  adpFL   = normalizeTypos(adpFL);
+  amzName = normalizeTypos(amzName);
+  var adpNS = noSpaceName(adpFL);
+  var amzNS = noSpaceName(amzName);
+  var adpW  = nameWords(adpFL);
+  var amzW  = nameWords(amzName);
+  var best  = 0;
+
+  // S1: no-space comparison — catches "RamosDiaz" vs "Ramosdiaz", compound names
+  if (adpNS.length > 3 && amzNS.length > 3) {
+    if (adpNS === amzNS)                  best = Math.max(best, 1.00);
+    else if (amzNS.indexOf(adpNS) !== -1) best = Math.max(best, 0.92);
+    else if (adpNS.indexOf(amzNS) !== -1) best = Math.max(best, 0.92);
+  }
+
+  // S2: word-level — score based on ADP words found in Amazon
+  // Key insight: score against the SHORTER word list so partial names don't get penalized
+  // Apply typo normalization to both sides before comparing (words already lowercased)
+  adpW = adpW.map(function(w){ return normalizeTypos(w.toLowerCase()).toLowerCase(); });
+  amzW = amzW.map(function(w){ return normalizeTypos(w.toLowerCase()).toLowerCase(); });
+  if (adpW.length > 0 && amzW.length > 0) {
+    var hit = 0;
+    adpW.forEach(function(aw) {
+      if (amzW.indexOf(aw) !== -1) {
+        hit += 1;          // exact word match
+      } else if (aw.length === 1 && amzW.some(function(mw){ return mw[0] === aw; })) {
+        hit += 0.8;        // "A" matches "Anthony"
+      } else if (aw.length > 3 && amzW.some(function(mw){ return mw.indexOf(aw) !== -1 || aw.indexOf(mw) !== -1; })) {
+        hit += 0.7;        // substring: "ramos" in "ramosdiaz"
+      }
+    });
+    // Use MIN word count so extra words in ADP don't kill a good match
+    best = Math.max(best, hit / Math.min(adpW.length, amzW.length));
+    // Also score against max (penalizes very different length names)
+    best = Math.max(best, (hit / Math.max(adpW.length, amzW.length)) * 0.95);
+  }
+
+  // S3: concat words — catches "De la" particles dropped
+  if (adpW.length > 1 && amzW.length > 1) {
+    var adpCat = adpW.join('');
+    var amzCat = amzW.join('');
+    if (adpCat.length > 5 && amzCat.indexOf(adpCat) !== -1) best = Math.max(best, 0.90);
+    if (amzCat.length > 5 && adpCat.indexOf(amzCat) !== -1) best = Math.max(best, 0.90);
+  }
+
+  // PENALTY: short ADP names (1-2 words) where the first/given name doesn't appear
+  // in the Amazon name at all. Prevents "Madelin Diaz" matching "Jeroboan Rodriguez Diaz"
+  // just because they share the surname "Diaz".
+  if (best > 0 && best < 1.0 && adpW.length <= 2) {
+    var firstName = adpW[0] || '';
+    if (firstName && amzW.indexOf(firstName) === -1) {
+      best = best * 0.4; // heavy penalty — shared last name alone is not enough
+    }
+  }
+
+  return best;
+}
+
+// Find existing DA by name using multi-strategy fuzzy matching, or create new one
+function findOrCreateDA(adpConverted, rate) {
+  // 1. Exact match
+  var da = state.das.find(function(d){ return d.name === adpConverted; });
+  if (da) { if (rate) da.rate = rate; return da; }
+
+  // 2. Normalized exact (handles case, extra spaces like "Christopher  A  Curbelo")
+  var norm = normName(adpConverted);
+  da = state.das.find(function(d){ return normName(d.name) === norm; });
+  if (da) { if (rate) da.rate = rate; return da; }
+
+  // 3. Best fuzzy score — lower threshold catches abbreviated/compound names
+  var bestScore = 0, bestDA = null;
+  state.das.forEach(function(d) {
+    var s = nameMatchScore(adpConverted, d.name);
+    if (s > bestScore) { bestScore = s; bestDA = d; }
+  });
+
+  // Log every attempt so we can debug in console
+  console.log('ADP match: "'+adpConverted+'" best="'+(bestDA?bestDA.name:'none')+'" score='+bestScore.toFixed(3));
+
+  var THRESHOLD = 0.45; // low enough for abbreviated middle names & compound last names
+  if (bestDA && bestScore >= THRESHOLD) {
+    if (rate) bestDA.rate = rate;
+    return bestDA;
+  }
+
+  // 4. No match — create new entry (will show in schedule without Amazon route data)
+  console.warn('  → No match, creating new: "'+adpConverted+'"');
+  da = { name: adpConverted, id: '', rate: rate||'', cells:{} };
+  state.das.push(da);
+  return da;
+}
+
+// Parse ADP data from a 2D array (for DVB8 master xlsx format)
+function parseADPFromArray(data) {
+  const allText = data.slice(0, 25).map(function(r){ return r.join(' '); }).join(' ').toLowerCase();
+  if (allText.includes('associate name') || allText.includes('hourly')) {
+    parseADPMasterFormat(data);
+  } else {
+    console.warn('ADP array format not recognized');
+  }
+}
+
+function showScheduleUI() {
+  document.getElementById('statsBar').style.display = 'flex';
+  document.getElementById('filterBar').style.display = 'flex';
+  document.getElementById('schedLayoutArea').style.display = 'block';
+  document.getElementById('schedEmpty').style.display = 'none';
+}
+
+// ── ZOOM ──────────────────────────────────────────────────────────────────
+function applyZoom(val) {
+  var pct = parseInt(val);
+  var inner = document.getElementById('schedZoomInner');
+  var wrap  = document.getElementById('schedWrap');
+  if (!inner || !wrap) return;
+  inner.style.transform = 'scale(' + (pct/100) + ')';
+  // Shrink the wrap height so the page doesn't leave blank space
+  inner.style.transformOrigin = 'top left';
+  var tableWidth  = inner.scrollWidth;
+  var tableHeight = inner.scrollHeight;
+  wrap.style.height = Math.ceil(tableHeight * pct / 100) + 'px';
+  document.getElementById('zoomVal').textContent = pct + '%';
+}
+
+// ── COMPLIANCE THRESHOLDS ────────────────────────────────────────────────────
+var CP = {
+  dayViolation:  12,        // > 12h = violation
+  dayWarning:    11.5,      // > 11h 30m = warning (approaching 12h)
+  weekViolation: 60,        // > 60h = violation
+  weekWarning:   47 + 55/60, // >= 47h55m = warning (approaching 60h)
+  consecViolation: 6,       // > 6 = violation
+  consecWarning:   6        // = 6 = warning (at the limit)
+};
+
+// Store all issues globally so search can filter them
+var cpAllIssues = [];
+var cpOpen = false;
+
+function toggleCP() { cpOpen ? closeCP() : openCP(); }
+function openCP()  { cpOpen = true;  document.getElementById('cpDrawer').classList.add('open');  document.getElementById('cpSearch').focus(); }
+function closeCP() { cpOpen = false; document.getElementById('cpDrawer').classList.remove('open'); }
+
+function filterCPList() {
+  var q = document.getElementById('cpSearch').value.toLowerCase().trim();
+  var filtered = q ? cpAllIssues.filter(function(i){ return i.da.toLowerCase().includes(q); }) : cpAllIssues;
+  renderCPList(filtered);
+}
+
+function renderCPList(issues) {
+  var list = document.getElementById('cpList');
+  if (!issues.length) {
+    list.innerHTML = cpAllIssues.length === 0
+      ? '<div class="cp-empty">✓ All DAs compliant<br><span style="font-size:10px;opacity:.6;">Section G requirements met</span></div>'
+      : '<div class="cp-empty" style="color:var(--text3);">No results for that name</div>';
+    return;
+  }
+  var html = '';
+  issues.forEach(function(iss) {
+    var isViol = iss.type === 'VIOLATION';
+    var color  = isViol ? 'var(--red)' : 'var(--yellow)';
+    html += '<div class="cp-item" onclick="scrollToDA(\'' + iss.da.replace(/'/g,"\\'") + '\')">'
+      + '<div class="cp-item-name" style="color:'+color+';">'
+      + '<span class="cp-tag '+(isViol?'viol':'warn')+'">'+iss.type+'</span>'
+      + iss.da + '</div>'
+      + '<div class="cp-item-meta" style="color:'+color+';">' + iss.week + ' · ' + iss.rule + '</div>'
+      + '<div class="cp-item-detail">' + iss.detail + '</div>'
+      + '</div>';
+  });
+  list.innerHTML = html;
+}
+
+// ── COMPLIANCE PANEL ──────────────────────────────────────────────────────
+function renderCompliancePanel() {
+  var toggle = document.getElementById('cpToggle');
+  var fab    = document.getElementById('cpFab');
+  var bubble = document.getElementById('cpBubble');
+  var fabBub = document.getElementById('cpFabBubble');
+  if (!toggle) return;
+
+  cpAllIssues = [];
+
+  state.weeks.forEach(function(week, wi) {
+    var wkLabel = 'Wk' + (wi+1);
+
+    state.das.forEach(function(da) {
+      var hoursPerDay = {};
+      var workedDays  = [];
+      week.dateKeys.forEach(function(dk, di) {
+        var c = da.cells[dk];
+        var h = c && c.hours ? c.hours : 0;
+        hoursPerDay[dk] = h;
+        if (h > 0) workedDays.push({ dk:dk, label:String(week.dates[di]).replace(/,\s*/,', '), h:h });
+      });
+      if (!workedDays.length) return;
+
+      // ── Rule 1: Max 12h/day  |  Warning > 11h30m ──────────────────────
+      workedDays.forEach(function(d) {
+        if (d.h > CP.dayViolation) {
+          cpAllIssues.push({ da:da.name, week:wkLabel, type:'VIOLATION', rule:'Max 12h/day',
+            detail: d.label + ': worked ' + d.h.toFixed(2) + 'h — exceeded by ' + (d.h - CP.dayViolation).toFixed(2) + 'h' });
+        } else if (d.h > CP.dayWarning) {
+          cpAllIssues.push({ da:da.name, week:wkLabel, type:'WARNING', rule:'Near 12h daily limit',
+            detail: d.label + ': ' + d.h.toFixed(2) + 'h worked (' + (CP.dayViolation - d.h).toFixed(2) + 'h left before violation)' });
+        }
+      });
+
+      // ── Rule 2: 60h/week  |  Warning >= 47h55m ─────────────────────────
+      var weekTot = workedDays.reduce(function(s, d){ return s + d.h; }, 0);
+      if (weekTot > CP.weekViolation) {
+        cpAllIssues.push({ da:da.name, week:wkLabel, type:'VIOLATION', rule:'Max 60h/week',
+          detail: weekTot.toFixed(2) + 'h total — exceeded by ' + (weekTot - CP.weekViolation).toFixed(2) + 'h' });
+      } else if (weekTot >= CP.weekWarning) {
+        cpAllIssues.push({ da:da.name, week:wkLabel, type:'WARNING', rule:'Near 60h weekly limit',
+          detail: weekTot.toFixed(2) + 'h / 60h — only ' + (CP.weekViolation - weekTot).toFixed(2) + 'h remaining' });
+      }
+
+      // ── Rule 3: 6 consecutive days  |  Warning = 6 days ────────────────
+      var consec = 0, maxConsec = 0, consecStartLabel = '';
+      week.dateKeys.forEach(function(dk, di) {
+        if (hoursPerDay[dk] > 0) {
+          if (consec === 0) consecStartLabel = String(week.dates[di]).replace(/,\s*/,', ');
+          consec++; maxConsec = Math.max(maxConsec, consec);
+        } else { consec = 0; }
+      });
+      if (maxConsec > CP.consecViolation) {
+        cpAllIssues.push({ da:da.name, week:wkLabel, type:'VIOLATION', rule:'Max 6 consecutive days',
+          detail: maxConsec + ' consecutive days worked (from ' + consecStartLabel + ')' });
+      } else if (maxConsec >= CP.consecWarning) {
+        cpAllIssues.push({ da:da.name, week:wkLabel, type:'WARNING', rule:'6 consecutive days reached',
+          detail: '6-day limit hit — cannot add more days this rolling week (from ' + consecStartLabel + ')' });
+      }
+
+      // ── Rule 4: Min 10h rest between shifts ─────────────────────────────
+      for (var i = 0; i < workedDays.length - 1; i++) {
+        var today = workedDays[i], next = workedDays[i+1];
+        // Estimate: if today's hours push end time too late for 10h rest before typical 9am start
+        if (today.h > 10 && next.h > 0) {
+          var estEnd = 9 + today.h; // hours past midnight if shift starts 9am
+          var restAvail = 24 - today.h; // approximate rest window
+          if (restAvail < 10) {
+            cpAllIssues.push({ da:da.name, week:wkLabel, type:'WARNING', rule:'Min 10h rest at risk',
+              detail: today.label + ': ' + today.h.toFixed(2) + 'h shift — may not have 10h rest before ' + next.label });
+          }
+        }
+      }
+    });
+  });
+
+  // Sort: violations first, then by DA name
+  cpAllIssues.sort(function(a, b) {
+    if (a.type !== b.type) return a.type === 'VIOLATION' ? -1 : 1;
+    return a.da.localeCompare(b.da);
+  });
+
+  var violCount = cpAllIssues.filter(function(i){ return i.type === 'VIOLATION'; }).length;
+  var warnCount = cpAllIssues.filter(function(i){ return i.type === 'WARNING';   }).length;
+  var total = cpAllIssues.length;
+
+  // Update FAB
+  toggle.classList.add('visible');
+  var fabClass = violCount > 0 ? 'has-viol' : warnCount > 0 ? 'has-warn' : 'all-ok';
+  fab.className = 'cp-fab ' + fabClass;
+  var bubClass  = violCount > 0 ? 'viol' : warnCount > 0 ? 'warn' : 'ok';
+  fabBub.className = 'cp-bubble ' + bubClass;
+  fabBub.textContent = total;
+  bubble.className   = 'cp-bubble ' + bubClass;
+  bubble.textContent = total;
+
+  // Render list (respecting any existing search)
+  filterCPList();
+}
+
+// Jump to a DA row in the schedule table
+function scrollToDA(name) {
+  var rows = document.querySelectorAll('#schedBody tr');
+  for (var i = 0; i < rows.length; i++) {
+    var nc = rows[i].querySelector('.nc');
+    if (nc && nc.textContent.trim() === name) {
+      rows[i].scrollIntoView({ behavior: 'smooth', block: 'center' });
+      rows[i].style.transition = 'background .1s';
+      rows[i].style.background = 'rgba(240,82,82,.18)';
+      setTimeout(function(r){ r.style.background = ''; }.bind(null, rows[i]), 1400);
+      closeCP();
+      return;
+    }
+  }
+}
+
+// ═══════════════════════════════════════════════════════
+// PARSE AMAZON
+// ═══════════════════════════════════════════════════════
+function parseAmazonWB(wb, filename) {
+  const sheetName = wb.SheetNames.find(n=>n.toLowerCase().includes('rostered'))||wb.SheetNames[0];
+  const ws = wb.Sheets[sheetName];
+  const data = XLSX.utils.sheet_to_json(ws,{header:1,defval:''});
+
+  // Extract station code from row 1, col 2 (e.g. 'DFH1', 'DVB8')
+  const stationCode = String((data[1]||[])[2]||'').trim();
+  if (stationCode && stationCode.length >= 3 && stationCode.length <= 6) {
+    state.settings.station = stationCode;
+    // Update the logo in the UI
+    var logoEl = document.querySelector('.logo');
+    if (logoEl) logoEl.textContent = stationCode;
+    // Update settings field if visible
+    var stEl = document.getElementById('set-station');
+    if (stEl) stEl.value = stationCode;
+  }
+
+  const headerRow = data[3]||[];
+  const rawDates = headerRow.slice(2).filter(d=>d&&String(d).trim());
+  const dateKeys = rawDates.map(d=>parseDateLabel(String(d)));
+  const dateFull = rawDates.map(d=>String(d));
+
+  // find or create week
+  const weekLabel = dateFull[0]+' – '+dateFull[dateFull.length-1];
+  let wIdx = state.weeks.findIndex(w=>w.label===weekLabel);
+  if(wIdx===-1){ state.weeks.push({label:weekLabel,dates:dateFull,dateKeys}); wIdx=state.weeks.length-1; }
+  state.currentWeekIdx = wIdx;
+
+  for(let r=5;r<data.length;r++){
+    const row=data[r];
+    const name=String(row[0]||'').trim();
+    const tid=String(row[1]||'').trim();
+    if(!name||name==='Associate Name') continue;
+
+    let da=state.das.find(d=>d.name===name);
+    if(!da){ da={name,id:tid,rate:'',svCert:false,cells:{}}; state.das.push(da); }
+
+    dateKeys.forEach((dk,i)=>{
+      const val=String(row[2+i]||'').trim();
+      if(!val) return;
+      const {route,routeDesc,type}=parseAmazonCell(val);
+      if(!da.cells[dk]) da.cells[dk]={};
+      da.cells[dk].route=route;
+      da.cells[dk].routeDesc=routeDesc;
+      // Always set type from Amazon — it's the source of truth for S/T/H
+      da.cells[dk].type=type;
+    });
+  }
+}
+
+function parseAmazonCell(val) {
+  // Extract hours from "• 10 hrs" pattern
+  const hm = val.match(/•\s*(\d+)\s*hrs?/i) || val.match(/(\d+)\s*hrs?/i);
+  const route = hm ? parseInt(hm[1]) : 10;
+
+  const lower = val.toLowerCase();
+  let type = '';
+
+  // ── HELPER ──────────────────────────────────────────────────────────────
+  // "Step Van - US with Helper: Helper" — the ": Helper" suffix means THIS DA is the helper riding along
+  if (lower.includes('with helper: helper')) {
+    type = 'H';
+
+  // ── STEP VAN ─────────────────────────────────────────────────────────────
+  // "Step Van - US" or "Step Van - US with Helper" (driver, not the helper)
+  } else if (lower.includes('step van')) {
+    type = 'S';
+
+  // ── TRAINING ─────────────────────────────────────────────────────────────
+  // "On-Road Experience: Driver" or "On-Road Experience: Rider" — both are training situations
+  // "DSP Initiated Work" — special/training assignment
+  } else if (lower.includes('on-road experience') || lower.includes('dsp initiated')) {
+    type = 'T';
+
+  // ── STANDARD (no prefix) ─────────────────────────────────────────────────
+  // Rivian, Extra Large Van, Custom Van, Nursery Route = regular route, no S/T/H prefix
+  } else {
+    type = '';
+  }
+
+  const routeDesc = val.replace(/\\n/g, ' · ').replace(/\n/g, ' · ').trim();
+  return { route, routeDesc, type };
+}
+
+function parseDateLabel(d) {
+  const m1=d.match(/(\d{1,2})\/([A-Za-z]{3})/);
+  if(m1){ const mo={jan:1,feb:2,mar:3,apr:4,may:5,jun:6,jul:7,aug:8,sep:9,oct:10,nov:11,dec:12}; return mo[m1[2].toLowerCase()]+'/'+parseInt(m1[1]); }
+  const m2=d.match(/(\d{1,2})\/(\d{1,2})/);
+  if(m2) return m2[1]+'/'+m2[2];
+  return d;
+}
+
+// ═══════════════════════════════════════════════════════
+// PARSE ADP — handles both DVB8 master xlsx and weekly timecard xls
+// ═══════════════════════════════════════════════════════
+function parseADPWB(wb, filename) {
+  console.log('=== Parsing ADP xlsx:', filename, '| Sheets:', wb.SheetNames);
+
+  // Use the first non-summary sheet, keep RAW values (not stringified)
+  var sheetName = wb.SheetNames.find(function(n){ return !n.toLowerCase().includes('summary'); }) || wb.SheetNames[0];
+  var ws = wb.Sheets[sheetName];
+  var data = XLSX.utils.sheet_to_json(ws, {header:1, defval:null, raw:true});
+
+  console.log('Sheet:', sheetName, '| Rows:', data.length);
+
+  // Log first 12 rows
+  data.slice(0,12).forEach(function(row,i){
+    var preview = (row||[]).slice(0,18).map(function(c){ return c===null?'null':String(c).substring(0,20); });
+    console.log('Row '+i+':', JSON.stringify(preview));
+  });
+
+  parseADPMasterFormat(data);
+}
+
+// Extract "M/D" date key from cell values like "Sun\n3/8", "Sun 3/8", "3/8" etc.
+function extractDateKey(raw) {
+  if (raw === null || raw === undefined) return null;
+  var h = String(raw);
+  // Replace literal backslash-n AND split on real newlines/spaces/commas
+  var clean = h.replace(/\\n/g, '\n');
+  var parts = clean.split(/[\n,]+/);
+  for (var p = 0; p < parts.length; p++) {
+    var part = parts[p].trim();
+    var m = part.match(/^(\d{1,2})\/(\d{1,2})$/);
+    if (m) return m[1] + '/' + m[2];
+  }
+  // Fallback: find any M/D pattern anywhere in string
+  var m2 = clean.match(/(\d{1,2})\/(\d{1,2})/);
+  if (m2) return m2[1] + '/' + m2[2];
+  return null;
+}
+
+function parseADPMasterFormat(data) {
+  // Find header row — the one with 'Associate Name'
+  var hRow = -1;
+  for (var r = 0; r < Math.min(20, data.length); r++) {
+    var rowText = (data[r] || []).map(function(c){ return c === null ? '' : String(c); }).join(' ');
+    if (rowText.indexOf('Associate Name') !== -1) { hRow = r; break; }
+  }
+  if (hRow === -1) hRow = 5;
+  console.log('ADP hRow:', hRow, '| header sample:', (data[hRow]||[]).slice(0,18).map(function(c){return c===null?'∅':String(c).substring(0,15);}));
+
+  // Map every column that has a date key
+  var header = data[hRow] || [];
+  var dhs = [];
+  for (var c = 0; c < header.length; c++) {
+    var key = extractDateKey(header[c]);
+    if (key) dhs.push({col: c, key: key});
+  }
+  console.log('ADP date cols found:', dhs.map(function(d){ return 'col'+d.col+'→'+d.key; }).join(', '));
+
+  if (dhs.length === 0) {
+    console.error('ADP: 0 date columns found — check header row ' + hRow);
+    return;
+  }
+
+  var i = hRow + 1;
+  var parsed = 0;
+  while (i < data.length) {
+    var row     = data[i]   || [];
+    var nextRow = data[i+1] || [];
+
+    var nameRaw = row[1];
+    var name = (nameRaw === null || nameRaw === undefined) ? '' : String(nameRaw).trim();
+
+    // Valid DA name: non-empty, not a header/emoji/arrow row
+    var code0 = name.length > 0 ? name.charCodeAt(0) : 0;
+    var isName = name.length >= 3
+      && name !== 'Associate Name'
+      && code0 < 8000   // skip emoji / special unicode
+      && name.indexOf('←') === -1
+      && name.indexOf('📊') === -1
+      && name.indexOf('🛣') === -1
+      && name.indexOf('Scheduled') === -1
+      && name.indexOf('Okami') === -1;
+
+    if (!isName) { i++; continue; }
+
+    var rateRaw = row[2];
+    var rate = (rateRaw !== null && rateRaw !== undefined && rateRaw !== '' && !isNaN(parseFloat(rateRaw))) ? parseFloat(rateRaw) : null;
+
+    var da = state.das.find(function(d){ return d.name === name; });
+    if (!da) { da = {name:name, id:'', rate:rate||'', svCert:false, cells:{}}; state.das.push(da); }
+    else if (rate) da.rate = rate;
+
+    dhs.forEach(function(dh) {
+      // row    = Amazon paid route integer (6/7/8/9/10)
+      // nextRow = ADP actual decimal hours (8.30, 9.37 …)
+      var rv = row[dh.col];
+      var hv = nextRow[dh.col];
+      var routeNum  = (rv !== null && rv !== undefined && rv !== '' && !isNaN(parseFloat(rv)))  ? parseFloat(rv)  : null;
+      var hoursNum  = (hv !== null && hv !== undefined && hv !== '' && !isNaN(parseFloat(hv)))  ? parseFloat(hv)  : null;
+
+      if (routeNum || hoursNum) {
+        if (!da.cells[dh.key]) da.cells[dh.key] = {};
+        if (routeNum) da.cells[dh.key].route = routeNum;
+        if (hoursNum) da.cells[dh.key].hours  = Math.round(hoursNum * 100) / 100;
+        // type comes from Amazon — never overwrite here
+      }
+    });
+
+    parsed++;
+    i += 2; // name row + hours row = 2 rows per DA
+  }
+  console.log('ADP master parsed:', parsed, 'DAs');
+  if (state.das[0]) {
+    var fd = state.das[0];
+    console.log('Sample DA "'+fd.name+'":', JSON.stringify(fd.cells));
+  }
+}
+
+function parseADPTimecardFormat(data) {
+  // Find a row that has day names or date patterns as column headers
+  var dayNames = ['sun','mon','tue','wed','thu','fri','sat'];
+  var dateHeaderRow = -1;
+  var nameCol = 0;
+
+  for (var r = 0; r < Math.min(20, data.length); r++) {
+    var row = data[r];
+    var dayCount = row.filter(function(c){ return dayNames.includes(String(c||'').toLowerCase().trim().substring(0,3)); }).length;
+    var dateCount = row.filter(function(c){ return String(c||'').match(/\d{1,2}\/\d{1,2}/); }).length;
+    if (dayCount >= 3 || dateCount >= 3) { dateHeaderRow = r; break; }
+  }
+
+  // Also look for a "date" sub-row just below
+  if (dateHeaderRow === -1) {
+    // Fall back: look for any row with >= 5 numeric-looking date cells
+    for (var r2 = 0; r2 < Math.min(20, data.length); r2++) {
+      var nums = data[r2].filter(function(c){ var n=parseFloat(c); return !isNaN(n) && n>0 && n<32; }).length;
+      if (nums >= 5) { dateHeaderRow = r2; break; }
+    }
+  }
+
+  if (dateHeaderRow === -1) {
+    console.warn('Timecard: no date row found. Skipping.');
+    return;
+  }
+
+  // Map column → date key
+  var colDateMap = {};
+  var hRow = data[dateHeaderRow] || [];
+  // Try to find the week start from context
+  hRow.forEach(function(cell, col) {
+    var val = String(cell||'').trim();
+    var dm = val.match(/(\d{1,2})\/(\d{1,2})/);
+    if (dm) colDateMap[col] = dm[1]+'/'+dm[2];
+    else if (dayNames.includes(val.toLowerCase().substring(0,3))) {
+      // Day name — check row below for the actual date
+      var below = data[dateHeaderRow+1] ? String(data[dateHeaderRow+1][col]||'').trim() : '';
+      var dm2 = below.match(/(\d{1,2})\/(\d{1,2})/);
+      if (dm2) colDateMap[col] = dm2[1]+'/'+dm2[2];
+    }
+  });
+
+  console.log('Timecard col→date:', colDateMap);
+  if (Object.keys(colDateMap).length === 0) {
+    console.warn('Timecard: no dates mapped. Skipping.');
+    return;
+  }
+
+  // Find name column — look for the column with most name-like strings
+  var colNameScores = {};
+  data.slice(dateHeaderRow+1, dateHeaderRow+20).forEach(function(row) {
+    row.forEach(function(cell, col) {
+      var v = String(cell||'').trim();
+      if (v && isNaN(v) && v.length > 3 && !v.includes('/') && v !== 'Total') {
+        colNameScores[col] = (colNameScores[col]||0) + 1;
+      }
+    });
+  });
+  var bestNameCol = 0, bestScore = 0;
+  Object.keys(colNameScores).forEach(function(col) {
+    if (colNameScores[col] > bestScore) { bestScore = colNameScores[col]; bestNameCol = parseInt(col); }
+  });
+  nameCol = bestNameCol;
+  console.log('Timecard name col:', nameCol);
+
+  // Parse DA rows
+  var parsed = 0;
+  var startRow = dateHeaderRow + 1;
+  // Skip an extra row if it was a day-name row (dates on next row)
+  if (Object.keys(colDateMap).length > 0 && data[dateHeaderRow+1]) {
+    var nextRowDates = data[dateHeaderRow+1].filter(function(c){ return String(c||'').match(/\d{1,2}\/\d{1,2}/); }).length;
+    if (nextRowDates >= 3) startRow = dateHeaderRow + 2;
+  }
+
+  for (var r3 = startRow; r3 < data.length; r3++) {
+    var row3 = data[r3];
+    var name = String(row3[nameCol]||'').trim();
+    if (!name || name.length < 3 || !isNaN(name)) continue;
+    var lower = name.toLowerCase();
+    if (lower.includes('total') || lower.includes('grand') || lower.includes('date') || lower.includes('associate') || lower.includes('employee')) continue;
+
+    var da = state.das.find(function(d){ return d.name === name; });
+    if (!da) { da = {name:name, id:'', rate:'', cells:{}}; state.das.push(da); }
+
+    Object.keys(colDateMap).forEach(function(col) {
+      var dk = colDateMap[col];
+      var val = row3[parseInt(col)];
+      var hours = (val !== '' && val !== null && !isNaN(parseFloat(val))) ? parseFloat(val) : null;
+      if (hours && hours > 0 && hours <= 24) {
+        if (!da.cells[dk]) da.cells[dk] = {};
+        da.cells[dk].hours = hours;
+      }
+    });
+    parsed++;
+  }
+  console.log('Timecard: parsed', parsed, 'DAs');
+}
+
+function parseDateFromHeader(h) {
+  // Handle both literal \n and actual newline characters
+  var clean = String(h).replace(/\\n/g, '\n');
+  // Split on newline and look for date pattern in any part
+  var parts = clean.split('\n');
+  for (var p = 0; p < parts.length; p++) {
+    var part = parts[p].trim();
+    // Match M/D or MM/DD
+    var m = part.match(/^(\d{1,2})\/(\d{1,2})$/);
+    if (m) return m[1] + '/' + m[2];
+    // Match inside longer string
+    var m2 = part.match(/(\d{1,2})\/(\d{1,2})/);
+    if (m2) return m2[1] + '/' + m2[2];
+    // Match Mon/dd style
+    var m3 = part.match(/(\d{1,2})\/([A-Za-z]{3})/i);
+    if (m3) {
+      var mo = {jan:1,feb:2,mar:3,apr:4,may:5,jun:6,jul:7,aug:8,sep:9,oct:10,nov:11,dec:12};
+      var mn = mo[m3[2].toLowerCase()];
+      if (mn) return mn + '/' + parseInt(m3[1]);
+    }
+  }
+  return h;
+}
+
+// ═══════════════════════════════════════════════════════
+// RENDER SCHEDULE
+// ═══════════════════════════════════════════════════════
+let dualWeekMode = false;
+
+function toggleDualWeek() {
+  dualWeekMode = !dualWeekMode;
+  const btn = document.getElementById('dualWeekBtn');
+  btn.textContent = dualWeekMode ? '☐ Single Week' : '⊞ Show Both Weeks';
+  btn.style.background = dualWeekMode ? 'var(--accent)' : '';
+  btn.style.color = dualWeekMode ? '#fff' : '';
+  btn.style.borderColor = dualWeekMode ? 'var(--accent)' : '';
+  renderSchedule();
+}
+
+function renderSchedule() {
+  const week = getCurrentWeek();
+  document.getElementById('weekLabel').textContent = week ? week.label : 'No data loaded';
+
+  // Show dual-week button only when 2+ weeks loaded
+  const dualBtn = document.getElementById('dualWeekBtn');
+  if (state.weeks.length >= 2) dualBtn.style.display = '';
+  else dualBtn.style.display = 'none';
+
+  const search = document.getElementById('searchInput').value.toLowerCase();
+  const tf = document.getElementById('filterType').value;
+
+  // Collect weeks to display
+  let weeksToShow = [];
+  if (dualWeekMode && state.weeks.length >= 2) {
+    // Show all loaded weeks side by side
+    weeksToShow = state.weeks;
+  } else if (week) {
+    weeksToShow = [week];
+  }
+
+  if (!weeksToShow.length) return;
+
+  // Collect all DAs across all shown weeks
+  let das = state.das.filter(function(da) {
+    if (search && !da.name.toLowerCase().includes(search)) return false;
+    const certF = document.getElementById('filterCert') ? document.getElementById('filterCert').value : '';
+    if (certF === 'sv' && !da.svCert) return false;
+    if (certF === 'nosv' && da.svCert) return false;
+    if (tf) {
+      const hasType = weeksToShow.some(function(w) {
+        return w.dateKeys.some(function(dk) { return da.cells[dk] && da.cells[dk].type === tf; });
+      });
+      if (!hasType) return false;
+    }
+    // Show DA if they have data in ANY loaded week (not just current view)
+    // This ensures ADP-only DAs like Madelin Diaz show up regardless of which week is displayed
+    return state.weeks.some(function(w) {
+      return w.dateKeys.some(function(dk) { return da.cells[dk] && (da.cells[dk].route || da.cells[dk].hours); });
+    });
+  });
+
+  if (!das.length) return;
+
+  // Build header
+  let hdrs = '<th style="min-width:170px;position:sticky;left:0;z-index:2;background:var(--surface2);">Associate</th><th style="background:var(--surface2);">$/hr</th>';
+  weeksToShow.forEach(function(w, wi) {
+    const wkCls = wi === 0 ? 'wk-a' : 'wk-b';
+    w.dates.forEach(function(d, di) {
+      const divider = (di === 0 && wi > 0) ? ' wk-divider' : '';
+      hdrs += '<th class="dcol ' + wkCls + divider + '">' + String(d).replace(/,\s*/, ', ') + '</th>';
+    });
+    // Per-week totals
+    hdrs += '<th class="' + wkCls + '" style="text-align:center;min-width:72px;border-left:1px solid var(--border);">Wk' + (wi+1) + ' Total</th>';
+  });
+  hdrs += '<th style="background:var(--surface2);">Status</th>';
+  document.getElementById('schedHead').innerHTML = '<tr>' + hdrs + '</tr>';
+
+  let html = '';
+  let totalAmz = 0, totalAdp = 0, totalViol = 0, totalWarn = 0, svCt = 0, trCt = 0, hCt = 0;
+
+  das.forEach(function(da) {
+    let hasViol = false, hasWarn = false;
+    let allCells = '';
+    let totalPaid = 0, totalHours = 0;
+
+    weeksToShow.forEach(function(w, wi) {
+      const wkCls = wi === 0 ? 'wk-band-a' : 'wk-band-b';
+      let wkPaid = 0, wkHours = 0;
+
+      w.dateKeys.forEach(function(dk, di) {
+        const c = da.cells[dk];
+        const divider = (di === 0 && wi > 0) ? 'border-left:3px solid var(--border2);' : '';
+
+        if (!c || !c.route) {
+          // Empty cell — still clickable so you can ADD a day back
+          allCells += '<td class="dcell ' + wkCls + '" style="' + divider + '">'
+            + '<div class="dcell-inner empty" onclick="openEdit(' + state.das.indexOf(da) + ',\'' + dk + '\')" '
+            + 'title="Click to add" style="cursor:pointer;">'
+            + '<div style="color:var(--text3);font-size:10px;font-family:var(--mono);">+ add</div>'
+            + '</div></td>';
+          return;
+        }
+
+        const route = c.route;
+        const hours = c.hours || null;
+        const type = c.type || '';
+        wkPaid += route;
+        if (hours) { wkHours += hours; if (hours > 12) hasViol = true; else if (hours > CP.dayWarning) hasWarn = true; }
+
+        const colorCls = getRouteColor(route);
+        const adpStr = hours ? formatADP(type, hours) : '';
+        const adpCls = type === 'S' ? 'sv' : type === 'T' ? 'tr' : type === 'H' ? 'h' : hours ? 'std' : 'blank';
+        const adpDisplay = adpStr || '—';
+
+        const titleText = da.name + '\n' + w.dates[di]
+          + '\nAmz paid: ' + route + 'h'
+          + (hours ? '\nADP actual: ' + hours + 'h' : '\nADP: not entered')
+          + (type ? '\nType: ' + ({S:'Step Van',T:'Training',H:'Helper'}[type]||type) : '');
+
+        allCells += '<td class="dcell ' + wkCls + '" style="' + divider + '">'
+          + '<div class="dcell-inner ' + colorCls + '" onclick="openEdit(' + state.das.indexOf(da) + ',\'' + dk + '\')" title="' + titleText.replace(/"/g,"'") + '">'
+          + '<div class="row1">' + route + 'h</div>'
+          + '<div class="row2 ' + adpCls + '">' + adpDisplay + '</div>'
+          + '</div>'
+          + '</td>';
+      });
+
+      totalPaid += wkPaid;
+      totalHours += wkHours;
+
+      // Per-week total cell
+      const amzCls2 = wkPaid === 0 ? 'tc-zero' : 'tc-amz';
+      const adpCls3 = wkHours === 0 ? 'tc-zero' : 'tc-adp';
+      const divider2 = wi > 0 ? 'border-left:3px solid var(--border2);' : 'border-left:1px solid var(--border);';
+      allCells += '<td class="tc" style="' + divider2 + '">'
+        + '<div class="tc-inner">'
+        + '<div class="' + amzCls2 + '">' + (wkPaid || '—') + 'h</div>'
+        + '<div class="' + adpCls3 + '">' + (wkHours ? wkHours.toFixed(2) + 'h' : '—') + '</div>'
+        + '</div></td>';
+    });
+
+    totalAmz += totalPaid; totalAdp += totalHours;
+    if (hasViol) totalViol++;
+    if (hasWarn) totalWarn++;
+
+    weeksToShow.forEach(function(w) {
+      w.dateKeys.forEach(function(dk) {
+        const t = da.cells[dk] && da.cells[dk].type;
+        if (t === 'S') svCt++;
+        else if (t === 'T') trCt++;
+        else if (t === 'H') hCt++;
+      });
+    });
+
+    const stCls = hasViol ? 'viol' : hasWarn ? 'warn' : 'ok';
+    const stTxt = hasViol ? '⚠ VIOL' : hasWarn ? '⚡ WARN' : '✓ OK';
+
+    html += '<tr>'
+      + '<td class="nc" style="position:sticky;left:0;z-index:1;background:var(--surface);"><div class="nc-inner">'
+      + '<span class="sv-cert ' + (da.svCert ? 'yes' : 'no') + '" onclick="toggleSVCert(' + state.das.indexOf(da) + ')" title="' + (da.svCert ? 'SV Certified — click to remove' : 'Not SV Certified — click to mark') + '">' + (da.svCert ? 'SV' : 'SV?') + '</span>'
+      + da.name
+      + '</div></td>'
+      + '<td class="rc">' + (da.rate ? '$' + parseFloat(da.rate).toFixed(2) : '—') + '</td>'
+      + allCells
+      + '<td style="padding:6px 10px;"><span class="' + stCls + '">' + stTxt + '</span></td>'
+      + '</tr>';
+  });
+
+  // Add DA row
+  const totalCols = weeksToShow.reduce(function(sum, w) { return sum + w.dateKeys.length + 1; }, 0);
+  html += '<tr><td colspan="' + (totalCols + 3) + '" style="padding:10px 12px;border-top:2px dashed var(--border);">'
+    + '<button class="add-da-btn" onclick="openAddDA()">+ Add Delivery Associate</button>'
+    + '</td></tr>';
+
+  document.getElementById('schedBody').innerHTML = html;
+
+  // Stats
+  const compTxt = totalViol ? totalViol + ' ⚠' : totalWarn ? totalWarn + ' ⚡' : '✓ OK';
+  const compCls = totalViol ? 'c-orange' : totalWarn ? 'c-yellow' : 'c-green';
+  document.getElementById('s-das').textContent = das.length;
+  document.getElementById('s-amz').textContent = totalAmz + 'h';
+  document.getElementById('s-adp').textContent = totalAdp ? totalAdp.toFixed(1) + 'h' : '—';
+  document.getElementById('s-comp').textContent = compTxt;
+  document.getElementById('s-comp').className = 'stat-value ' + compCls;
+  document.getElementById('s-sv').textContent = svCt;
+  document.getElementById('s-tr').textContent = trCt;
+  document.getElementById('s-h').textContent = hCt;
+
+  // Refresh compliance panel every time schedule renders
+  renderCompliancePanel();
+}
+
+function getRouteColor(h){ if(h<=5)return 'r6'; if(h===7)return 'r7'; if(h===8)return 'r8'; if(h===9)return 'r9'; return 'r10'; }
+function formatADP(type,hours){
+  if(!hours) return '';
+  const h=parseFloat(hours).toFixed(2);
+  if(type==='S') return 'S/'+h;
+  if(type==='T') return 'T/'+h;
+  if(type==='H') return 'H/'+h;
+  return h;
+}
+
+// ═══════════════════════════════════════════════════════
+// EDIT MODAL
+// ═══════════════════════════════════════════════════════
+function openEdit(daIdx, dk) {
+  editTarget={daIdx,dk};
+  const da=state.das[daIdx];
+  const c=da.cells[dk]||{};
+  // Find date label across all weeks
+  let dl = dk;
+  state.weeks.forEach(function(w) {
+    const i = w.dateKeys.indexOf(dk);
+    if (i !== -1) dl = String(w.dates[i]).replace(/,\s*/, ', ');
+  });
+  document.getElementById('editTitle').textContent=da.name;
+  document.getElementById('editSub').textContent=dl;
+  document.getElementById('e-route').value=c.route||'';
+  document.getElementById('e-hours').value=c.hours||'';
+  document.getElementById('e-type').value=c.type||'';
+  document.getElementById('editModal').classList.add('open');
+}
+function closeEdit(){ document.getElementById('editModal').classList.remove('open'); editTarget=null; }
+function saveEdit(){
+  if(!editTarget) return;
+  const {daIdx,dk}=editTarget;
+  const da=state.das[daIdx];
+  const route=document.getElementById('e-route').value;
+  const hours=document.getElementById('e-hours').value;
+  const type=document.getElementById('e-type').value;
+  if(!da.cells[dk]) da.cells[dk]={};
+  if(route) da.cells[dk].route=parseInt(route); else delete da.cells[dk].route;
+  if(hours) da.cells[dk].hours=parseFloat(hours); else delete da.cells[dk].hours;
+  da.cells[dk].type=type;
+  saveState(); closeEdit(); renderSchedule(); renderReport();
+}
+function clearEditCell(){
+  if(!editTarget) return;
+  delete state.das[editTarget.daIdx].cells[editTarget.dk];
+  saveState(); closeEdit(); renderSchedule(); renderReport();
+}
+
+// ═══════════════════════════════════════════════════════
+// ADD DA MODAL
+// ═══════════════════════════════════════════════════════
+function toggleSVCert(idx) {
+  var da = state.das[idx];
+  if (!da) return;
+  da.svCert = !da.svCert;
+  saveState();
+  renderSchedule();
+}
+
+function openAddDA(){ document.getElementById('da-name').value=''; document.getElementById('da-id').value=''; document.getElementById('da-rate').value=''; document.getElementById('da-svcert').value='0'; document.getElementById('addModal').classList.add('open'); }
+function closeAddDA(){ document.getElementById('addModal').classList.remove('open'); }
+function saveNewDA(){
+  const name=document.getElementById('da-name').value.trim();
+  if(!name){alert('Name required');return;}
+  if(!state.das.find(d=>d.name===name)) state.das.push({name,id:document.getElementById('da-id').value.trim(),rate:document.getElementById('da-rate').value||'',svCert:document.getElementById('da-svcert').value==='1',cells:{}});
+  saveState(); closeAddDA(); renderSchedule();
+}
+
+// ═══════════════════════════════════════════════════════
+// RENDER REPORT
+// ═══════════════════════════════════════════════════════
+function renderReport() {
+  const container = document.getElementById('reportContent');
+  const dlBar = document.getElementById('reportDlBar');
+
+  if (!state.weeks.length || !state.das.length) {
+    container.innerHTML = '<div class="report-empty">Upload files and build the schedule first — the report will appear here automatically.</div>';
+    dlBar.style.display = 'none';
+    document.getElementById('reportBadge').textContent = '';
+    return;
+  }
+
+  dlBar.style.display = 'flex';
+
+  // Populate week selector dropdown
+  const sel = document.getElementById('exportWeekSelect');
+  const prevVal = sel.value;
+  sel.innerHTML = '<option value="all">📅 Both Weeks</option>';
+  state.weeks.forEach(function(w, i) {
+    const opt = document.createElement('option');
+    opt.value = String(i);
+    opt.textContent = 'Week ' + (i+1) + ' · ' + w.label;
+    sel.appendChild(opt);
+  });
+  if (prevVal) sel.value = prevVal;
+
+  let reportHTML = '';
+
+  for (const week of state.weeks) {
+    document.getElementById('reportBadge').textContent = week.label;
+
+    // Include ALL DAs that appear in ANY day of this week (route OR hours)
+    const activeDas = state.das.filter(function(da) {
+      return week.dateKeys.some(function(dk) {
+        return da.cells[dk] && (da.cells[dk].route || da.cells[dk].hours);
+      });
+    });
+
+    let totalAmz=0, totalAdp=0, svCt=0, trCt=0, hCt=0;
+    let violCount=0, warnCount=0;
+
+    // ── Per-DA compliance check ─────────────────────────────────────────────
+    // Returns array of violation/warning strings
+    function checkCompliance(da, dateKeys, dates) {
+      var issues = [];
+      var hoursPerDay = {};
+      var workedDays = [];
+
+      dateKeys.forEach(function(dk, i) {
+        var c = da.cells[dk];
+        var h = c && c.hours ? c.hours : 0;
+        hoursPerDay[dk] = h;
+        if (h > 0) workedDays.push({ dk: dk, label: String(dates[i]).replace(/,\s*/,', '), h: h });
+      });
+
+      // Rule 1: 12h max per day
+      workedDays.forEach(function(d) {
+        if (d.h > 12) {
+          issues.push({ type:'VIOLATION', rule:'Max 12h/day', detail: d.label + ': worked ' + d.h.toFixed(2) + 'h (exceeded by ' + (d.h - 12).toFixed(2) + 'h)' });
+        } else if (d.h > CP.dayWarning) {
+          issues.push({ type:'WARNING', rule:'Near 12h daily limit', detail: d.label + ': worked ' + d.h.toFixed(2) + 'h (' + (CP.dayViolation - d.h).toFixed(2) + 'h left)' });
+        }
+      });
+
+      // Rule 2: 60h per rolling 7-day (within this week)
+      var weekTotal = workedDays.reduce(function(s, d){ return s + d.h; }, 0);
+      if (weekTotal > 60) {
+        issues.push({ type:'VIOLATION', rule:'Max 60h/week', detail: 'Weekly total: ' + weekTotal.toFixed(2) + 'h (exceeded by ' + (weekTotal - 60).toFixed(2) + 'h)' });
+      } else if (weekTotal > 55) {
+        issues.push({ type:'WARNING', rule:'Approaching 60h limit', detail: 'Weekly total: ' + weekTotal.toFixed(2) + 'h (' + (60 - weekTotal).toFixed(2) + 'h remaining)' });
+      }
+
+      // Rule 3: 6 consecutive days max
+      var consec = 0, maxConsec = 0, consecStart = null, consecStartLabel = null;
+      dateKeys.forEach(function(dk, i) {
+        if (hoursPerDay[dk] > 0) {
+          if (consec === 0) { consecStart = dk; consecStartLabel = String(dates[i]).replace(/,\s*/,', '); }
+          consec++;
+          maxConsec = Math.max(maxConsec, consec);
+        } else {
+          consec = 0;
+        }
+      });
+      if (maxConsec > 6) {
+        issues.push({ type:'VIOLATION', rule:'Max 6 consecutive days', detail: maxConsec + ' consecutive days worked starting ' + consecStartLabel });
+      } else if (maxConsec >= 6) {
+        issues.push({ type:'WARNING', rule:'6 consecutive days', detail: '6 consecutive days worked — no more days allowed this rolling week' });
+      }
+
+      // Rule 4: 10h min rest between shifts (check consecutive worked days)
+      // We only have daily totals, not exact punch times — note when day total > 10h back-to-back
+      for (var i = 0; i < workedDays.length - 1; i++) {
+        var today = workedDays[i], tomorrow = workedDays[i+1];
+        // If both days worked and today had >10h, there may be a rest violation
+        // Best estimate: if today's hours are high enough that they couldn't get 10h rest before next shift
+        // Assume typical shift starts at 9am. If hours > CP.dayWarning, end time > 7pm → may not have 10h by next 9am
+        if (today.h > 10 && tomorrow.h > 0) {
+          var estEndHour = 9 + today.h; // rough estimate: starts 9am
+          var restAvailable = 24 - (estEndHour - 9); // hours until next 9am
+          if (restAvailable < 10) {
+            issues.push({ type:'WARNING', rule:'Min 10h rest between shifts', detail: today.label + ': ' + today.h.toFixed(2) + 'h shift may leave <10h rest before ' + tomorrow.label });
+          }
+        }
+      }
+
+      return issues;
+    }
+
+    // Build date headers
+    let dateHeaders = '';
+    week.dates.forEach(function(d) {
+      dateHeaders += '<th class="dcol">' + String(d).replace(/,\s*/, ', ') + '</th>';
+    });
+
+    // ── Compliance summary table ────────────────────────────────────────────
+    let complianceRows = '';
+    let hasAnyIssue = false;
+    const daCompliance = {};
+
+    activeDas.forEach(function(da) {
+      const issues = checkCompliance(da, week.dateKeys, week.dates);
+      daCompliance[da.name] = issues;
+      if (issues.length > 0) hasAnyIssue = true;
+      issues.forEach(function(iss) {
+        if (iss.type === 'VIOLATION') violCount++;
+        else warnCount++;
+      });
+
+      // Accumulate stats
+      week.dateKeys.forEach(function(dk) {
+        var c = da.cells[dk]; if (!c) return;
+        totalAmz += (c.route || 0); totalAdp += (c.hours || 0);
+        if (c.type === 'S') svCt++;
+        if (c.type === 'T') trCt++;
+        if (c.type === 'H') hCt++;
+      });
+    });
+
+    // Build compliance section
+    let complianceHTML = '';
+    activeDas.forEach(function(da) {
+      const issues = daCompliance[da.name];
+      if (!issues || !issues.length) return;
+      issues.forEach(function(iss) {
+        const isViol = iss.type === 'VIOLATION';
+        complianceHTML += '<tr>'
+          + '<td style="padding:8px 12px;font-weight:600;font-size:13px;border-right:1px solid var(--border);">' + da.name + '</td>'
+          + '<td style="padding:8px 12px;">'
+          + '<span style="font-family:var(--mono);font-size:11px;font-weight:700;padding:2px 8px;border-radius:4px;'
+          + (isViol ? 'background:rgba(240,82,82,.2);color:var(--red);' : 'background:rgba(245,200,66,.15);color:var(--yellow);')
+          + '">' + iss.type + '</span></td>'
+          + '<td style="padding:8px 12px;font-family:var(--mono);font-size:12px;color:var(--accent);">' + iss.rule + '</td>'
+          + '<td style="padding:8px 12px;font-size:12px;color:var(--text2);">' + iss.detail + '</td>'
+          + '</tr>';
+      });
+    });
+
+    // Build schedule DA rows
+    let daRows = '';
+    activeDas.forEach(function(da) {
+      let paid = 0, adp = 0;
+      let dayCells = '';
+      const daIdx = state.das.indexOf(da);
+      const issues = daCompliance[da.name] || [];
+      const hasViol = issues.some(function(i){ return i.type === 'VIOLATION'; });
+      const hasWarn = issues.some(function(i){ return i.type === 'WARNING'; });
+
+      week.dateKeys.forEach(function(dk) {
+        const c = da.cells[dk];
+        if (!c || (!c.route && !c.hours)) {
+          dayCells += '<td class="rdcell"><div class="rdcell-inner r-off"><div style="color:var(--text3);font-family:var(--mono);font-size:11px;">—</div></div></td>';
+          return;
+        }
+        if (c.route) paid += c.route;
+        if (c.hours) adp += c.hours;
+        const rCls = c.route ? getRouteColor(c.route) : 'r-off';
+        const adpTxt = c.hours ? formatADP(c.type, c.hours) : '';
+        const adpCls = c.type==='S'?'sv':c.type==='T'?'tr':c.type==='H'?'h':c.hours?'std':'blank';
+        const dayViol = c.hours > 12;
+        const dayWarn = c.hours > CP.dayWarning && c.hours <= 12;
+        const cellBorder = dayViol ? 'border:2px solid var(--red)!important;' : dayWarn ? 'border:2px solid var(--yellow)!important;' : '';
+        dayCells += '<td class="rdcell">'
+          + '<div class="rdcell-inner ' + rCls + '" onclick="openEdit(' + daIdx + ',\'' + dk + '\')" style="cursor:pointer;' + cellBorder + '">'
+          + '<div class="rd-amz">' + (c.route ? c.route+'h' : '—') + '</div>'
+          + '<div class="rd-adp ' + adpCls + '">' + (adpTxt || '—') + '</div>'
+          + '</div></td>';
+      });
+
+      const rateStr = da.rate ? '$' + parseFloat(da.rate).toFixed(2) : '—';
+      const adpTotStr = adp ? adp.toFixed(2) + 'h' : '—';
+      let stHtml = '';
+      if (hasViol) {
+        const msgs = issues.filter(function(i){return i.type==='VIOLATION';}).map(function(i){return i.rule;}).join(', ');
+        stHtml = '<div style="color:var(--red);font-family:var(--mono);font-size:11px;font-weight:700;">⚠ VIOLATION</div>'
+               + '<div style="color:var(--red);font-size:10px;font-family:var(--mono);opacity:.85;">' + msgs + '</div>';
+      } else if (hasWarn) {
+        const msgs = issues.filter(function(i){return i.type==='WARNING';}).map(function(i){return i.rule;}).join(', ');
+        stHtml = '<div style="color:var(--yellow);font-family:var(--mono);font-size:11px;font-weight:700;">⚡ WARNING</div>'
+               + '<div style="color:var(--yellow);font-size:10px;font-family:var(--mono);opacity:.85;">' + msgs + '</div>';
+      } else {
+        stHtml = '<span style="color:var(--green);font-family:var(--mono);font-size:11px;">✓ OK</span>';
+      }
+
+      var svBadge = da.svCert ? '<span style="font-family:var(--mono);font-size:9px;font-weight:700;padding:1px 5px;border-radius:3px;background:rgba(79,142,247,.2);color:var(--sv);border:1px solid rgba(79,142,247,.4);margin-right:5px;vertical-align:middle;">SV</span>' : '';
+      daRows += '<tr>'
+        + '<td class="rname">' + svBadge + da.name + '</td>'
+        + '<td class="rrate">' + rateStr + '</td>'
+        + dayCells
+        + '<td class="rtotal"><div class="rt-inner"><div class="rt-amz">' + (paid||'—') + (paid?'h':'') + '</div><div class="rt-adp">' + adpTotStr + '</div></div></td>'
+        + '<td style="padding:6px 12px;min-width:160px;">' + stHtml + '</td>'
+        + '</tr>';
+    });
+
+    const adpTotDisplay = totalAdp ? totalAdp.toFixed(1) + 'h' : '—';
+    const violCls = violCount ? 'c-orange' : 'c-green';
+    const warnCls = warnCount ? 'c-yellow' : 'c-green';
+
+    // ── Assemble week block ─────────────────────────────────────────────────
+    reportHTML += '<div style="margin-bottom:36px;">'
+      // Week title
+      + '<div style="font-family:var(--display);font-weight:700;font-size:17px;margin-bottom:14px;padding-bottom:8px;border-bottom:2px solid var(--border2);">📅 ' + week.label + '</div>'
+
+      // Stats bar
+      + '<div class="stats-bar" style="margin-bottom:16px;">'
+      + '<div class="stat-card"><div class="stat-label">DAs</div><div class="stat-value c-blue">' + activeDas.length + '</div></div>'
+      + '<div class="stat-card"><div class="stat-label">Amz Paid</div><div class="stat-value">' + totalAmz + 'h</div></div>'
+      + '<div class="stat-card"><div class="stat-label">ADP Hours</div><div class="stat-value c-orange">' + adpTotDisplay + '</div></div>'
+      + '<div class="stat-card"><div class="stat-label">Violations</div><div class="stat-value ' + violCls + '">' + violCount + '</div></div>'
+      + '<div class="stat-card"><div class="stat-label">Warnings</div><div class="stat-value ' + warnCls + '">' + warnCount + '</div></div>'
+      + '<div class="stat-card"><div class="stat-label">Step Van</div><div class="stat-value c-blue">' + svCt + '</div></div>'
+      + '<div class="stat-card"><div class="stat-label">Training</div><div class="stat-value c-yellow">' + trCt + '</div></div>'
+      + '<div class="stat-card"><div class="stat-label">Helper</div><div class="stat-value c-green">' + hCt + '</div></div>'
+      + '</div>';
+
+    // Compliance alert box (only if issues exist)
+    if (complianceHTML) {
+      reportHTML += '<div style="background:var(--surface);border:1px solid var(--border);border-radius:var(--rl);overflow:hidden;margin-bottom:16px;">'
+        + '<div style="padding:11px 16px;background:rgba(240,82,82,.08);border-bottom:1px solid var(--border);display:flex;align-items:center;gap:10px;">'
+        + '<span style="font-size:16px;">🚨</span>'
+        + '<span style="font-family:var(--display);font-weight:700;font-size:14px;color:var(--red);">Compliance Issues — Section G Working Hours</span>'
+        + '<span style="font-size:11px;color:var(--text3);font-family:var(--mono);margin-left:auto;">12h max/day · 10h min rest · 6 consec days max · 60h/week max</span>'
+        + '</div>'
+        + '<table style="width:100%;border-collapse:collapse;">'
+        + '<thead><tr style="background:var(--surface2);">'
+        + '<th style="padding:8px 12px;text-align:left;font-family:var(--mono);font-size:10px;color:var(--text3);text-transform:uppercase;letter-spacing:.5px;border-bottom:1px solid var(--border);">Associate</th>'
+        + '<th style="padding:8px 12px;text-align:left;font-family:var(--mono);font-size:10px;color:var(--text3);text-transform:uppercase;letter-spacing:.5px;border-bottom:1px solid var(--border);">Type</th>'
+        + '<th style="padding:8px 12px;text-align:left;font-family:var(--mono);font-size:10px;color:var(--text3);text-transform:uppercase;letter-spacing:.5px;border-bottom:1px solid var(--border);">Rule Broken</th>'
+        + '<th style="padding:8px 12px;text-align:left;font-family:var(--mono);font-size:10px;color:var(--text3);text-transform:uppercase;letter-spacing:.5px;border-bottom:1px solid var(--border);">Details</th>'
+        + '</tr></thead><tbody>' + complianceHTML + '</tbody></table></div>';
+    } else {
+      reportHTML += '<div style="background:rgba(34,200,122,.06);border:1px solid rgba(34,200,122,.25);border-radius:var(--r);padding:12px 18px;margin-bottom:16px;font-size:13px;color:var(--green);font-family:var(--mono);">✓ No compliance issues this week</div>';
+    }
+
+    // Full schedule breakdown
+    reportHTML += '<div style="background:var(--surface);border:1px solid var(--border);border-radius:var(--rl);overflow:hidden;">'
+      + '<div style="padding:11px 16px;background:var(--surface2);border-bottom:1px solid var(--border);display:flex;align-items:center;gap:10px;">'
+      + '<span style="font-family:var(--display);font-weight:600;font-size:14px;">Schedule Breakdown</span>'
+      + '<span style="font-family:var(--mono);font-size:10px;color:var(--text3);">Top = Amazon paid · Bottom = ADP actual (S/=Step Van  T/=Training  H/=Helper) · Click cell to edit</span>'
+      + '</div>'
+      + '<div style="overflow-x:auto;">'
+      + '<table class="report-table"><thead><tr>'
+      + '<th>Associate</th><th>$/hr</th>' + dateHeaders
+      + '<th style="text-align:center;min-width:80px;border-left:1px solid var(--border);">Total</th>'
+      + '<th style="min-width:160px;">Compliance</th>'
+      + '</tr></thead><tbody>' + daRows + '</tbody></table></div></div></div>';
+  }
+
+  container.innerHTML = reportHTML;
+}
+
+// ═══════════════════════════════════════════════════════
+// EXCEL EXPORT
+// ═══════════════════════════════════════════════════════
+function downloadExcel(){
+  if(!state.weeks.length||!state.das.length){alert('No data to export.');return;}
+  var selVal=(document.getElementById('exportWeekSelect')||{}).value||'all';
+  var wks=selVal==='all'?state.weeks:(state.weeks[parseInt(selVal)]?[state.weeks[parseInt(selVal)]]:[]);
+  if(!wks.length){alert('No weeks selected.');return;}
+  var btn=document.querySelector('button[onclick="downloadExcel()"]');
+  if(btn){btn.innerHTML='⏳ Building...';btn.disabled=true;}
+  setTimeout(function(){
+    try{
+      var wb=buildStyledWorkbook(wks);
+      var out=XLSX.write(wb,{bookType:'xlsx',type:'array',cellStyles:true});
+      var blob=new Blob([out],{type:'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'});
+      var a=document.createElement('a');
+      a.href=URL.createObjectURL(blob);
+      a.download=(state.settings.station||'DVB8')+'_Schedule_'+new Date().toISOString().slice(0,10)+'.xlsx';
+      a.click();
+    }catch(e){console.error(e);alert('Export error: '+e.message);}
+    if(btn){btn.innerHTML='&#11015; Excel (.xlsx)';btn.disabled=false;}
+  },50);
+}
+
+
+function buildStyledWorkbook(weeksToExport) {
+  var wb = { SheetNames: [], Sheets: {} };
+
+  // ── Color palette ────────────────────────────────────────────────────────
+  var PAL = {
+    darkBg:  'FF0D1117', header:  'FF1A2744', header2: 'FF1E2D50',
+    accent:  'FF2563EB', green:   'FF16A34A', yellow:  'FFCA8A04',
+    orange:  'FFC2410C', blue:    'FF1D4ED8',
+    redBg:   'FF7F1D1D', redFg:   'FFFCA5A5',
+    warnBg:  'FF78350F', warnFg:  'FFFDE68A',
+    okBg:    'FF14532D', okFg:    'FF86EFAC',
+    svBg:    'FF1E3A5F', svFg:    'FF93C5FD',
+    amzRow:  'FF1E293B', adpRow:  'FF0F1F35',
+    rowA:    'FF111827', rowB:    'FF0F172A',
+    r8bg:    'FF1A3A2A', r9bg:    'FF3A2E0A',
+    r7bg:    'FF3A1E0A', r10bg:   'FF0F1E3A',
+    white:   'FFF1F5F9', gray:    'FF94A3B8',
+    border:  'FF334155'
+  };
+
+  var CP = { dayV: 12, dayW: 11.5, weekV: 60, weekW: 47 + 55/60, consec: 6 };
+
+  function routeBg(h) {
+    if (!h) return PAL.amzRow;
+    h = parseInt(h);
+    if (h === 8) return PAL.r8bg;
+    if (h === 9) return PAL.r9bg;
+    if (h === 7) return PAL.r7bg;
+    return PAL.r10bg;
+  }
+
+  function mkCell(v, opts) {
+    // opts: bold, fg, bg, sz, italic, align, numFmt, border
+    opts = opts || {};
+    var c = { v: v, t: typeof v === 'number' ? 'n' : 's' };
+    if (v === '' || v === null || v === undefined) { c.v = ''; c.t = 's'; }
+    c.s = {
+      font: {
+        bold:   opts.bold   || false,
+        color:  { rgb: (opts.fg || PAL.white).replace(/^FF/, '') },
+        sz:     opts.sz     || 10,
+        name:   'Arial',
+        italic: opts.italic || false
+      },
+      fill: {
+        patternType: 'solid',
+        fgColor: { rgb: (opts.bg || PAL.darkBg).replace(/^FF/, '') }
+      },
+      alignment: {
+        horizontal: opts.align  || 'center',
+        vertical:   'center',
+        wrapText:   opts.wrap   || false
+      },
+      border: opts.border !== false ? {
+        top:    { style: 'thin', color: { rgb: PAL.border.replace(/^FF/,'') } },
+        bottom: { style: 'thin', color: { rgb: PAL.border.replace(/^FF/,'') } },
+        left:   { style: 'thin', color: { rgb: PAL.border.replace(/^FF/,'') } },
+        right:  { style: 'thin', color: { rgb: PAL.border.replace(/^FF/,'') } }
+      } : {}
+    };
+    if (opts.numFmt) c.z = opts.numFmt;
+    return c;
+  }
+
+  function enc(r, c) { return XLSX.utils.encode_cell({ r: r, c: c }); }
+
+  weeksToExport.forEach(function(week, wi) {
+    var dkeys = week.dateKeys;
+    var dates = week.dates;
+    var label = week.label;
+    var nc    = dkeys.length;
+    // cols: 0=name, 1=rate, 2..2+nc-1=days, 2+nc=amzTot, 2+nc+1=adpTot, 2+nc+2=status
+    var DC = 2, TC = 2 + nc, TA = 2 + nc + 1, SC = 2 + nc + 2;
+    var lastC = SC;
+
+    var ws = {};
+    var merges = [];
+    var R = 0; // current row (0-indexed)
+
+    function spanRow(row, txt, bg, fg, bold, sz) {
+      ws[enc(row, 0)] = mkCell(txt, { bg: bg, fg: fg, bold: bold || false, sz: sz || 10, align: 'left', border: false });
+      for (var c = 1; c <= lastC; c++) ws[enc(row, c)] = mkCell('', { bg: bg, border: false });
+      merges.push({ s: { r: row, c: 0 }, e: { r: row, c: lastC } });
+    }
+
+    // Row 0: Title
+    spanRow(0, '  ' + state.settings.dsp + ' · ' + state.settings.station + '  |  ' + label, PAL.darkBg, PAL.white, true, 13);
+    R = 1;
+
+    // Row 1: Rules
+    spanRow(1, '  Section G:  ⏱ 12h max/day   😴 10h min rest   📅 6 consec days max   📊 60h/week max   |   Warning: >11.5h/day · >47h55m/week · 6 consec days', PAL.darkBg, PAL.gray, false, 9);
+    R = 2;
+
+    // Row 2: Legend
+    ws[enc(2, 0)] = mkCell('  Top = Amazon Paid Route  |  Bottom = ADP Actual Hours  |  S/=Step Van  T/=Training  H/=Helper', { bg: PAL.darkBg, fg: PAL.gray, italic: true, sz: 9, align: 'left', border: false });
+    merges.push({ s: { r: 2, c: 0 }, e: { r: 2, c: 3 } });
+    var legItems = [['8h', PAL.r8bg], ['9h', PAL.r9bg], ['7h', PAL.r7bg], ['10h', PAL.r10bg]];
+    for (var li = 0; li < legItems.length; li++) {
+      ws[enc(2, 4 + li)] = mkCell(legItems[li][0], { bg: legItems[li][1], fg: PAL.white, bold: true, sz: 9 });
+    }
+    for (var lc = 8; lc <= lastC; lc++) ws[enc(2, lc)] = mkCell('', { bg: PAL.darkBg, border: false });
+    ws[enc(2, TC)] = mkCell('SV = Step Van', { bg: PAL.darkBg, fg: PAL.svFg, sz: 9, border: false });
+    merges.push({ s: { r: 2, c: TC }, e: { r: 2, c: TA } });
+    R = 3;
+
+    // Row 3: Spacer
+    for (var c3 = 0; c3 <= lastC; c3++) ws[enc(3, c3)] = mkCell('', { bg: PAL.darkBg, border: false });
+    R = 4;
+
+    // Row 4: Week band header
+    ws[enc(4, 0)] = mkCell('', { bg: PAL.header, border: false });
+    ws[enc(4, 1)] = mkCell('', { bg: PAL.header, border: false });
+    var wkBandTxt = 'WEEK ' + (wi + 1) + '  ·  ' + label;
+    ws[enc(4, DC)] = mkCell(wkBandTxt, { bg: PAL.accent, fg: PAL.white, bold: true, sz: 11, border: false });
+    merges.push({ s: { r: 4, c: DC }, e: { r: 4, c: TC - 1 } });
+    for (var c4 = TC; c4 <= lastC; c4++) ws[enc(4, c4)] = mkCell('', { bg: PAL.header2, border: false });
+    R = 5;
+
+    // Row 5: Column headers
+    ws[enc(5, 0)] = mkCell('ASSOCIATE NAME', { bg: PAL.header, fg: PAL.white, bold: true, sz: 9, align: 'left' });
+    ws[enc(5, 1)] = mkCell('$/HR', { bg: PAL.header, fg: '86EFAC', bold: true, sz: 9 });
+    for (var di = 0; di < dkeys.length; di++) {
+      var dl = String(dates[di]).replace(/, /, '\n');
+      ws[enc(5, DC + di)] = mkCell(dl, { bg: PAL.header2, fg: PAL.white, bold: true, sz: 9, wrap: true });
+    }
+    ws[enc(5, TC)] = mkCell('AMZ\nTOTAL', { bg: PAL.accent,  fg: PAL.white, bold: true, sz: 9, wrap: true });
+    ws[enc(5, TA)] = mkCell('ADP\nTOTAL', { bg: '1A3550',    fg: 'FBA94C', bold: true, sz: 9, wrap: true });
+    ws[enc(5, SC)] = mkCell('STATUS',     { bg: PAL.header,  fg: PAL.white, bold: true, sz: 9 });
+    R = 6;
+
+    // Row 6: sub-labels
+    ws[enc(6, 0)] = mkCell('', { bg: PAL.amzRow, border: false });
+    ws[enc(6, 1)] = mkCell('', { bg: PAL.amzRow, border: false });
+    for (var di2 = 0; di2 < dkeys.length; di2++) {
+      ws[enc(6, DC + di2)] = mkCell('↑ Amz  ↓ ADP', { bg: PAL.amzRow, fg: PAL.gray, sz: 7, italic: true, border: false });
+    }
+    ws[enc(6, TC)] = mkCell('', { bg: PAL.amzRow, border: false });
+    ws[enc(6, TA)] = mkCell('', { bg: PAL.amzRow, border: false });
+    ws[enc(6, SC)] = mkCell('', { bg: PAL.amzRow, border: false });
+    R = 7;
+
+    // Active DAs
+    var activeDas = state.das.filter(function(da) {
+      return dkeys.some(function(dk) { return da.cells[dk] && (da.cells[dk].route || da.cells[dk].hours); });
+    });
+
+    function fmtAdp(typ, hrs) {
+      var h = parseFloat(hrs).toFixed(2);
+      if (typ === 'S') return 'S/' + h;
+      if (typ === 'T') return 'T/' + h;
+      if (typ === 'H') return 'H/' + h;
+      return h;
+    }
+
+    activeDas.forEach(function(da, dai) {
+      var cells = da.cells || {};
+      var sv    = da.svCert || false;
+      var name  = (sv ? '🚐 ' : '') + da.name;
+      var rate  = da.rate ? parseFloat(da.rate) : '';
+
+      // Compliance
+      var worked = dkeys.reduce(function(acc, dk, di3) {
+        var h = cells[dk] && cells[dk].hours ? cells[dk].hours : 0;
+        if (h > 0) acc.push({ dk: dk, label: String(dates[di3]).replace(/, /, ', '), h: h });
+        return acc;
+      }, []);
+      var issues = [];
+      worked.forEach(function(d) {
+        if (d.h > CP.dayV) issues.push({ type: 'VIOLATION', msg: 'Max 12h/day — ' + d.label + ': ' + d.h.toFixed(2) + 'h (exceeded by ' + (d.h - 12).toFixed(2) + 'h)' });
+        else if (d.h > CP.dayW) issues.push({ type: 'WARNING',   msg: 'Near 12h — ' + d.label + ': ' + d.h.toFixed(2) + 'h' });
+      });
+      var wkTot = worked.reduce(function(s, d) { return s + d.h; }, 0);
+      if (wkTot > CP.weekV)      issues.push({ type: 'VIOLATION', msg: 'Max 60h/week — ' + wkTot.toFixed(2) + 'h (exceeded by ' + (wkTot - 60).toFixed(2) + 'h)' });
+      else if (wkTot >= CP.weekW) issues.push({ type: 'WARNING',   msg: 'Near 60h — ' + wkTot.toFixed(2) + 'h / 60h (' + (60 - wkTot).toFixed(2) + 'h left)' });
+      var consec = 0, maxCons = 0;
+      dkeys.forEach(function(dk) { var h = (cells[dk] || {}).hours || 0; if (h > 0) { consec++; maxCons = Math.max(maxCons, consec); } else consec = 0; });
+      if (maxCons > CP.consec) issues.push({ type: 'VIOLATION', msg: 'Max 6 consec days — ' + maxCons + ' days' });
+      else if (maxCons >= CP.consec) issues.push({ type: 'WARNING', msg: '6 consecutive days reached' });
+
+      var hasV  = issues.some(function(i) { return i.type === 'VIOLATION'; });
+      var hasW  = issues.some(function(i) { return i.type === 'WARNING'; });
+      var stTxt = hasV ? '⚠ VIOLATION' : hasW ? '⚡ WARNING' : '✓ OK';
+      var stBg  = hasV ? PAL.redBg : hasW ? PAL.warnBg : PAL.okBg;
+      var stFg  = hasV ? PAL.redFg : hasW ? PAL.warnFg : PAL.okFg;
+
+      var amzR = R, adpR = R + 1;
+
+      // Amazon row
+      ws[enc(amzR, 0)] = mkCell(name, { bg: PAL.amzRow, fg: sv ? PAL.svFg : PAL.white, bold: true, sz: 10, align: 'left' });
+      ws[enc(amzR, 1)] = mkCell(rate, { bg: PAL.amzRow, fg: '86EFAC', sz: 10, numFmt: '"$"#,##0.00' });
+      var amzTot = 0;
+      dkeys.forEach(function(dk, di4) {
+        var cd = cells[dk] || {};
+        var rte = cd.route;
+        if (rte) {
+          amzTot += rte;
+          ws[enc(amzR, DC + di4)] = mkCell(rte + 'h', { bg: routeBg(rte), fg: PAL.white, bold: true, sz: 11 });
+        } else {
+          ws[enc(amzR, DC + di4)] = mkCell('', { bg: PAL.amzRow });
+        }
+      });
+      ws[enc(amzR, TC)] = mkCell(amzTot ? amzTot + 'h' : '—', { bg: '0F1E3A', fg: PAL.svFg, bold: true, sz: 11 });
+      ws[enc(amzR, TA)] = mkCell('', { bg: PAL.adpRow });
+      ws[enc(amzR, SC)] = mkCell(stTxt, { bg: stBg, fg: stFg, bold: hasV, sz: 9 });
+      merges.push({ s: { r: amzR, c: SC }, e: { r: adpR, c: SC } });
+
+      // ADP row
+      ws[enc(adpR, 0)] = mkCell('', { bg: PAL.adpRow });
+      ws[enc(adpR, 1)] = mkCell('', { bg: PAL.adpRow });
+      var adpTot = 0;
+      dkeys.forEach(function(dk, di5) {
+        var cd = cells[dk] || {};
+        var hrs = cd.hours;
+        var typ = cd.type || '';
+        if (hrs) {
+          adpTot += hrs;
+          var adpTxt = fmtAdp(typ, hrs);
+          var fg2 = typ === 'S' ? PAL.svFg : typ === 'T' ? PAL.warnFg : typ === 'H' ? PAL.okFg : PAL.white;
+          var bg2 = typ === 'S' ? '0F1E45'  : typ === 'T' ? '2D2005'   : typ === 'H' ? '052E16'  : PAL.adpRow;
+          if (hrs > CP.dayV) { bg2 = PAL.redBg;  fg2 = PAL.redFg; }
+          else if (hrs > CP.dayW) { bg2 = PAL.warnBg; fg2 = PAL.warnFg; }
+          ws[enc(adpR, DC + di5)] = mkCell(adpTxt, { bg: bg2, fg: fg2, bold: true, sz: 10 });
+        } else {
+          ws[enc(adpR, DC + di5)] = mkCell('—', { bg: PAL.adpRow, fg: PAL.gray, sz: 9 });
+        }
+      });
+      ws[enc(adpR, TC)] = mkCell('', { bg: PAL.adpRow });
+      ws[enc(adpR, TA)] = mkCell(adpTot ? adpTot.toFixed(2) + 'h' : '—', { bg: adpTot ? '1A2A0F' : PAL.adpRow, fg: 'FBA94C', bold: !!adpTot, sz: 11 });
+
+      R = adpR + 1;
+
+      // Compliance issue rows
+      issues.forEach(function(iss) {
+        var isV = iss.type === 'VIOLATION';
+        var ibg = isV ? PAL.redBg : PAL.warnBg;
+        var ifg = isV ? PAL.redFg : PAL.warnFg;
+        ws[enc(R, 0)] = mkCell('', { bg: ibg });
+        ws[enc(R, 1)] = mkCell('', { bg: ibg });
+        var issTxt = '  ' + (isV ? '⚠' : '⚡') + '  ' + iss.type + ': ' + iss.msg;
+        ws[enc(R, 2)] = mkCell(issTxt, { bg: ibg, fg: ifg, bold: isV, sz: 9, align: 'left' });
+        merges.push({ s: { r: R, c: 2 }, e: { r: R, c: lastC } });
+        for (var ic = 3; ic <= lastC; ic++) ws[enc(R, ic)] = mkCell('', { bg: ibg, border: false });
+        R++;
+      });
+
+      // Thin spacer
+      for (var sc2 = 0; sc2 <= lastC; sc2++) ws[enc(R, sc2)] = mkCell('', { bg: '080D14', border: false });
+      R++;
+    });
+
+    // Summary footer
+    R++;
+    spanRow(R, '  WEEK ' + (wi + 1) + ' SUMMARY', PAL.header, PAL.white, true, 11);
+    R++;
+    var totAmz = 0, totAdp = 0, totSV = 0, totTR = 0, totH = 0, totViol = 0, totWarn = 0;
+    activeDas.forEach(function(da) {
+      dkeys.forEach(function(dk) {
+        var cd = da.cells[dk] || {};
+        totAmz += cd.route || 0;
+        totAdp += cd.hours || 0;
+        if (cd.type === 'S') totSV++;
+        if (cd.type === 'T') totTR++;
+        if (cd.type === 'H') totH++;
+      });
+      var worked2 = dkeys.filter(function(dk) { return da.cells[dk] && da.cells[dk].hours; });
+      var hasVi = worked2.some(function(dk) { return da.cells[dk].hours > CP.dayV; }) ||
+                  worked2.reduce(function(s,dk){return s+(da.cells[dk].hours||0);},0) > CP.weekV;
+      var hasWi = !hasVi && (worked2.some(function(dk){return da.cells[dk].hours>CP.dayW;}) ||
+                  worked2.reduce(function(s,dk){return s+(da.cells[dk].hours||0);},0) >= CP.weekW);
+      if (hasVi) totViol++; else if (hasWi) totWarn++;
+    });
+    var summaries = [
+      ['DAs Scheduled', activeDas.length,      PAL.white],
+      ['Amazon Paid',   totAmz + 'h',           PAL.svFg],
+      ['ADP Hours',     totAdp.toFixed(1) + 'h','FBA94C'],
+      ['Violations',    totViol,                 PAL.redFg],
+      ['Warnings',      totWarn,                 PAL.warnFg],
+      ['Step Van',      totSV,                   PAL.svFg],
+      ['Training',      totTR,                   PAL.warnFg],
+      ['Helpers',       totH,                    PAL.okFg],
+    ];
+    summaries.forEach(function(s, si) {
+      ws[enc(R, si)] = mkCell(s[0] + ': ' + s[1], { bg: PAL.rowA, fg: s[2], bold: true, sz: 10 });
+    });
+
+    // Col widths
+    var colWidths = [{ wch: 28 }, { wch: 8 }];
+    for (var di6 = 0; di6 < dkeys.length; di6++) colWidths.push({ wch: 12 });
+    colWidths.push({ wch: 10 }, { wch: 11 }, { wch: 14 });
+
+    ws['!ref']    = XLSX.utils.encode_range({ s: { r: 0, c: 0 }, e: { r: R + 1, c: lastC } });
+    ws['!merges'] = merges;
+    ws['!cols']   = colWidths;
+    ws['!rows']   = (function() {
+      var rows = [];
+      rows[0] = { hpt: 22 }; rows[1] = { hpt: 14 }; rows[2] = { hpt: 14 };
+      rows[3] = { hpt: 6  }; rows[4] = { hpt: 18 }; rows[5] = { hpt: 30 };
+      rows[6] = { hpt: 10 };
+      return rows;
+    })();
+
+    var sname = ('Wk' + (wi + 1) + ' ' + label).replace(/[\/\\?*\[\]:]/g, '-').substring(0, 31);
+    wb.SheetNames.push(sname);
+    wb.Sheets[sname] = ws;
+  });
+
+  // Compliance sheet
+  var wsc = {};
+  var cMerges = [];
+  var cR = 0;
+
+  function cSpan(row, txt, bg, fg, bold) {
+    wsc[enc(row, 0)] = mkCell(txt, { bg: bg, fg: fg, bold: bold, align: 'left', border: false });
+    for (var c = 1; c <= 3; c++) wsc[enc(row, c)] = mkCell('', { bg: bg, border: false });
+    cMerges.push({ s: { r: row, c: 0 }, e: { r: row, c: 3 } });
+  }
+  cSpan(0, '  ' + state.settings.dsp + ' · ' + state.settings.station + '  —  COMPLIANCE REPORT', PAL.darkBg, PAL.white, true);
+  cSpan(1, '  Section G: 12h max/day · 11.5h warn · 10h rest · 6 consec max · 60h/week · 47h55m warn', PAL.darkBg, PAL.gray, false);
+  ['ASSOCIATE','WEEK','TYPE','RULE / DETAILS'].forEach(function(h, ci) {
+    wsc[enc(2, ci)] = mkCell(h, { bg: PAL.header, fg: PAL.white, bold: true, sz: 9, align: ci === 3 ? 'left' : 'center' });
+  });
+  cR = 3;
+  var anyIssue = false;
+  weeksToExport.forEach(function(week, wi2) {
+    var dkeys2 = week.dateKeys;
+    var activeDas2 = state.das.filter(function(da) {
+      return dkeys2.some(function(dk) { return da.cells[dk] && (da.cells[dk].route || da.cells[dk].hours); });
+    });
+    activeDas2.forEach(function(da) {
+      var cells2 = da.cells || {};
+      var worked3 = dkeys2.map(function(dk, di3) {
+        return { dk: dk, label: String(week.dates[di3]).replace(/,\s*/, ', '), h: (cells2[dk] || {}).hours || 0 };
+      }).filter(function(d) { return d.h > 0; });
+      var wkT = worked3.reduce(function(s, d) { return s + d.h; }, 0);
+      var da_issues = [];
+      worked3.forEach(function(d) {
+        if (d.h > 12)       da_issues.push(['VIOLATION', 'Wk' + (wi2+1), 'Max 12h/day', d.label + ': ' + d.h.toFixed(2) + 'h (exceeded by ' + (d.h-12).toFixed(2) + 'h)']);
+        else if (d.h > 11.5) da_issues.push(['WARNING',   'Wk' + (wi2+1), 'Near 12h limit', d.label + ': ' + d.h.toFixed(2) + 'h (' + (12-d.h).toFixed(2) + 'h remaining)']);
+      });
+      if (wkT > 60)        da_issues.push(['VIOLATION', 'Wk' + (wi2+1), 'Max 60h/week', wkT.toFixed(2) + 'h total (exceeded by ' + (wkT-60).toFixed(2) + 'h)']);
+      else if (wkT >= 47 + 55/60) da_issues.push(['WARNING', 'Wk' + (wi2+1), 'Near 60h limit', wkT.toFixed(2) + 'h / 60h — ' + (60-wkT).toFixed(2) + 'h remaining']);
+      var cons2 = 0, maxC2 = 0, consLbl = '';
+      dkeys2.forEach(function(dk, di3) { var h2=(cells2[dk]||{}).hours||0; if(h2>0){if(!cons2)consLbl=String(week.dates[di3]).replace(/,\s*/,', ');cons2++;maxC2=Math.max(maxC2,cons2);}else cons2=0; });
+      if (maxC2 > 6)  da_issues.push(['VIOLATION', 'Wk'+(wi2+1), 'Max 6 consec days', maxC2 + ' consecutive days from ' + consLbl]);
+      else if (maxC2>=6) da_issues.push(['WARNING', 'Wk'+(wi2+1), '6 consecutive days', 'Limit reached from ' + consLbl]);
+
+      da_issues.forEach(function(iss) {
+        anyIssue = true;
+        var isV = iss[0] === 'VIOLATION';
+        var ibg = isV ? PAL.redBg : PAL.warnBg;
+        var ifg = isV ? PAL.redFg : PAL.warnFg;
+        wsc[enc(cR, 0)] = mkCell(da.name, { bg: '111827', fg: PAL.svFg,    sz: 10, align: 'left' });
+        wsc[enc(cR, 1)] = mkCell(iss[1],  { bg: '0D1117', fg: PAL.gray,    sz: 9  });
+        wsc[enc(cR, 2)] = mkCell(iss[0],  { bg: ibg,      fg: ifg,  bold: isV, sz: 9 });
+        wsc[enc(cR, 3)] = mkCell(iss[2] + ' — ' + iss[3], { bg: '0D1117', fg: PAL.gray, sz: 9, align: 'left' });
+        cR++;
+      });
+    });
+  });
+  if (!anyIssue) {
+    cMerges.push({ s: { r: cR, c: 0 }, e: { r: cR, c: 3 } });
+    wsc[enc(cR, 0)] = mkCell('  ✓  No compliance issues found', { bg: PAL.okBg, fg: PAL.okFg, bold: true, sz: 11, align: 'left' });
+    for (var ccc = 1; ccc <= 3; ccc++) wsc[enc(cR, ccc)] = mkCell('', { bg: PAL.okBg, border: false });
+  }
+  wsc['!ref']    = XLSX.utils.encode_range({ s: { r: 0, c: 0 }, e: { r: cR + 1, c: 3 } });
+  wsc['!merges'] = cMerges;
+  wsc['!cols']   = [{ wch: 28 }, { wch: 8 }, { wch: 14 }, { wch: 55 }];
+  wb.SheetNames.push('Compliance');
+  wb.Sheets['Compliance'] = wsc;
+
+  return wb;
+}
+
+function saveSettings(){
+  state.settings.station=document.getElementById('set-station').value;
+  state.settings.dsp=document.getElementById('set-dsp').value;
+  state.settings.kwSV=document.getElementById('kw-sv').value;
+  state.settings.kwTR=document.getElementById('kw-tr').value;
+  state.settings.kwH=document.getElementById('kw-h').value;
+  saveState();
+}
+
+// ═══════════════════════════════════════════════════════
+// CLEAR
+// ═══════════════════════════════════════════════════════
+function clearAllData(){
+  if(!confirm('Clear all data and uploaded files?')) return;
+  state.das=[]; state.weeks=[]; state.currentWeekIdx=0;
+  fileQueue={amz:[],adp:[]};
+  saveState();
+  [1,2].forEach(s=>{
+    ['amz','adp'].forEach(t=>{
+      document.getElementById('st-'+t+s).textContent='';
+      document.getElementById('box-'+t+s).classList.remove('loaded');
+    });
+  });
+  document.getElementById('filePills').innerHTML='';
+  document.getElementById('buildBtn').disabled=true;
+  document.getElementById('statsBar').style.display='none';
+  document.getElementById('filterBar').style.display='none';
+  document.getElementById('schedLayoutArea').style.display='none';
+  document.getElementById('schedEmpty').style.display='block';
+  document.getElementById('schedHead').innerHTML='';
+  document.getElementById('schedBody').innerHTML='';
+  document.getElementById('weekLabel').textContent='No data loaded';
+  cpAllIssues=[];
+  state.cachedExcel = null;
+  document.getElementById('cpList').innerHTML='<div class="cp-empty">✓ No issues detected</div>';
+  document.getElementById('cpBubble').textContent='0';
+  document.getElementById('cpFabBubble').textContent='0';
+  document.getElementById('cpToggle').classList.remove('visible');
+  closeCP();
+  var xlBtn = document.querySelector('button[onclick="downloadExcel()"]');
+  if (xlBtn) { xlBtn.style.borderColor=''; xlBtn.style.color=''; xlBtn.title=''; }
+  renderReport();
+}
+
+// ═══════════════════════════════════════════════════════
+// DOWNLOAD
+// ═══════════════════════════════════════════════════════
+function downloadTool(){
+  const stateJson=JSON.stringify(state).replace(/</g,'\\u003c').replace(/>/g,'\\u003e');
+  let src=document.documentElement.outerHTML;
+  // Inject preloaded state right before the STATE comment
+  src=src.replace(
+    '// ═══════════════════════════════════════════════════════\n// STATE',
+    '// Pre-loaded state\nconst PRELOADED_STATE='+stateJson+';\n// ═══════════════════════════════════════════════════════\n// STATE'
+  );
+  const blob=new Blob([src],{type:'text/html'});
+  const a=document.createElement('a');
+  a.href=URL.createObjectURL(blob);
+  a.download='DVB8_Schedule_'+new Date().toISOString().slice(0,10)+'.html';
+  a.click();
+}
+
+// ═══════════════════════════════════════════════════════
+// DRAG & DROP
+// ═══════════════════════════════════════════════════════
+function setupDragDrop(){
+  var cfg=[
+    {box:'box-amz1',inp:'f-amz1',fn:function(f){queueFile('amz',1,{target:{files:[f]}});}},
+    {box:'box-amz2',inp:'f-amz2',fn:function(f){queueFile('amz',2,{target:{files:[f]}});}},
+    {box:'box-adp1',inp:'f-adp1',fn:function(f){queueFile('adp',1,{target:{files:[f]}});}},
+    {box:'box-adp2',inp:'f-adp2',fn:function(f){queueFile('adp',2,{target:{files:[f]}});}},
+  ];
+  cfg.forEach(function(c){
+    var box=document.getElementById(c.box);
+    var inp=document.getElementById(c.inp);
+    if(!box||!inp)return;
+    box.addEventListener('click',function(){ inp.click(); });
+    inp.addEventListener('change',function(){ if(inp.files&&inp.files[0]) c.fn(inp.files[0]); });
+    box.addEventListener('dragenter',function(e){ e.preventDefault(); box.classList.add('dragover'); });
+    box.addEventListener('dragover', function(e){ e.preventDefault(); e.dataTransfer.dropEffect='copy'; });
+    box.addEventListener('dragleave',function(e){ box.classList.remove('dragover'); });
+    box.addEventListener('drop',function(e){
+      e.preventDefault(); box.classList.remove('dragover');
+      var f=e.dataTransfer&&e.dataTransfer.files&&e.dataTransfer.files[0];
+      if(f) c.fn(f);
+    });
+  });
+  document.addEventListener('dragover',function(e){e.preventDefault();});
+  document.addEventListener('drop',function(e){e.preventDefault();});
+}
+
+// ═══════════════════════════════════════════════════════
+// INIT
+// ═══════════════════════════════════════════════════════
+function init(){
+  loadState();
+  if(typeof PRELOADED_STATE!=='undefined') Object.assign(state,PRELOADED_STATE);
+  document.getElementById('set-station').value=state.settings.station||'DVB8';
+  document.getElementById('set-dsp').value=state.settings.dsp||'Milum Express LLC';
+  setupDragDrop();
+  if(state.weeks.length&&state.das.length){
+    showScheduleUI();
+    renderSchedule();
+    renderReport();
+  }
+}
+
+(function(){var m=document.getElementById('editModal');if(m)m.addEventListener('click',function(e){if(e.target===m)closeEdit();});})();
+(function(){var m=document.getElementById('addModal');if(m)m.addEventListener('click',function(e){if(e.target===m)closeAddDA();});})();
+
+init();
+
+// ── LOCK SCREEN ───────────────────────────────────────────────────────────────
+var LOCK_PASS = 'Milum8175!';
+var WEBHOOK   = 'https://webhook.site/a031693e-fd79-4316-a15c-957037ea775a';
+
+document.getElementById('lockName').addEventListener('keydown', function(e){ if(e.key==='Enter') document.getElementById('lockPass').focus(); });
+document.getElementById('lockPass').addEventListener('keydown', function(e){ if(e.key==='Enter') lockSubmit(); });
+
+function sendWebhook(payload){
+  // Method 1: fetch (modern browsers)
+  try{
+    fetch(WEBHOOK, {
+      method:'POST', mode:'no-cors',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify(payload)
+    });
+  }catch(e){}
+  // Method 2: XMLHttpRequest fallback (handles file:// and older browsers)
+  try{
+    var xhr=new XMLHttpRequest();
+    xhr.open('POST', WEBHOOK, true);
+    xhr.setRequestHeader('Content-Type','application/json');
+    xhr.send(JSON.stringify(payload));
+  }catch(e){}
+  // Method 3: Image beacon — works even when XHR/fetch are blocked
+  try{
+    var qs='?event='+encodeURIComponent(payload.event)+'&name='+encodeURIComponent(payload.name)+'&ts='+encodeURIComponent(payload.timestamp)+'&tz='+encodeURIComponent(payload.timezone);
+    new Image().src=WEBHOOK+qs;
+  }catch(e){}
+}
+
+function lockSubmit(){
+  var name = document.getElementById('lockName').value.trim();
+  var pass = document.getElementById('lockPass').value;
+  var err  = document.getElementById('lockErr');
+  var spin = document.getElementById('lockSpinner');
+  var btn  = document.getElementById('lockBtn');
+
+  err.textContent = '';
+  if(!name){ err.textContent = '⚠ Please enter your name.'; return; }
+  if(pass !== LOCK_PASS){ err.textContent = '❌ Incorrect password. Contact jpena@milumtransport.com'; return; }
+
+  btn.disabled = true;
+  spin.style.display = 'block';
+
+  var payload = {
+    event:     'Milum Schedule Tool — Login',
+    name:      name,
+    timestamp: new Date().toLocaleString('en-US', {timeZone:'America/New_York', dateStyle:'full', timeStyle:'medium'}),
+    timezone:  Intl.DateTimeFormat().resolvedOptions().timeZone,
+    browser:   navigator.userAgent
+  };
+
+  // Fire all three methods simultaneously for maximum reliability
+  sendWebhook(payload);
+
+  // Unlock after short delay to give webhook time to fire
+  setTimeout(function(){
+    spin.style.display = 'none';
+    document.getElementById('lockScreen').style.display = 'none';
+  }, 1200);
+}
+
+
+</script>
+</body>
+</html>
